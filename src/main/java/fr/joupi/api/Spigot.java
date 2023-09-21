@@ -1,0 +1,72 @@
+package fr.joupi.api;
+
+import fr.joupi.api.duelgame.DuelGame;
+import fr.joupi.api.game.GameSize;
+import fr.joupi.api.listener.GameListener;
+import fr.joupi.api.listener.TestListener;
+import fr.joupi.api.shop.Product;
+import fr.joupi.api.skyly.KillStreak;
+import lombok.Getter;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.reflections.Reflections;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+@Getter
+public class Spigot extends JavaPlugin {
+
+    private DuelGame duelGame;
+
+    private List<Product> products;
+    private List<User> users;
+    private KillStreak killStreak;
+
+    @Override
+    public void onEnable() {
+        this.duelGame = new DuelGame(this, GameSize.SIZE_1V1);
+        this.products = new ArrayList<>();
+        this.users = new ArrayList<>();
+        this.killStreak = new KillStreak(this);
+
+        addProduct();
+        getServer().getPluginManager().registerEvents(new TestListener(this), this);
+        getServer().getPluginManager().registerEvents(new GameListener(this), this);
+    }
+
+    @Override
+    public void onDisable() {
+        getKillStreak().saveKillStreak();
+    }
+
+    public User getUser(UUID uuid) {
+        return getUsers().stream().filter(user -> user.getUuid().equals(uuid)).findFirst().orElse(null);
+    }
+
+    public void addProduct() {
+        Arrays.stream(DyeColor.values()).forEach(dyeColor -> {
+            getProducts().add(new Product("Laine " + dyeColor.name(), new ItemBuilder(Material.WOOL).setDyeColor(dyeColor).build()));
+            getProducts().add(new Product("Brick " + dyeColor.name(), new ItemBuilder(Material.STAINED_CLAY).setDyeColor(dyeColor).build()));
+            getProducts().add(new Product("InkSac " + dyeColor.name(), new ItemBuilder(Material.INK_SACK).setDyeColor(dyeColor).build()));
+            getProducts().add(new Product("StainedGlass " + dyeColor.name(), new ItemBuilder(Material.STAINED_GLASS_PANE).setDyeColor(dyeColor).build()));
+            getProducts().add(new Product("Glass " + dyeColor.name(), new ItemBuilder(Material.STAINED_GLASS).setDyeColor(dyeColor).build()));
+        });
+    }
+
+    public void registerListeners(String packageName) {
+        new Reflections(packageName).getSubTypesOf(AListener.class)
+                .forEach(clazz -> {
+                    try {
+                        getServer().getPluginManager().registerEvents(clazz.getDeclaredConstructor(this.getClass()).newInstance(this), this);
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+                        e.printStackTrace();
+                    }
+                });
+    }
+
+}
