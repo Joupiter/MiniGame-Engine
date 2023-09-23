@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class GameManager {
 
     private final JavaPlugin plugin;
-    private final ConcurrentMap<String, Game<?>> games;
+    private final ConcurrentMap<String, List<Game<?>>> games;
 
     public GameManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -67,19 +67,15 @@ public class GameManager {
     }
 
     public List<Game<?>> getGames(String gameName) {
-        return getGames().values().stream()
-                .filter(game -> game.getName().equals(gameName))
-                .collect(Collectors.toList());
+        return getGames().get(gameName);
     }
 
     public int getSize(String gameName) {
-        return getGames().values().stream()
-                .filter(game -> game.getName().equals(gameName))
-                .mapToInt(Game::getSize).sum();
+        return getGames().get(gameName).stream().mapToInt(Game::getSize).sum();
     }
 
     public int getSize() {
-        return getGames().size();
+        return getGames().values().stream().mapToInt(List::size).sum();
     }
 
 }
