@@ -45,11 +45,6 @@ public class GamePlayer {
         setDeaths(function.apply(deaths));
     }
 
-    public void setSpectator() {
-        setSpectator(!isSpectator());
-        getPlayer().setGameMode(isSpectator() ? GameMode.SPECTATOR : GameMode.ADVENTURE);
-    }
-
     public void sendMessage(String... messages) {
         Arrays.asList(messages)
                 .forEach(message -> getPlayer().sendMessage(ChatColor.translateAlternateColorCodes('&', message)));

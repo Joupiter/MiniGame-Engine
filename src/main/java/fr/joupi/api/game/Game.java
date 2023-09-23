@@ -1,18 +1,21 @@
 package fr.joupi.api.game;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import fr.joupi.api.BooleanWrapper;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
-import fr.joupi.api.game.phase.PhaseNode;
+import fr.joupi.api.game.phase.PhaseManager;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.swing.plaf.PanelUI;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -22,22 +25,23 @@ public abstract class Game<P extends JavaPlugin> {
 
     private final P plugin;
 
-    private final String name;
+    private final String name, id;
     private final GameSettings settings;
-    private final PhaseNode<?> phaseNode;
+    private final PhaseManager<?> phaseManager;
 
     private final List<GameTeam> teams;
-    private final Map<UUID, GamePlayer> players;
+    private final ConcurrentMap<UUID, GamePlayer> players;
 
     private GameState state;
 
     protected Game(P plugin, String name, GameSettings settings) {
         this.plugin = plugin;
         this.name = name;
+        this.id = RandomStringUtils.randomAlphanumeric(10);
         this.settings = settings;
-        this.phaseNode = new PhaseNode<>(this);
-        this.teams = Lists.newLinkedList();
-        this.players = Maps.newConcurrentMap();
+        this.phaseManager = new PhaseManager<>(this);
+        this.teams = new LinkedList<>();
+        this.players = new ConcurrentHashMap<>();
         this.state = GameState.WAIT;
         load();
     }
@@ -80,14 +84,17 @@ public abstract class Game<P extends JavaPlugin> {
     }
 
     public void checkGameState(GameState gameState, Runnable runnable) {
-        BooleanWrapper.of(getState().equals(gameState)).ifTrue(runnable);
+        BooleanWrapper.of(getState().equals(gameState))
+                .ifTrue(runnable);
     }
 
-    public void joinGame(GamePlayer gamePlayer) {
-        BooleanWrapper.of(getPlayers().containsKey(gamePlayer.getUuid()))
+    public void joinGame(Player player) {
+        BooleanWrapper.of(getPlayers().containsKey(player.getUniqueId()))
                 .ifFalse(() -> {
+                    GamePlayer gamePlayer = new GamePlayer(player.getUniqueId(), 0, 0, !getState().equals(GameState.WAIT));
                     getPlayers().put(gamePlayer.getUuid(), gamePlayer);
                     Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent(this, gamePlayer));
+                    System.out.println(player.getName() + " join " + getFullName() + " game");
                 });
     }
 
@@ -96,6 +103,7 @@ public abstract class Game<P extends JavaPlugin> {
             getPlayers().remove(gamePlayer.getUuid());
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent(this, gamePlayer));
             getTeam(gamePlayer).ifPresent(gameTeam -> gameTeam.removeMember(gamePlayer));
+            System.out.println(gamePlayer.getPlayer().getName() + " leave " + getFullName() + " game");
         });
     }
 
@@ -109,7 +117,19 @@ public abstract class Game<P extends JavaPlugin> {
     }
 
     public String getFullName() {
-        return getName() + "_" + getSettings().getSize().getName();
+        return getName() + "-" + getSettings().getSize().getName() + "-" + getId();
+    }
+
+    public int getAlivePlayersCount() {
+        return getAlivePlayers().size();
+    }
+
+    public int getSpectatorsCount() {
+        return getSpectators().size();
+    }
+
+    public int getTeamsCount() {
+        return getTeams().size();
     }
 
     public int getSize() {

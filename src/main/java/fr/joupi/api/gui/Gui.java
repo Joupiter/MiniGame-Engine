@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -174,13 +175,18 @@ public abstract class Gui<P extends JavaPlugin> {
 
             if (itemStack != null)
                 if (event.getInventory().equals(inventory)) {
-                    if (event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.LEFT)
-                        getButtons()
-                                .entrySet()
-                                .stream()
+                    if (event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.LEFT) {
+                        if (itemStack.getType() == Material.SKULL_ITEM)
+                            getButtons().entrySet().stream()
+                                    .filter(entry -> entry.getValue().getItemStack().getType().equals(Material.SKULL_ITEM))
+                                    .filter(entry -> entry.getValue().getItemStack().getItemMeta().getDisplayName().equals(itemStack.getItemMeta().getDisplayName()))
+                                    .findFirst().ifPresent(entry -> entry.getValue().getClickEvent().accept(event));
+                         else
+                             getButtons().entrySet().stream()
                                 .filter(entry -> entry.getValue().getItemStack().equals(itemStack))
                                 .findFirst()
                                 .ifPresent(entry -> entry.getValue().getClickEvent().accept(event));
+                    }
 
                     event.setCancelled(true);
                 }

@@ -1,6 +1,8 @@
 package fr.joupi.api;
 
+import fr.joupi.api.game.Game;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -9,77 +11,67 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 @Getter
+@RequiredArgsConstructor
 public class GameRunnable implements Runnable {
 
     private BukkitTask task;
     private final Consumer<BukkitTask> consumer;
 
-    public GameRunnable(Consumer<BukkitTask> consumer) {
-        this.consumer = consumer;
-    }
-
     public synchronized void cancel() throws IllegalStateException {
         Bukkit.getScheduler().cancelTask(this.getTaskId());
     }
 
-    @NotNull
-    public synchronized BukkitTask runTask(@NotNull Plugin plugin) throws IllegalArgumentException, IllegalStateException {
+    public synchronized BukkitTask runTask(Game<?> game) {
         checkNotYetScheduled();
-        return setupTask(Bukkit.getScheduler().runTask(plugin, this));
+        return setupTask(Bukkit.getScheduler().runTask(game.getPlugin(), this));
     }
 
-    @NotNull
-    public synchronized BukkitTask runTaskAsynchronously(@NotNull Plugin plugin) throws IllegalArgumentException, IllegalStateException {
+    public synchronized BukkitTask runTaskAsynchronously(Game<?> game) {
         checkNotYetScheduled();
-        return setupTask(Bukkit.getScheduler().runTaskAsynchronously(plugin, this));
+        return setupTask(Bukkit.getScheduler().runTaskAsynchronously(game.getPlugin(), this));
     }
 
-    @NotNull
-    public synchronized BukkitTask runTaskLater(@NotNull Plugin plugin, long delay) throws IllegalArgumentException, IllegalStateException {
+    public synchronized BukkitTask runTaskLater(Game<?> game, long delay) {
         checkNotYetScheduled();
-        return this.setupTask(Bukkit.getScheduler().runTaskLater(plugin, this, delay));
+        return setupTask(Bukkit.getScheduler().runTaskLater(game.getPlugin(), this, delay));
     }
 
-    @NotNull
-    public synchronized BukkitTask runTaskLaterAsynchronously(@NotNull Plugin plugin, long delay) throws IllegalArgumentException, IllegalStateException {
+    public synchronized BukkitTask runTaskLaterAsynchronously(Game<?> game, long delay) {
         checkNotYetScheduled();
-        return this.setupTask(Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, delay));
+        return setupTask(Bukkit.getScheduler().runTaskLaterAsynchronously(game.getPlugin(), this, delay));
     }
 
-    @NotNull
-    public synchronized BukkitTask runTaskTimer(@NotNull Plugin plugin, long delay, long period) throws IllegalArgumentException, IllegalStateException {
+    public synchronized BukkitTask runTaskTimer(Game<?> game, long delay, long period) {
         checkNotYetScheduled();
-        return this.setupTask(Bukkit.getScheduler().runTaskTimer(plugin, this, delay, period));
+        return setupTask(Bukkit.getScheduler().runTaskTimer(game.getPlugin(), this, delay, period));
     }
 
-    @NotNull
-    public synchronized BukkitTask runTaskTimerAsynchronously(@NotNull Plugin plugin, long delay, long period) throws IllegalArgumentException, IllegalStateException {
+    public synchronized BukkitTask runTaskTimerAsynchronously(Game<?> game, long delay, long period) {
         checkNotYetScheduled();
-        return this.setupTask(Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this, delay, period));
+        return setupTask(Bukkit.getScheduler().runTaskTimerAsynchronously(game.getPlugin(), this, delay, period));
     }
 
-    public synchronized int getTaskId() throws IllegalStateException {
+    public synchronized int getTaskId() {
         checkScheduled();
-        return this.task.getTaskId();
+        return getTask().getTaskId();
     }
 
     private void checkScheduled() {
-        if (this.task == null)
+        if (getTask() == null)
             throw new IllegalStateException("Not scheduled yet");
     }
 
     private void checkNotYetScheduled() {
-        if (this.task != null)
-            throw new IllegalStateException("Already scheduled as " + this.task.getTaskId());
+        if (getTask() != null)
+            throw new IllegalStateException("Already scheduled as " + getTask().getTaskId());
     }
 
     @Override
     public void run() {
-        getConsumer().accept(task);
+        getConsumer().accept(getTask());
     }
 
-    @NotNull
-    private BukkitTask setupTask(@NotNull BukkitTask task) {
+    private BukkitTask setupTask(BukkitTask task) {
         this.task = task;
         return task;
     }

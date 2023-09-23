@@ -1,46 +1,35 @@
 package fr.joupi.api.listener;
 
-import fr.joupi.api.CountdownTimer;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GamePlayer;
-import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.GameTeam;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
-import fr.joupi.api.game.event.GameStartEvent;
-import fr.joupi.api.game.event.GameStopEvent;
+import fr.joupi.api.shop.ShopGui;
+import fr.joupi.api.skyly.PlayerGameListGui;
+import io.reactivex.rxjava3.core.Observable;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Getter
 public class GameListener implements Listener {
 
     private final Spigot plugin;
-    @Setter private CountdownTimer timer;
 
     public GameListener(Spigot plugin) {
         this.plugin = plugin;
     }
 
-    private CountdownTimer getNewCountdownTimer(Game<?> game) {
-        return new CountdownTimer(getPlugin(), 25,
-                () -> game.broadcast("&eLa partie va se lancer !"),
-                () -> Bukkit.getServer().getPluginManager().callEvent(new GameStartEvent(game)),
-                countdown -> game.getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.setLevel(countdown.getSecondsLeft())));
-    }
-
     @EventHandler
     public void onGamePlayerJoin(GamePlayerJoinEvent event) {
-        Game<?> game = event.getGame();
+        /*Game<?> game = event.getGame();
         GamePlayer gamePlayer = event.getGamePlayer();
 
         game.checkGameState(GameState.WAIT, () -> {
@@ -50,43 +39,34 @@ public class GameListener implements Listener {
                 getTimer().scheduleTimer();
 
             event.sendJoinMessage();
+            System.out.println("CHECK GAME STATE = WAIT");
         });
 
         game.checkGameState(GameState.IN_GAME, () -> {
-            gamePlayer.setSpectator();
+            gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
             gamePlayer.sendMessage("&aLa partie est déjà commencer !");
+            System.out.println("CHECK GAME STATE = IG");
         });
 
         game.checkGameState(GameState.END, () -> {
-            gamePlayer.setSpectator();
+            gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
             gamePlayer.sendMessage("&aLa partie est déjà terminée !");
-        });
+            System.out.println("CHECK GAME STATE = END");
+        });*/
     }
 
     @EventHandler
     public void onGamePlayerLeave(GamePlayerLeaveEvent event) {
-        Game<?> game = event.getGame();
+        /*Game<?> game = event.getGame();
 
         game.checkGameState(GameState.WAIT, () -> {
-            if (game.getSize() < game.getSettings().getSize().getMinPlayer())
+            if (game.getSize() < game.getSettings().getSize().getMinPlayer()) {
                 getTimer().cancelTimer();
+                System.out.println("CANCEL TIMER BCS HAVING NO MUCH PLAYER FOR START!");
+            }
         });
 
-        event.sendLeaveMessage();
-    }
-
-    @EventHandler
-    public void onGameStart(GameStartEvent event) {
-        Game<?> game = event.getGame();
-
-        game.setState(GameState.IN_GAME);
-        game.broadcast("&eDémarage de la partie !!");
-    }
-
-    @EventHandler
-    public void onGameEnd(GameStopEvent event) {
-        Game<?> game = event.getGame();
-        game.setState(GameState.END);
+        event.sendLeaveMessage();*/
     }
 
     @EventHandler
@@ -94,13 +74,30 @@ public class GameListener implements Listener {
         Player player = event.getPlayer();
         Game<Spigot> game = getPlugin().getDuelGame();
 
-        if (event.getMessage().equals("!timerstop")) {
-            Optional.ofNullable(getTimer()).ifPresentOrElse(CountdownTimer::cancelTimer, () -> player.sendMessage("timer is null"));
+        /**
+         *  TEST
+         */
+        if (event.getMessage().equals("!gui")) {
+            new PlayerGameListGui(getPlugin(), player).onOpen(player);
             event.setCancelled(true);
         }
 
-        game.getPlayer(player.getUniqueId())
-                .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', game.getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
+        if (event.getMessage().equals("!test")) {
+            new ShopGui(getPlugin(), player).onOpen(player);
+            event.setCancelled(true);
+        }
+
+        if (event.getMessage().equals("!rx")) {
+            Observable<GameTeam> teamObservable = Observable.fromIterable(game.getTeams());
+
+            teamObservable.subscribe(
+                    gameTeam -> Bukkit.broadcastMessage(gameTeam.getName() + ":" + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(","))),
+                    throwable -> Bukkit.broadcastMessage("Error: " + throwable.getMessage()),
+                    () -> Bukkit.broadcastMessage("Completed!")
+            );
+
+            event.setCancelled(true);
+        }
     }
 
 }

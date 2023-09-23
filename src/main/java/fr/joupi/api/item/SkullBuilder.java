@@ -1,13 +1,19 @@
 package fr.joupi.api.item;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Skull;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Base64;
@@ -27,6 +33,16 @@ public class SkullBuilder {
         notNull(name, "name");
 
         return Bukkit.getUnsafe().modifyItemStack(item, "{SkullOwner:\"" + name + "\"}");
+    }
+
+    public ItemStack getHeadFromValue(String value) {
+        UUID id = UUID.nameUUIDFromBytes(value.getBytes());
+        int less = (int) id.getLeastSignificantBits();
+        int most = (int) id.getMostSignificantBits();
+        return Bukkit.getUnsafe().modifyItemStack(
+                new ItemStack(Material.SKULL_ITEM),
+                "{SkullOwner:{Id:[I;" + (less * most) + "," + (less >> 23) + "," + (most / less) + "," + (most * 8731) + "],Properties:{textures:[{Value:\"" + value + "\"}]}}}"
+        );
     }
 
     public ItemStack itemFromUuid(UUID id) {
@@ -152,6 +168,81 @@ public class SkullBuilder {
 
         String toEncode = "{\"textures\":{\"SKIN\":{\"url\":\"" + actualUrl + "\"}}}";
         return Base64.getEncoder().encodeToString(toEncode.getBytes());
+    }
+
+
+    public ItemStack withTexture(String name) {
+        try {
+            ItemStack itemStack = getPlayerSkullItem();
+            SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+            GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+            profile.getProperties().put("textures", new Property("textures", name));
+
+            Field profileField = skullMeta.getClass().getDeclaredField("profile");
+
+            profileField.setAccessible(true);
+            profileField.set(skullMeta, profile);
+
+            itemStack.setItemMeta(skullMeta);
+
+            return itemStack;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public ItemStack withSkullOwner(UUID uuid) {
+        ItemStack itemStack = getPlayerSkullItem();
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+
+        skullMeta.setOwner(player.getName());
+
+        itemStack.setItemMeta(skullMeta);
+
+        return itemStack;
+    }
+
+    public ItemStack withSkullOwner(String name) {
+        ItemStack itemStack = getPlayerSkullItem();
+        OfflinePlayer player = Bukkit.getOfflinePlayer(name);
+        SkullMeta skullMeta = (SkullMeta) itemStack.getItemMeta();
+
+        skullMeta.setOwner(player.getName());
+
+        itemStack.setItemMeta(skullMeta);
+
+        return itemStack;
+    }
+
+    public ItemStack getLeftArrowSkull() {
+        return withTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzdhZWU5YTc1YmYwZGY3ODk3MTgzMDE1Y2NhMGIyYTdkNzU1YzYzMzg4ZmYwMTc1MmQ1ZjQ0MTlmYzY0NSJ9fX0=");
+    }
+
+    public ItemStack getRightArrowSkull() {
+        return withTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjgyYWQxYjljYjRkZDIxMjU5YzBkNzVhYTMxNWZmMzg5YzNjZWY3NTJiZTM5NDkzMzgxNjRiYWM4NGE5NmUifX19");
+    }
+
+    public ItemStack getPlusSkull() {
+        return withTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWEyZDg5MWM2YWU5ZjZiYWEwNDBkNzM2YWI4NGQ0ODM0NGJiNmI3MGQ3ZjFhMjgwZGQxMmNiYWM0ZDc3NyJ9fX0=");
+    }
+
+    public ItemStack gejkjdfgdfgdf(Player player) {
+        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
+        GameProfile profile = new GameProfile(player.getUniqueId(), player.getName());
+        Field profileField;
+        try {
+            profileField = meta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(meta, profile);
+        } catch (IllegalArgumentException | IllegalAccessException | NoSuchFieldException | SecurityException e) {
+            e.printStackTrace();
+        }
+        head.setItemMeta(meta);
+        return head;
     }
 
 }

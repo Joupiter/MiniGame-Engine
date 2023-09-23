@@ -1,5 +1,6 @@
 package fr.joupi.api.listener;
 
+import com.google.common.collect.ImmutableList;
 import fr.joupi.api.AListener;
 import fr.joupi.api.CountdownTimer;
 import fr.joupi.api.Spigot;
@@ -26,61 +27,12 @@ public class TestListener extends AListener<Spigot> {
     }
 
     @EventHandler
-    public void onChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
-        Game<Spigot> game = getPlugin().getDuelGame();
-
-        if (event.getMessage().equals("!test")) {
-            CountdownTimer timer = new CountdownTimer(getPlugin(), 10,
-                    () -> player.sendMessage(">> before timer"),
-                    () -> player.sendMessage(">> after timer"),
-                    seconds -> player.sendMessage(">> " + seconds.getSecondsLeft()));
-
-            timer.scheduleTimer();
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!join")) {
-            game.joinGame(new GamePlayer(player.getUniqueId(), 0, 0, false));
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!leave")) {
-            game.leaveGame(player.getUniqueId());
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!info")) {
-            game.getTeams().forEach(gameTeam -> player.sendMessage(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getUuid).map(UUID::toString).collect(Collectors.joining(", "))));
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!team")) {
-            game.fillTeam();
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!test")) {
-            new ShopGui(getPlugin(), player).onOpen(player);
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!rx")) {
-            Observable<GameTeam> teamObservable = Observable.fromIterable(game.getTeams());
-
-            teamObservable.subscribe(
-                    gameTeam -> Bukkit.broadcastMessage(gameTeam.getName() + ":" + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(","))),
-                    throwable -> Bukkit.broadcastMessage("Error: " + throwable.getMessage()),
-                    () -> Bukkit.broadcastMessage("Completed!")
-            );
-
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+
+        ImmutableList<String> list = ImmutableList.<String>builder().add("", "").build();
+
+
         getPlugin().getUsers().add(new User(player.getUniqueId(), 1));
     }
 

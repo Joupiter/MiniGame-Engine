@@ -2,6 +2,7 @@ package fr.joupi.api;
 
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.GameSize;
+import fr.joupi.api.listener.GameCommand;
 import fr.joupi.api.listener.GameListener;
 import fr.joupi.api.listener.TestListener;
 import fr.joupi.api.shop.Product;
@@ -13,10 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 public class Spigot extends JavaPlugin {
@@ -37,6 +35,9 @@ public class Spigot extends JavaPlugin {
         addProduct();
         getServer().getPluginManager().registerEvents(new TestListener(this), this);
         getServer().getPluginManager().registerEvents(new GameListener(this), this);
+        getCommand("join").setExecutor(new GameCommand(this));
+        getCommand("leave").setExecutor(new GameCommand(this));
+        getCommand("info").setExecutor(new GameCommand(this));
     }
 
     @Override

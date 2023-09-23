@@ -1,5 +1,6 @@
 package fr.joupi.api;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -9,6 +10,7 @@ import java.util.function.Consumer;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public class CountdownTimer implements Runnable {
 
     private final JavaPlugin plugin;
