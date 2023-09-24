@@ -15,7 +15,7 @@ public class GamePlayerLeaveEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Game<?> game;
+    private Game game;
     private GamePlayer gamePlayer;
 
     public Player getPlayer() {

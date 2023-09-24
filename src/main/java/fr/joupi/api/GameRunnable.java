@@ -21,32 +21,32 @@ public class GameRunnable implements Runnable {
         Bukkit.getScheduler().cancelTask(this.getTaskId());
     }
 
-    public synchronized BukkitTask runTask(Game<?> game) {
+    public synchronized BukkitTask runTask(Game game) {
         checkNotYetScheduled();
         return setupTask(Bukkit.getScheduler().runTask(game.getPlugin(), this));
     }
 
-    public synchronized BukkitTask runTaskAsynchronously(Game<?> game) {
+    public synchronized BukkitTask runTaskAsynchronously(Game game) {
         checkNotYetScheduled();
         return setupTask(Bukkit.getScheduler().runTaskAsynchronously(game.getPlugin(), this));
     }
 
-    public synchronized BukkitTask runTaskLater(Game<?> game, long delay) {
+    public synchronized BukkitTask runTaskLater(Game game, long delay) {
         checkNotYetScheduled();
         return setupTask(Bukkit.getScheduler().runTaskLater(game.getPlugin(), this, delay));
     }
 
-    public synchronized BukkitTask runTaskLaterAsynchronously(Game<?> game, long delay) {
+    public synchronized BukkitTask runTaskLaterAsynchronously(Game game, long delay) {
         checkNotYetScheduled();
         return setupTask(Bukkit.getScheduler().runTaskLaterAsynchronously(game.getPlugin(), this, delay));
     }
 
-    public synchronized BukkitTask runTaskTimer(Game<?> game, long delay, long period) {
+    public synchronized BukkitTask runTaskTimer(Game game, long delay, long period) {
         checkNotYetScheduled();
         return setupTask(Bukkit.getScheduler().runTaskTimer(game.getPlugin(), this, delay, period));
     }
 
-    public synchronized BukkitTask runTaskTimerAsynchronously(Game<?> game, long delay, long period) {
+    public synchronized BukkitTask runTaskTimerAsynchronously(Game game, long delay, long period) {
         checkNotYetScheduled();
         return setupTask(Bukkit.getScheduler().runTaskTimerAsynchronously(game.getPlugin(), this, delay, period));
     }

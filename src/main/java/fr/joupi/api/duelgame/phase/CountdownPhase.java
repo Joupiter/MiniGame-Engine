@@ -5,7 +5,6 @@ import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.GameTeam;
-import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import lombok.Getter;
@@ -17,7 +16,7 @@ public class CountdownPhase extends AbstractGamePhase {
 
     private final CountdownTimer countdownTimer;
 
-    public CountdownPhase(Game<?> game) {
+    public CountdownPhase(Game game) {
         super(game);
         this.countdownTimer = new CountdownTimer(getGame().getPlugin(), 10);
     }
@@ -29,24 +28,28 @@ public class CountdownPhase extends AbstractGamePhase {
         getCountdownTimer().setAfterTimer(this::endPhase);
 
         registerEvent(AsyncPlayerChatEvent.class, event -> {
-            getGame().getPlayer(event.getPlayer().getUniqueId())
+            if (canTriggerEvent(event.getPlayer().getUniqueId()))
+                getGame().getPlayer(event.getPlayer().getUniqueId())
                     .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getGame().getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
         });
 
-        registerEvent(GamePlayerJoinEvent.class, GamePlayerJoinEvent::sendJoinMessage);
-
         registerEvent(GamePlayerLeaveEvent.class, event -> {
-            getGame().checkGameState(GameState.WAIT, () -> {
-                if (getGame().getSize() < getGame().getSettings().getSize().getMinPlayer()) {
-                    getCountdownTimer().cancelTimer();
-                    cancelPhase();
-                    System.out.println("CANCEL TIMER BCS HAVING NO MUCH PLAYER FOR START!");
-                }
-            });
+            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+                event.getGame().getPlayers().remove(event.getPlayer().getUniqueId());
 
-            event.sendLeaveMessage();
+                getGame().checkGameState(GameState.WAIT, () -> {
+                    if (getGame().getSize() < getGame().getSettings().getSize().getMinPlayer()) {
+                        getCountdownTimer().cancelTimer();
+                        cancelPhase();
+                        System.out.println("CANCEL TIMER BCS HAVING NO MUCH PLAYER FOR START!");
+                    }
+
+                });
+                event.sendLeaveMessage();
+            }
         });
 
+        getCountdownTimer().setSecondsLeft(10);
         getCountdownTimer().scheduleTimer();
     }
 

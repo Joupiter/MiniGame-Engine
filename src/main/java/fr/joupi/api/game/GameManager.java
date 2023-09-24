@@ -1,28 +1,62 @@
 package fr.joupi.api.game;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 @Getter
 public class GameManager {
 
     private final JavaPlugin plugin;
-    private final ConcurrentMap<String, List<Game<?>>> games;
+    private final ConcurrentMap<String, List<Game>> games;
 
     public GameManager(JavaPlugin plugin) {
         this.plugin = plugin;
         this.games = new ConcurrentHashMap<>();
     }
 
+    /*
+        First check : get game with more players in WAITING state and check if the game is not full
+        Second check : get game with less players in WAITING state and check if the game is not full
+     */
     public void findGame(Player player, String gameName) {
+        if (Optional.ofNullable(getGames(gameName)).isPresent()) {
+            /*
+                Debug
+             */
+            getReachableGamesWithMorePlayers(gameName).stream().map(Game::getFullName).forEach(s -> System.out.println("Reachable with more : " + s));
+            getReachableGamesWithLessPlayers(gameName).stream().map(Game::getFullName).forEach(s -> System.out.println("Reachable with less : " + s));
 
+            getGamesWithMorePlayers(gameName, GameState.WAIT).stream().map(Game::getFullName).forEach(s -> System.out.println("Games with more : " + s));
+            getGamesWithLessPlayers(gameName, GameState.WAIT).stream().map(Game::getFullName).forEach(s -> System.out.println("Games with less : " + s));
+
+            getGames(gameName, GameState.WAIT).stream().map(Game::getFullName).forEach(s -> System.out.println("Games in WAIT state : " + s));
+            getGames(gameName).stream().map(Game::getFullName).forEach(s -> System.out.println("All Games : " + s));
+
+            getBestGame(gameName).ifPresentOrElse(
+                    game -> {
+                        getGame(player, currentGame -> currentGame.leaveGame(player.getUniqueId())); // Leave game of the player if he currently in a game (reduce bug)
+                        game.joinGame(player);
+                    }, () -> System.out.println("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER " + player.getName()));
+        }
+    }
+
+    public void addGame(String gameName, Game game) {
+        Optional.ofNullable(getGames().get(gameName))
+                .ifPresentOrElse(gameList -> gameList.add(game), () -> getGames().putIfAbsent(gameName, Lists.newArrayList(game)));
+        System.out.println("ADD GAME " + game.getFullName());
+    }
+
+    public void removeGame(Game game) {
+        getGames().values().forEach(gameList -> gameList.remove(game));
+        System.out.println("REMOVE GAME " + game.getFullName());
     }
 
     /*
@@ -30,43 +64,67 @@ public class GameManager {
         ex: getGamesWithMorePlayers("golemrush10vs10"); return all games
      */
 
-    public List<Game<?>> getGamesWithMorePlayers(String gameName, GameState state) {
+    public void getGame(Player player, Consumer<Game> consumer) {
+        getGames().keySet().forEach(gameName -> getGame(gameName, player).ifPresent(consumer));
+    }
+
+    public Optional<Game> getGame(String gameName, Player player) {
+        return getGames().get(gameName).stream().filter(game -> game.containsPlayer(player.getUniqueId())).findFirst();
+    }
+
+    public List<Game> getGamesWithMorePlayers(String gameName, GameState state) {
         return getGamesWithMorePlayers(gameName).stream()
                 .filter(game -> game.getState().equals(state))
                 .collect(Collectors.toList());
     }
 
-    public List<Game<?>> getGamesWithMorePlayers(String gameName) {
+    public List<Game> getGamesWithMorePlayers(String gameName) {
         return getGames(gameName).stream()
                 .max(Comparator.comparingInt(Game::getSize))
                 .stream().collect(Collectors.toList());
     }
 
-    public List<Game<?>> getGamesWithLessPlayers(String gameName, GameState state) {
+    public List<Game> getGamesWithLessPlayers(String gameName, GameState state) {
         return getGamesWithLessPlayers(gameName).stream()
                 .filter(game -> game.getState().equals(state))
                 .collect(Collectors.toList());
     }
 
-    public List<Game<?>> getGamesWithLessPlayers(String gameName) {
+    public List<Game> getGamesWithLessPlayers(String gameName) {
         return getGames(gameName).stream()
                 .min(Comparator.comparingInt(Game::getSize))
                 .stream().collect(Collectors.toList());
     }
 
-    public List<Game<?>> getReachableGames(String gameName) {
+    public Optional<Game> getBestGame(String gameName) {
+        return getReachableGame(gameName).stream().findFirst();
+    }
+
+    public List<Game> getReachableGame(String gameName) {
         return getGames(gameName, GameState.WAIT).stream()
                 .filter(game -> game.getAlivePlayersCount() < game.getSettings().getSize().getMaxPlayer())
                 .collect(Collectors.toList());
     }
 
-    public List<Game<?>> getGames(String gameName, GameState gameState) {
+    public List<Game> getReachableGamesWithMorePlayers(String gameName) {
+        return getGamesWithMorePlayers(gameName, GameState.WAIT).stream()
+                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getSize().getMaxPlayer())
+                .collect(Collectors.toList());
+    }
+
+    public List<Game> getReachableGamesWithLessPlayers(String gameName) {
+        return getGamesWithLessPlayers(gameName, GameState.WAIT).stream()
+                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getSize().getMaxPlayer())
+                .collect(Collectors.toList());
+    }
+
+    public List<Game> getGames(String gameName, GameState gameState) {
         return getGames(gameName).stream()
                 .filter(game -> game.getState().equals(gameState))
                 .collect(Collectors.toList());
     }
 
-    public List<Game<?>> getGames(String gameName) {
+    public List<Game> getGames(String gameName) {
         return getGames().get(gameName);
     }
 

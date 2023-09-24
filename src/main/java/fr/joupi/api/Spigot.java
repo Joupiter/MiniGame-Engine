@@ -1,6 +1,7 @@
 package fr.joupi.api;
 
 import fr.joupi.api.duelgame.DuelGame;
+import fr.joupi.api.game.GameManager;
 import fr.joupi.api.game.GameSize;
 import fr.joupi.api.listener.GameCommand;
 import fr.joupi.api.listener.GameListener;
@@ -19,7 +20,7 @@ import java.util.*;
 @Getter
 public class Spigot extends JavaPlugin {
 
-    private DuelGame duelGame;
+    private GameManager gameManager;
 
     private List<Product> products;
     private List<User> users;
@@ -27,7 +28,7 @@ public class Spigot extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.duelGame = new DuelGame(this, GameSize.SIZE_1V1);
+        this.gameManager = new GameManager(this);
         this.products = new ArrayList<>();
         this.users = new ArrayList<>();
         this.killStreak = new KillStreak(this);
@@ -64,8 +65,8 @@ public class Spigot extends JavaPlugin {
                 .forEach(clazz -> {
                     try {
                         getServer().getPluginManager().registerEvents(clazz.getDeclaredConstructor(this.getClass()).newInstance(this), this);
-                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-                        e.printStackTrace();
+                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
+                        exception.printStackTrace();
                     }
                 });
     }

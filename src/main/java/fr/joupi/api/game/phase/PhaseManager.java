@@ -11,14 +11,14 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Getter
-public class PhaseManager<G extends Game<?>> {
+public class PhaseManager {
 
-    private final G game;
+    private final Game game;
 
     private final List<AbstractGamePhase> phases;
     @Setter private AbstractGamePhase currentPhase;
 
-    public PhaseManager(G game) {
+    public PhaseManager(Game game) {
         this.game = game;
         this.phases = new LinkedList<>();
     }

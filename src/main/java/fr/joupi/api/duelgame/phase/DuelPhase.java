@@ -18,7 +18,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class DuelPhase extends AbstractGamePhase {
 
-    public DuelPhase(Game<?> game) {
+    public DuelPhase(Game game) {
         super(game);
     }
 
@@ -29,39 +29,47 @@ public class DuelPhase extends AbstractGamePhase {
         getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().addItem(new ItemBuilder(Material.IRON_SWORD).build()));
 
         registerEvent(GamePlayerJoinEvent.class, event -> {
-            getGame().checkGameState(GameState.IN_GAME, () -> {
-                event.getPlayer().setGameMode(GameMode.SPECTATOR);
-                event.getGamePlayer().sendMessage("&aLa partie est déjà commencer !");
-            });
+            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+                getGame().checkGameState(GameState.IN_GAME, () -> {
+                    event.getPlayer().setGameMode(GameMode.SPECTATOR);
+                    event.getGamePlayer().sendMessage("&aLa partie est déjà commencer !");
+                });
 
-            event.sendJoinMessage();
+                event.sendJoinMessage();
+            }
         });
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
-            endPhase();
-            event.sendLeaveMessage();
+            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+                event.getGame().getPlayers().remove(event.getPlayer().getUniqueId());
+                endPhase();
+                event.sendLeaveMessage();
+            }
         });
 
         registerEvent(AsyncPlayerChatEvent.class, event -> {
-            getGame().getPlayer(event.getPlayer().getUniqueId())
+            if (canTriggerEvent(event.getPlayer().getUniqueId()))
+                getGame().getPlayer(event.getPlayer().getUniqueId())
                     .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getGame().getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
         });
 
         registerEvent(PlayerDeathEvent.class, event -> {
-            Player player = event.getEntity();
-            Player killer = event.getEntity().getKiller();
+            if (canTriggerEvent(event.getEntity().getUniqueId())) {
+                Player player = event.getEntity();
+                Player killer = event.getEntity().getKiller();
 
-            if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                getGame().getPlayer(player.getUniqueId()).ifPresent(gamePlayer -> {
-                    gamePlayer.addDeath();
-                    gamePlayer.setSpectator(true);
-                    gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
-                });
+                if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                    getGame().getPlayer(player.getUniqueId()).ifPresent(gamePlayer -> {
+                        gamePlayer.addDeath();
+                        gamePlayer.setSpectator(true);
+                        gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
+                    });
 
-                getGame().getPlayer(killer.getUniqueId()).ifPresent(GamePlayer::addKill);
+                    getGame().getPlayer(killer.getUniqueId()).ifPresent(GamePlayer::addKill);
 
-                getGame().broadcast("&a" + player.getName() + " &ea ete tue par &c" + killer.getName() + " &e!");
-                endPhase();
+                    getGame().broadcast("&a" + player.getName() + " &ea ete tue par &c" + killer.getName() + " &e!");
+                    endPhase();
+                }
             }
         });
     }

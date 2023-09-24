@@ -1,29 +1,32 @@
 package fr.joupi.api.duelgame.phase;
 
-import fr.joupi.api.game.Game;
-import fr.joupi.api.game.GamePlayer;
-import fr.joupi.api.game.GameState;
-import fr.joupi.api.game.GameTeam;
+import fr.joupi.api.Spigot;
+import fr.joupi.api.game.*;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import fr.joupi.api.threading.MultiThreading;
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 public class VictoryPhase extends AbstractGamePhase {
 
-    public VictoryPhase(Game<?> game) {
+    @Getter private final Spigot spigot;
+
+    public VictoryPhase(Game game, Spigot spigot) {
         super(game);
+        this.spigot = spigot;
     }
 
     @Override
     public void onStart() {
         getGame().setState(GameState.END);
-        GamePlayer winner = getGame().getAlivePlayers().get(0);
+        Optional<GamePlayer> winner = Optional.ofNullable(getGame().getAlivePlayers().get(0));
 
         registerEvent(AsyncPlayerChatEvent.class, event -> {
             getGame().getPlayer(event.getPlayer().getUniqueId())
@@ -31,34 +34,40 @@ public class VictoryPhase extends AbstractGamePhase {
         });
 
         registerEvent(GamePlayerJoinEvent.class, event -> {
-            getGame().checkGameState(GameState.END, () -> {
-                event.getPlayer().setGameMode(GameMode.SPECTATOR);
-                event.getGamePlayer().sendMessage("&aLa partie est déjà terminée !");
-                System.out.println("CHECK GAME STATE = END");
-            });
+            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+                getGame().checkGameState(GameState.END, () -> {
+                    event.getPlayer().setGameMode(GameMode.SPECTATOR);
+                    event.getGamePlayer().sendMessage("&aLa partie est déjà terminée !");
+                    System.out.println("CHECK GAME STATE = END");
+                });
 
-            event.sendJoinMessage();
+                event.sendJoinMessage();
+            }
         });
 
-        registerEvent(GamePlayerLeaveEvent.class, GamePlayerLeaveEvent::sendLeaveMessage);
+        registerEvent(GamePlayerLeaveEvent.class, event -> {
+            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+                event.getGame().getPlayers().remove(event.getPlayer().getUniqueId());
+                event.sendLeaveMessage();
+            }
+        });
 
-        getGame().broadcast("&7&m-----------------------",
-                "",
-                "&b" + winner.getPlayer().getName() + " &egagne la partie !",
-                "&eavec &b" + winner.getKills() + " &ekills et &b" + winner.getDeaths() + " &emorts !",
-                "",
-                "&7&m-----------------------");
+        winner.ifPresent(gamePlayer ->
+                getGame().broadcast("&7&m-----------------------",
+                        "",
+                        "&b" + gamePlayer.getPlayer().getName() + " &egagne la partie !",
+                        "&eavec &b" + gamePlayer.getKills() + " &ekills et &b" + gamePlayer.getDeaths() + " &emorts !",
+                        "              &9&lGG WP",
+                        "&7&m-----------------------"));
 
         MultiThreading.schedule(this::endPhase, 10, TimeUnit.SECONDS);
-        //scheduleAsyncTask(task -> endPhase(), 10 * 20L);
     }
 
     @Override
     public void onEnd() {
-        // REMOVE THE GAME IN THE MAP OF GamesManager class
         getGame().getPlayers().values().stream().map(GamePlayer::getUuid).forEach(getGame()::leaveGame);
+        getSpigot().getGameManager().removeGame(getGame());
         System.out.println("END OF GAME : " + getGame().getFullName());
-        // SEND TO HUB ect ...
     }
 
 }

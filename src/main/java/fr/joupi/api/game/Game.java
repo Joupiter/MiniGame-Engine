@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.swing.plaf.PanelUI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,25 +20,25 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public abstract class Game<P extends JavaPlugin> {
+public abstract class Game {
 
-    private final P plugin;
+    private final JavaPlugin plugin;
 
     private final String name, id;
     private final GameSettings settings;
-    private final PhaseManager<?> phaseManager;
+    private final PhaseManager phaseManager;
 
     private final List<GameTeam> teams;
     private final ConcurrentMap<UUID, GamePlayer> players;
 
     private GameState state;
 
-    protected Game(P plugin, String name, GameSettings settings) {
+    protected Game(JavaPlugin plugin, String name, GameSettings settings) {
         this.plugin = plugin;
         this.name = name;
         this.id = RandomStringUtils.randomAlphanumeric(10);
         this.settings = settings;
-        this.phaseManager = new PhaseManager<>(this);
+        this.phaseManager = new PhaseManager(this);
         this.teams = new LinkedList<>();
         this.players = new ConcurrentHashMap<>();
         this.state = GameState.WAIT;
@@ -100,7 +99,6 @@ public abstract class Game<P extends JavaPlugin> {
 
     public void leaveGame(UUID uuid) {
         getPlayer(uuid).ifPresent(gamePlayer -> {
-            getPlayers().remove(gamePlayer.getUuid());
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent(this, gamePlayer));
             getTeam(gamePlayer).ifPresent(gameTeam -> gameTeam.removeMember(gamePlayer));
             System.out.println(gamePlayer.getPlayer().getName() + " leave " + getFullName() + " game");
@@ -120,6 +118,10 @@ public abstract class Game<P extends JavaPlugin> {
         return getName() + "-" + getSettings().getSize().getName() + "-" + getId();
     }
 
+    public boolean containsPlayer(UUID uuid) {
+        return getPlayers().containsKey(uuid);
+    }
+
     public int getAlivePlayersCount() {
         return getAlivePlayers().size();
     }
@@ -134,6 +136,38 @@ public abstract class Game<P extends JavaPlugin> {
 
     public int getSize() {
         return getPlayers().size();
+    }
+
+    public void sendDebugInfoMessage(Player player) {
+        player.sendMessage("-----------------------------");
+        player.sendMessage("Game: " + getFullName());
+        player.sendMessage("Size: type=" + getSettings().getSize().getName() + ", min=" + getSettings().getSize().getMinPlayer() + ", max=" + getSettings().getSize().getMaxPlayer() + ", tn=" + getSettings().getSize().getTeamNeeded() + ", tm=" + getSettings().getSize().getTeamMaxPlayer());
+        player.sendMessage("State: " + getState());
+        player.sendMessage("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
+
+        player.sendMessage("Teams: " + getTeamsCount());
+        getTeams().forEach(gameTeam -> player.sendMessage(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
+
+        player.sendMessage("Players: " + getSize() + " (" + getAlivePlayersCount() + "|" + getSpectatorsCount() + ")");
+        player.sendMessage("Alive players: " + getAlivePlayers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
+        player.sendMessage("Spectator players: " + getSpectators().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
+        player.sendMessage("-----------------------------");
+    }
+
+    public void sendDebugInfoMessage() {
+        System.out.println("-----------------------------");
+        System.out.println("Game: " + getFullName());
+        System.out.println("Size: type=" + getSettings().getSize().getName() + ", min=" + getSettings().getSize().getMinPlayer() + ", max=" + getSettings().getSize().getMaxPlayer() + ", tn=" + getSettings().getSize().getTeamNeeded() + ", tm=" + getSettings().getSize().getTeamMaxPlayer());
+        System.out.println("State: " + getState());
+        System.out.println("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
+
+        System.out.println("Teams: " + getTeamsCount());
+        getTeams().forEach(gameTeam -> System.out.println(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
+
+        System.out.println("Players: " + getSize() + " /join(" + getAlivePlayersCount() + "|" + getSpectatorsCount() + ")");
+        System.out.println("Alive players: " + getAlivePlayers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
+        System.out.println("Spectator players: " + getSpectators().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
+        System.out.println("-----------------------------");
     }
 
 }

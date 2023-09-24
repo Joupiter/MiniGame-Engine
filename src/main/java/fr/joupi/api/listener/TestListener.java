@@ -30,9 +30,6 @@ public class TestListener extends AListener<Spigot> {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        ImmutableList<String> list = ImmutableList.<String>builder().add("", "").build();
-
-
         getPlugin().getUsers().add(new User(player.getUniqueId(), 1));
     }
 
@@ -40,7 +37,7 @@ public class TestListener extends AListener<Spigot> {
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        getPlugin().getDuelGame().leaveGame(event.getPlayer().getUniqueId());
+        getPlugin().getGameManager().getGame(player, game -> game.leaveGame(player.getUniqueId()));
         getPlugin().getUsers().remove(getPlugin().getUser(player.getUniqueId()));
     }
 

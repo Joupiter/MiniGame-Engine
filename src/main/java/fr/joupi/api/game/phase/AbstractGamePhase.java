@@ -13,17 +13,18 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 @Getter
 public abstract class AbstractGamePhase {
 
-    private final Game<?> game;
+    private final Game game;
 
     private final List<Listener> events;
     private final List<BukkitTask> tasks;
 
-    public AbstractGamePhase(Game<?> game) {
+    public AbstractGamePhase(Game game) {
         this.game = game;
         this.events = new LinkedList<>();
         this.tasks = new LinkedList<>();
@@ -32,8 +33,16 @@ public abstract class AbstractGamePhase {
     public <EventType extends Event> void registerEvent(Class<EventType> eventClass, Consumer<EventType> handler) {
         EventListenerWrapper<EventType> wrapper = new EventListenerWrapper<>(handler);
 
-        Bukkit.getPluginManager().registerEvent(eventClass, wrapper, EventPriority.NORMAL, (listener, event) -> handler.accept((EventType) event), getGame().getPlugin());
+        Bukkit.getPluginManager().registerEvent(eventClass, wrapper, EventPriority.NORMAL, (listener, event) ->  handler.accept((EventType) event), getGame().getPlugin());
         getEvents().add(wrapper);
+    }
+
+    public boolean canTriggerEvent(Game game, UUID uuid) {
+        return game.containsPlayer(uuid);
+    }
+
+    public boolean canTriggerEvent(UUID uuid) {
+        return canTriggerEvent(getGame(), uuid);
     }
 
     public void scheduleSyncTask(Consumer<BukkitTask> task, long delay) {

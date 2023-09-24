@@ -1,8 +1,10 @@
 package fr.joupi.api.listener;
 
 import fr.joupi.api.Spigot;
+import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GamePlayer;
+import fr.joupi.api.game.GameSize;
 import fr.joupi.api.game.GameTeam;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
@@ -72,11 +74,16 @@ public class GameListener implements Listener {
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        Game<Spigot> game = getPlugin().getDuelGame();
 
         /**
          *  TEST
          */
+
+        if (event.getMessage().equals("!addgame")) {
+            getPlugin().getGameManager().addGame("duel", new DuelGame(getPlugin(), GameSize.SIZE_1V1));
+            event.setCancelled(true);
+        }
+
         if (event.getMessage().equals("!gui")) {
             new PlayerGameListGui(getPlugin(), player).onOpen(player);
             event.setCancelled(true);
@@ -87,17 +94,6 @@ public class GameListener implements Listener {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!rx")) {
-            Observable<GameTeam> teamObservable = Observable.fromIterable(game.getTeams());
-
-            teamObservable.subscribe(
-                    gameTeam -> Bukkit.broadcastMessage(gameTeam.getName() + ":" + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(","))),
-                    throwable -> Bukkit.broadcastMessage("Error: " + throwable.getMessage()),
-                    () -> Bukkit.broadcastMessage("Completed!")
-            );
-
-            event.setCancelled(true);
-        }
     }
 
 }

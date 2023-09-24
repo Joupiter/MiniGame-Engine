@@ -12,7 +12,7 @@ public class GameStopEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Game<?> game;
+    private Game game;
 
     @Override
     public HandlerList getHandlers() {

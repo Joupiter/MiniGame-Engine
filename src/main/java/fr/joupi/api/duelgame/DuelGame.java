@@ -10,7 +10,8 @@ import fr.joupi.api.game.GameSettings;
 import fr.joupi.api.game.GameSize;
 import org.bukkit.Bukkit;
 
-public class DuelGame extends Game<Spigot> {
+public class DuelGame extends Game {
+
 
     public DuelGame(Spigot plugin, GameSize gameSize) {
         super(plugin, "Duel", new GameSettings(gameSize, Bukkit.getWorld("world")));
@@ -23,7 +24,7 @@ public class DuelGame extends Game<Spigot> {
                 new WaitingPhase(this),
                 new CountdownPhase(this),
                 new DuelPhase(this),
-                new VictoryPhase(this)
+                new VictoryPhase(this, plugin)
         );
 
         getPhaseManager().start();
