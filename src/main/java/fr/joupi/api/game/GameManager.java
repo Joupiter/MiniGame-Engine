@@ -55,6 +55,7 @@ public class GameManager {
     }
 
     public void removeGame(Game game) {
+        game.unload();
         getGames().values().forEach(gameList -> gameList.remove(game));
         System.out.println("REMOVE GAME " + game.getFullName());
     }

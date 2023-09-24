@@ -10,6 +10,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -20,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public abstract class Game {
+public abstract class Game implements Listener {
 
     private final JavaPlugin plugin;
 
@@ -51,7 +53,11 @@ public abstract class Game {
                 .limit(getSettings().getSize().getTeamNeeded())
                 .forEach(gameTeamColor -> getTeams().add(new GameTeam(gameTeamColor)));
 
-        getTeams().forEach(gameTeam -> System.out.println(gameTeam.toString()));
+        Bukkit.getPluginManager().registerEvents(this, getPlugin());
+    }
+
+    public void unload() {
+        HandlerList.unregisterAll(this);
     }
 
     public List<GamePlayer> getAlivePlayers() {

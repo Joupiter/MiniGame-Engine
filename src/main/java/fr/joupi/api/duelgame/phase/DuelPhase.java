@@ -4,17 +4,13 @@ import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
-import fr.joupi.api.game.GameTeam;
-import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class DuelPhase extends AbstractGamePhase {
 
@@ -28,29 +24,9 @@ public class DuelPhase extends AbstractGamePhase {
         getGame().fillTeam();
         getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().addItem(new ItemBuilder(Material.IRON_SWORD).build()));
 
-        registerEvent(GamePlayerJoinEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
-                getGame().checkGameState(GameState.IN_GAME, () -> {
-                    event.getPlayer().setGameMode(GameMode.SPECTATOR);
-                    event.getGamePlayer().sendMessage("&aLa partie est déjà commencer !");
-                });
-
-                event.sendJoinMessage();
-            }
-        });
-
         registerEvent(GamePlayerLeaveEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
-                event.getGame().getPlayers().remove(event.getPlayer().getUniqueId());
-                endPhase();
-                event.sendLeaveMessage();
-            }
-        });
-
-        registerEvent(AsyncPlayerChatEvent.class, event -> {
             if (canTriggerEvent(event.getPlayer().getUniqueId()))
-                getGame().getPlayer(event.getPlayer().getUniqueId())
-                    .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getGame().getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
+                endPhase();
         });
 
         registerEvent(PlayerDeathEvent.class, event -> {
