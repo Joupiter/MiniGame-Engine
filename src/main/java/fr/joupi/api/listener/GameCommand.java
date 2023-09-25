@@ -1,7 +1,6 @@
 package fr.joupi.api.listener;
 
 import fr.joupi.api.Spigot;
-import fr.joupi.api.game.Game;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.command.Command;

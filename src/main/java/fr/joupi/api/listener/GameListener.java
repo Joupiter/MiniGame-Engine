@@ -2,23 +2,16 @@ package fr.joupi.api.listener;
 
 import fr.joupi.api.Spigot;
 import fr.joupi.api.duelgame.DuelGame;
-import fr.joupi.api.game.Game;
-import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameSize;
-import fr.joupi.api.game.GameTeam;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.shop.ShopGui;
 import fr.joupi.api.skyly.PlayerGameListGui;
-import io.reactivex.rxjava3.core.Observable;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import java.util.stream.Collectors;
 
 @Getter
 public class GameListener implements Listener {

@@ -48,8 +48,7 @@ public abstract class Game implements Listener {
     }
 
     private void load() {
-        Arrays.stream(GameTeamColor.values()).collect(Collectors.toList())
-                .stream()
+        Arrays.stream(GameTeamColor.values()).collect(Collectors.toList()).stream()
                 .limit(getSettings().getSize().getTeamNeeded())
                 .forEach(gameTeamColor -> getTeams().add(new GameTeam(gameTeamColor)));
 
@@ -170,7 +169,7 @@ public abstract class Game implements Listener {
         System.out.println("Teams: " + getTeamsCount());
         getTeams().forEach(gameTeam -> System.out.println(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
 
-        System.out.println("Players: " + getSize() + " /join(" + getAlivePlayersCount() + "|" + getSpectatorsCount() + ")");
+        System.out.println("Players: " + getSize() + " (" + getAlivePlayersCount() + "|" + getSpectatorsCount() + ")");
         System.out.println("Alive players: " + getAlivePlayers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
         System.out.println("Spectator players: " + getSpectators().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
         System.out.println("-----------------------------");
