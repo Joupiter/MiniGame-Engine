@@ -21,31 +21,32 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
-@Setter
-public abstract class Game implements Listener {
+public abstract class Game<G extends GamePlayer> implements Listener {
 
     private final JavaPlugin plugin;
 
     private final String name, id;
     private final GameSettings settings;
-    private final PhaseManager phaseManager;
+    private final PhaseManager<?> phaseManager;
 
     private final List<GameTeam> teams;
-    private final ConcurrentMap<UUID, GamePlayer> players;
+    private final ConcurrentMap<UUID, G> players;
 
-    private GameState state;
+    @Setter private GameState state;
 
     protected Game(JavaPlugin plugin, String name, GameSettings settings) {
         this.plugin = plugin;
         this.name = name;
         this.id = RandomStringUtils.randomAlphanumeric(10);
         this.settings = settings;
-        this.phaseManager = new PhaseManager(this);
+        this.phaseManager = new PhaseManager<>(this);
         this.teams = new LinkedList<>();
         this.players = new ConcurrentHashMap<>();
         this.state = GameState.WAIT;
         load();
     }
+
+    public abstract G defaultGamePlayer(UUID uuid);
 
     private void load() {
         Arrays.stream(GameTeamColor.values()).collect(Collectors.toList()).stream()
@@ -59,11 +60,11 @@ public abstract class Game implements Listener {
         HandlerList.unregisterAll(this);
     }
 
-    public List<GamePlayer> getAlivePlayers() {
+    public List<G> getAlivePlayers() {
         return getPlayers().values().stream().filter(((Predicate<? super GamePlayer>) GamePlayer::isSpectator).negate()).collect(Collectors.toList());
     }
 
-    public List<GamePlayer> getSpectators() {
+    public List<G> getSpectators() {
         return getPlayers().values().stream().filter(GamePlayer::isSpectator).collect(Collectors.toList());
     }
 
@@ -75,7 +76,7 @@ public abstract class Game implements Listener {
         return getTeams().stream().filter(gameTeam -> gameTeam.isMember(gamePlayer)).findFirst();
     }
 
-    public Optional<GamePlayer> getPlayer(UUID uuid) {
+    public Optional<G> getPlayer(UUID uuid) {
         return Optional.ofNullable(getPlayers().get(uuid));
     }
 
@@ -88,29 +89,29 @@ public abstract class Game implements Listener {
     }
 
     public void checkGameState(GameState gameState, Runnable runnable) {
-        BooleanWrapper.of(getState().equals(gameState))
-                .ifTrue(runnable);
+        if (getState().equals(gameState))
+                runnable.run();
     }
 
     public void joinGame(Player player) {
         BooleanWrapper.of(getPlayers().containsKey(player.getUniqueId()))
                 .ifFalse(() -> {
-                    GamePlayer gamePlayer = new GamePlayer(player.getUniqueId(), 0, 0, !getState().equals(GameState.WAIT));
-                    getPlayers().put(gamePlayer.getUuid(), gamePlayer);
-                    Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent(this, gamePlayer));
+                    G gamePlayer = defaultGamePlayer(player.getUniqueId());
+                    getPlayers().put(player.getUniqueId(), gamePlayer);
+                    Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
                     System.out.println(player.getName() + " join " + getFullName() + " game");
                 });
     }
 
     public void leaveGame(UUID uuid) {
         getPlayer(uuid).ifPresent(gamePlayer -> {
-            Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent(this, gamePlayer));
+            Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent<>(this, gamePlayer));
             getTeam(gamePlayer).ifPresent(gameTeam -> gameTeam.removeMember(gamePlayer));
             System.out.println(gamePlayer.getPlayer().getName() + " leave " + getFullName() + " game");
         });
     }
 
-    public void broadcast(String message) {
+    private void broadcast(String message) {
         getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', message)));
     }
 

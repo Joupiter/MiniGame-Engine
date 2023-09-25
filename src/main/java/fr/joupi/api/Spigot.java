@@ -55,7 +55,7 @@ public class Spigot extends JavaPlugin {
             getProducts().add(new Product("Laine " + dyeColor.name(), new ItemBuilder(Material.WOOL).setDyeColor(dyeColor).build()));
             getProducts().add(new Product("Brick " + dyeColor.name(), new ItemBuilder(Material.STAINED_CLAY).setDyeColor(dyeColor).build()));
             getProducts().add(new Product("InkSac " + dyeColor.name(), new ItemBuilder(Material.INK_SACK).setDyeColor(dyeColor).build()));
-            getProducts().add(new Product("StainedGlass " + dyeColor.name(), new ItemBuilder(Material.STAINED_GLASS_PANE).setDyeColor(dyeColor).build()));
+            getProducts().add(new Product("StainedGlass " + dyeColor.name(), ne!tesw ItemBuilder(Material.STAINED_GLASS_PANE).setDyeColor(dyeColor).build()));
             getProducts().add(new Product("Glass " + dyeColor.name(), new ItemBuilder(Material.STAINED_GLASS).setDyeColor(dyeColor).build()));
         });
     }

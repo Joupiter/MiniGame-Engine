@@ -11,15 +11,15 @@ import org.bukkit.event.HandlerList;
 
 @Getter
 @AllArgsConstructor
-public class GamePlayerJoinEvent extends Event {
+public class GamePlayerJoinEvent<G extends GamePlayer> extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Game game;
-    private GamePlayer gamePlayer;
+    private Game<G> game;
+    private G gamePlayer;
 
     public Player getPlayer() {
-        return Bukkit.getPlayer(gamePlayer.getUuid());
+        return getGamePlayer().getPlayer();
     }
 
     public void sendJoinMessage() {

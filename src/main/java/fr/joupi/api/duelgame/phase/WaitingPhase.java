@@ -1,14 +1,14 @@
 package fr.joupi.api.duelgame.phase;
 
-import fr.joupi.api.game.Game;
+import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import org.bukkit.GameMode;
 
-public class WaitingPhase extends AbstractGamePhase {
+public class WaitingPhase extends AbstractGamePhase<DuelGame> {
 
-    public WaitingPhase(Game game) {
+    public WaitingPhase(DuelGame game) {
         super(game);
     }
 

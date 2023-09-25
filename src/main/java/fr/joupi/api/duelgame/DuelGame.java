@@ -15,7 +15,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class DuelGame extends Game {
+import java.util.UUID;
+
+public class DuelGame extends Game<DuelGamePlayer> {
 
     public DuelGame(Spigot plugin, GameSize gameSize) {
         super(plugin, "Duel", new GameSettings(gameSize, Bukkit.getWorld("world")));
@@ -34,12 +36,17 @@ public class DuelGame extends Game {
         getPhaseManager().start();
     }
 
+    @Override
+    public DuelGamePlayer defaultGamePlayer(UUID uuid) {
+        return new DuelGamePlayer(uuid, 0, 0, 0, !getState().equals(GameState.WAIT));
+    }
+
     /*
         Listeners
      */
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onGamePlayerJoin(GamePlayerJoinEvent event) {
+    public void onGamePlayerJoin(GamePlayerJoinEvent<DuelGamePlayer> event) {
         GamePlayer gamePlayer = event.getGamePlayer();
 
         if (containsPlayer(event.getPlayer().getUniqueId())) {
@@ -67,7 +74,7 @@ public class DuelGame extends Game {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onGamePlayerLeave(GamePlayerLeaveEvent event) {
+    public void onGamePlayerLeave(GamePlayerLeaveEvent<DuelGamePlayer> event) {
         if (containsPlayer(event.getPlayer().getUniqueId())) {
             getPlayers().remove(event.getPlayer().getUniqueId());
             event.sendLeaveMessage();

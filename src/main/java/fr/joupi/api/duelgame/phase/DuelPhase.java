@@ -1,7 +1,8 @@
 package fr.joupi.api.duelgame.phase;
 
 import fr.joupi.api.ItemBuilder;
-import fr.joupi.api.game.Game;
+import fr.joupi.api.duelgame.DuelGame;
+import fr.joupi.api.duelgame.DuelGamePlayer;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
@@ -12,9 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
-public class DuelPhase extends AbstractGamePhase {
+public class DuelPhase extends AbstractGamePhase<DuelGame> {
 
-    public DuelPhase(Game game) {
+    public DuelPhase(DuelGame game) {
         super(game);
     }
 
@@ -25,8 +26,10 @@ public class DuelPhase extends AbstractGamePhase {
         getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().addItem(new ItemBuilder(Material.IRON_SWORD).build()));
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer().getUniqueId()))
+            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+                event.getGamePlayer().setSpectator(true);
                 endPhase();
+            }
         });
 
         registerEvent(PlayerDeathEvent.class, event -> {
@@ -36,12 +39,12 @@ public class DuelPhase extends AbstractGamePhase {
 
                 if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
                     getGame().getPlayer(player.getUniqueId()).ifPresent(gamePlayer -> {
-                        gamePlayer.addDeath();
+                        gamePlayer.addDeath(1);
                         gamePlayer.setSpectator(true);
                         gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
                     });
 
-                    getGame().getPlayer(killer.getUniqueId()).ifPresent(GamePlayer::addKill);
+                    getGame().getPlayer(killer.getUniqueId()).ifPresent(DuelGamePlayer::addKill);
 
                     getGame().broadcast("&a" + player.getName() + " &ea ete tue par &c" + killer.getName() + " &e!");
                     endPhase();
