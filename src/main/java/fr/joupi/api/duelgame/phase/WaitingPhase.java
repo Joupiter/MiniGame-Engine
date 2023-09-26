@@ -5,6 +5,7 @@ import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 
 public class WaitingPhase extends AbstractGamePhase<DuelGame> {
 
@@ -15,9 +16,11 @@ public class WaitingPhase extends AbstractGamePhase<DuelGame> {
     @Override
     public void onStart() {
         registerEvent(GamePlayerJoinEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer().getUniqueId()))
+            Player player = event.getPlayer();
+            if (canTriggerEvent(player.getUniqueId()))
                 getGame().checkGameState(GameState.WAIT, () -> {
-                    event.getPlayer().setGameMode(GameMode.ADVENTURE);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    player.teleport(getGame().getSettings().getLocation("waiting"));
                     canEnd();
                 });
         });

@@ -5,6 +5,7 @@ import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.duelgame.DuelGamePlayer;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
+import fr.joupi.api.game.GameTeam;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import org.bukkit.GameMode;
@@ -24,6 +25,8 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
         getGame().setState(GameState.IN_GAME);
         getGame().fillTeam();
         getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.IRON_SWORD).build()));
+
+        getGame().getAliveTeam().forEach(this::teleportPlayersToBase);
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
             if (canTriggerEvent(event.getPlayer().getUniqueId())) {
@@ -51,6 +54,10 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
                 }
             }
         });
+    }
+
+    private void teleportPlayersToBase(GameTeam gameTeam) {
+        gameTeam.getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().teleport(getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase())));
     }
 
     @Override

@@ -11,6 +11,7 @@ import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -22,10 +23,13 @@ public class DuelGame extends Game<DuelGamePlayer> {
     public DuelGame(Spigot plugin, GameSize gameSize) {
         super(plugin, "Duel", new GameSettings(gameSize, Bukkit.getWorld("world")));
 
+        getSettings().addLocation("waiting", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
+        getSettings().addLocation("red", new Location(getSettings().getWorld(), -179, 67, 74));
+        getSettings().addLocation("blue", new Location(getSettings().getWorld(), -189, 67, 74));
+
         /*
             Les phases doivent être dans l'ordre !
          */
-
         getPhaseManager().addPhase(
                 new WaitingPhase(this),
                 new CountdownPhase(this),

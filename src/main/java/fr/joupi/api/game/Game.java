@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -171,6 +172,9 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         player.sendMessage("Size: type=" + getSettings().getGameSize().getName() + ", min=" + getSettings().getGameSize().getMinPlayer() + ", max=" + getSettings().getGameSize().getMaxPlayer() + ", tn=" + getSettings().getGameSize().getTeamNeeded() + ", tm=" + getSettings().getGameSize().getTeamMaxPlayer());
         player.sendMessage("State: " + getState());
         player.sendMessage("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
+
+        /*player.sendMessage("Locations: ");
+        getSettings().getLocations().forEach((s, locations) -> player.sendMessage(s + ": " + locations.stream().map(Location::toString).collect(Collectors.joining(", "))));*/
 
         player.sendMessage("Team Alive: " + getAliveTeamCount());
         player.sendMessage("Teams: " + getTeamsCount());
