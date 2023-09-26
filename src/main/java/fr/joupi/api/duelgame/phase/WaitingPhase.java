@@ -24,7 +24,7 @@ public class WaitingPhase extends AbstractGamePhase<DuelGame> {
     }
 
     private void canEnd() {
-        if (getGame().getSettings().getSize().getMinPlayer() == getGame().getSize())
+        if (getGame().getSettings().getGameSize().getMinPlayer() == getGame().getSize())
             endPhase();
     }
 

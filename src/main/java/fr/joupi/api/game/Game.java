@@ -50,7 +50,7 @@ public abstract class Game<G extends GamePlayer> implements Listener {
 
     private void load() {
         Arrays.stream(GameTeamColor.values()).collect(Collectors.toList()).stream()
-                .limit(getSettings().getSize().getTeamNeeded())
+                .limit(getSettings().getGameSize().getTeamNeeded())
                 .forEach(gameTeamColor -> getTeams().add(new GameTeam(gameTeamColor)));
 
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
@@ -58,6 +58,12 @@ public abstract class Game<G extends GamePlayer> implements Listener {
 
     public void unload() {
         HandlerList.unregisterAll(this);
+    }
+
+    public List<GameTeam> getAliveTeam() {
+        return getTeams().stream()
+                .filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate())
+                .collect(Collectors.toList());
     }
 
     public List<G> getAlivePlayers() {
@@ -81,7 +87,7 @@ public abstract class Game<G extends GamePlayer> implements Listener {
     }
 
     private Optional<GameTeam> getTeamWithLeastPlayers() {
-        return getTeams().stream().filter(team -> team.getSize() < getSettings().getSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
+        return getTeams().stream().filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
     }
 
     public void fillTeam() {
@@ -111,6 +117,13 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         });
     }
 
+    public void endGame(GameManager gameManager) {
+        getPlayers().values().stream().map(GamePlayer::getUuid).forEach(this::leaveGame);
+        unload();
+        gameManager.removeGame(this);
+        System.out.println("END OF GAME : " + getFullName());
+    }
+
     private void broadcast(String message) {
         getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', message)));
     }
@@ -121,11 +134,19 @@ public abstract class Game<G extends GamePlayer> implements Listener {
     }
 
     public String getFullName() {
-        return getName() + "-" + getSettings().getSize().getName() + "-" + getId();
+        return getName() + "-" + getSettings().getGameSize().getName() + "-" + getId();
     }
 
     public boolean containsPlayer(UUID uuid) {
         return getPlayers().containsKey(uuid);
+    }
+
+    public boolean oneTeamAlive() {
+        return getAliveTeamCount() == 1;
+    }
+
+    public int getAliveTeamCount() {
+        return getAliveTeam().size();
     }
 
     public int getAlivePlayersCount() {
@@ -147,10 +168,11 @@ public abstract class Game<G extends GamePlayer> implements Listener {
     public void sendDebugInfoMessage(Player player) {
         player.sendMessage("-----------------------------");
         player.sendMessage("Game: " + getFullName());
-        player.sendMessage("Size: type=" + getSettings().getSize().getName() + ", min=" + getSettings().getSize().getMinPlayer() + ", max=" + getSettings().getSize().getMaxPlayer() + ", tn=" + getSettings().getSize().getTeamNeeded() + ", tm=" + getSettings().getSize().getTeamMaxPlayer());
+        player.sendMessage("Size: type=" + getSettings().getGameSize().getName() + ", min=" + getSettings().getGameSize().getMinPlayer() + ", max=" + getSettings().getGameSize().getMaxPlayer() + ", tn=" + getSettings().getGameSize().getTeamNeeded() + ", tm=" + getSettings().getGameSize().getTeamMaxPlayer());
         player.sendMessage("State: " + getState());
         player.sendMessage("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
 
+        player.sendMessage("Team Alive: " + getAliveTeamCount());
         player.sendMessage("Teams: " + getTeamsCount());
         getTeams().forEach(gameTeam -> player.sendMessage(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
 
@@ -163,10 +185,11 @@ public abstract class Game<G extends GamePlayer> implements Listener {
     public void sendDebugInfoMessage() {
         System.out.println("-----------------------------");
         System.out.println("Game: " + getFullName());
-        System.out.println("Size: type=" + getSettings().getSize().getName() + ", min=" + getSettings().getSize().getMinPlayer() + ", max=" + getSettings().getSize().getMaxPlayer() + ", tn=" + getSettings().getSize().getTeamNeeded() + ", tm=" + getSettings().getSize().getTeamMaxPlayer());
+        System.out.println("Size: type=" + getSettings().getGameSize().getName() + ", min=" + getSettings().getGameSize().getMinPlayer() + ", max=" + getSettings().getGameSize().getMaxPlayer() + ", tn=" + getSettings().getGameSize().getTeamNeeded() + ", tm=" + getSettings().getGameSize().getTeamMaxPlayer());
         System.out.println("State: " + getState());
         System.out.println("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
 
+        System.out.println("Team Alive: " + getAliveTeamCount());
         System.out.println("Teams: " + getTeamsCount());
         getTeams().forEach(gameTeam -> System.out.println(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
 

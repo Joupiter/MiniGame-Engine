@@ -33,7 +33,7 @@ public class CountdownPhase extends AbstractGamePhase<DuelGame> {
     }
 
     private void checkCanCancelPhase() {
-        if (getGame().getSize() - 1  < getGame().getSettings().getSize().getMinPlayer()) {
+        if (getGame().getSize() - 1  < getGame().getSettings().getGameSize().getMinPlayer()) {
             getCountdownTimer().cancelTimer();
             cancelPhase();
         }

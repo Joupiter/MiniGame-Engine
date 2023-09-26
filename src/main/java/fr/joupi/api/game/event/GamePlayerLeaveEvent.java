@@ -23,7 +23,7 @@ public class GamePlayerLeaveEvent<G extends GamePlayer> extends Event {
     }
 
     public void sendLeaveMessage() {
-        getGame().broadcast("&c- &7" + getPlayer().getName() + " (" + getGame().getPlayers().size() + "/" + getGame().getSettings().getSize().getMaxPlayer() +")");
+        getGame().broadcast("&c- &7" + getPlayer().getName() + " (" + getGame().getPlayers().size() + "/" + getGame().getSettings().getGameSize().getMaxPlayer() +")");
     }
 
     @Override

@@ -23,7 +23,7 @@ public class GamePlayerJoinEvent<G extends GamePlayer> extends Event {
     }
 
     public void sendJoinMessage() {
-        getGame().broadcast("&a+ &7" + getPlayer().getName() + " (" + getGame().getPlayers().size() + "/" + getGame().getSettings().getSize().getMaxPlayer() +")");
+        getGame().broadcast("&a+ &7" + getPlayer().getName() + " (" + getGame().getPlayers().size() + "/" + getGame().getSettings().getGameSize().getMaxPlayer() +")");
     }
 
     @Override

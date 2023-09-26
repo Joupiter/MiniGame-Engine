@@ -28,18 +28,6 @@ public class GameManager {
      */
     public void findGame(Player player, String gameName) {
         if (Optional.ofNullable(getGames(gameName)).isPresent()) {
-            /*
-                Debug
-             */
-            getReachableGamesWithMorePlayers(gameName).stream().map(Game::getFullName).forEach(s -> System.out.println("Reachable with more : " + s));
-            getReachableGamesWithLessPlayers(gameName).stream().map(Game::getFullName).forEach(s -> System.out.println("Reachable with less : " + s));
-
-            getGamesWithMorePlayers(gameName, GameState.WAIT).stream().map(Game::getFullName).forEach(s -> System.out.println("Games with more : " + s));
-            getGamesWithLessPlayers(gameName, GameState.WAIT).stream().map(Game::getFullName).forEach(s -> System.out.println("Games with less : " + s));
-
-            getGames(gameName, GameState.WAIT).stream().map(Game::getFullName).forEach(s -> System.out.println("Games in WAIT state : " + s));
-            getGames(gameName).stream().map(Game::getFullName).forEach(s -> System.out.println("All Games : " + s));
-
             getBestGame(gameName).ifPresentOrElse(
                     game -> {
                         getGame(player, currentGame -> currentGame.leaveGame(player.getUniqueId())); // Leave game of the player if he currently in a game (reduce bug)
@@ -49,13 +37,12 @@ public class GameManager {
     }
 
     public void addGame(String gameName, Game game) {
-        Optional.ofNullable(getGames().get(gameName))
-                .ifPresentOrElse(gameList -> gameList.add(game), () -> getGames().putIfAbsent(gameName, Lists.newArrayList(game)));
+        //Optional.ofNullable(getGames().get(gameName)).ifPresentOrElse(gameList -> gameList.add(game), () -> getGames().putIfAbsent(gameName, Lists.newArrayList(game)));
+        getGames().computeIfAbsent(gameName, k -> Lists.newArrayList()).add(game);
         System.out.println("ADD GAME " + game.getFullName());
     }
 
     public void removeGame(Game game) {
-        game.unload();
         getGames().values().forEach(gameList -> gameList.remove(game));
         System.out.println("REMOVE GAME " + game.getFullName());
     }
@@ -103,19 +90,19 @@ public class GameManager {
 
     public List<Game> getReachableGame(String gameName) {
         return getGames(gameName, GameState.WAIT).stream()
-                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getSize().getMaxPlayer())
+                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
                 .collect(Collectors.toList());
     }
 
     public List<Game> getReachableGamesWithMorePlayers(String gameName) {
         return getGamesWithMorePlayers(gameName, GameState.WAIT).stream()
-                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getSize().getMaxPlayer())
+                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
                 .collect(Collectors.toList());
     }
 
     public List<Game> getReachableGamesWithLessPlayers(String gameName) {
         return getGamesWithLessPlayers(gameName, GameState.WAIT).stream()
-                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getSize().getMaxPlayer())
+                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
                 .collect(Collectors.toList());
     }
 
@@ -126,7 +113,7 @@ public class GameManager {
     }
 
     public List<Game> getGames(String gameName) {
-        return getGames().get(gameName);
+        return getGames().getOrDefault(gameName, Collections.emptyList());
     }
 
     public int getSize(String gameName) {

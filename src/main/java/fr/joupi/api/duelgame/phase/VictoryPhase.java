@@ -39,9 +39,7 @@ public class VictoryPhase extends AbstractGamePhase<DuelGame> {
 
     @Override
     public void onEnd() {
-        getGame().getPlayers().values().stream().map(GamePlayer::getUuid).forEach(getGame()::leaveGame);
-        getSpigot().getGameManager().removeGame(getGame());
-        System.out.println("END OF GAME : " + getGame().getFullName());
+        getGame().endGame(getSpigot().getGameManager());
     }
 
 }

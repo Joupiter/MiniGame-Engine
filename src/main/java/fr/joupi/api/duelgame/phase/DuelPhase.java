@@ -23,7 +23,7 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
     public void onStart() {
         getGame().setState(GameState.IN_GAME);
         getGame().fillTeam();
-        getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().addItem(new ItemBuilder(Material.IRON_SWORD).build()));
+        getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.IRON_SWORD).build()));
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
             if (canTriggerEvent(event.getPlayer().getUniqueId())) {

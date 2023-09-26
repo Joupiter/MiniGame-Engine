@@ -10,7 +10,7 @@ import org.bukkit.World;
 @AllArgsConstructor
 public class GameSettings {
 
-    private GameSize size;
+    private GameSize gameSize;
     private World world;
 
 }

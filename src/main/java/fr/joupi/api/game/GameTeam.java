@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Getter
 public class GameTeam {
@@ -28,6 +30,14 @@ public class GameTeam {
 
     public boolean isMember(GamePlayer gamePlayer) {
         return getMembers().contains(gamePlayer);
+    }
+
+    public List<GamePlayer> getAlivePlayers() {
+        return getMembers().stream().filter(((Predicate<? super GamePlayer>) GamePlayer::isSpectator).negate()).collect(Collectors.toList());
+    }
+
+    public boolean isNoPlayersAlive() {
+        return getAlivePlayers().isEmpty();
     }
 
     public int getSize() {

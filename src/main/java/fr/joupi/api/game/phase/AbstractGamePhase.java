@@ -31,6 +31,32 @@ public abstract class AbstractGamePhase<G extends Game<?>> {
         this.tasks = new LinkedList<>();
     }
 
+    public abstract void onStart();
+    public abstract void onEnd();
+
+    public void startPhase() {
+        onStart();
+    }
+
+    public void endPhase() {
+        onEnd();
+        unregister();
+        getGame().getPhaseManager().tryAdvance(this);
+    }
+
+    public void cancelPhase() {
+        unregister();
+        getGame().getPhaseManager().tryRetreat(this);
+    }
+
+    public void unregister() {
+        getEvents().forEach(HandlerList::unregisterAll);
+        getTasks().forEach(BukkitTask::cancel);
+
+        getTasks().clear();
+        getEvents().clear();
+    }
+
     public <EventType extends Event> void registerEvent(Class<EventType> eventClass, Consumer<EventType> handler) {
         EventListenerWrapper<EventType> wrapper = new EventListenerWrapper<>(handler);
 
@@ -56,32 +82,6 @@ public abstract class AbstractGamePhase<G extends Game<?>> {
 
     public void scheduleRepeatingTask(Consumer<BukkitTask> task, long delay, long period) {
         getTasks().add(new GameRunnable(task).runTaskTimer(getGame(), delay, period));
-    }
-
-    public abstract void onStart();
-    public abstract void onEnd();
-
-    public void startPhase() {
-        onStart();
-    }
-
-    public void endPhase() {
-        onEnd();
-        unregister();
-        getGame().getPhaseManager().tryAdvance(this);
-    }
-
-    public void cancelPhase() {
-        unregister();
-        getGame().getPhaseManager().tryRetreat(this);
-    }
-
-    public void unregister() {
-        getEvents().forEach(HandlerList::unregisterAll);
-        getTasks().forEach(BukkitTask::cancel);
-
-        getTasks().clear();
-        getEvents().clear();
     }
 
 }
