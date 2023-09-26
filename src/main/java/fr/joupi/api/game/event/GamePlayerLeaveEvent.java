@@ -4,7 +4,6 @@ import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GamePlayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

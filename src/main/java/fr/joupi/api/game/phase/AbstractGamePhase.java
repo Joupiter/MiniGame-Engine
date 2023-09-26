@@ -3,7 +3,6 @@ package fr.joupi.api.game.phase;
 import fr.joupi.api.GameRunnable;
 import fr.joupi.api.game.EventListenerWrapper;
 import fr.joupi.api.game.Game;
-import fr.joupi.api.game.GamePlayer;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;

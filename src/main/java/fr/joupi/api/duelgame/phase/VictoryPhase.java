@@ -3,7 +3,6 @@ package fr.joupi.api.duelgame.phase;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.duelgame.DuelGamePlayer;
-import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import fr.joupi.api.threading.MultiThreading;
