@@ -60,18 +60,18 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         HandlerList.unregisterAll(this);
     }
 
-    public List<GameTeam> getAliveTeam() {
-        return getTeams().stream()
-                .filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate())
-                .collect(Collectors.toList());
-    }
-
     public List<G> getAlivePlayers() {
         return getPlayers().values().stream().filter(((Predicate<? super GamePlayer>) GamePlayer::isSpectator).negate()).collect(Collectors.toList());
     }
 
     public List<G> getSpectators() {
         return getPlayers().values().stream().filter(GamePlayer::isSpectator).collect(Collectors.toList());
+    }
+
+    public List<GameTeam> getAliveTeam() {
+        return getTeams().stream()
+                .filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate())
+                .collect(Collectors.toList());
     }
 
     public GameTeam getTeam(String teamName) {
@@ -82,16 +82,25 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         return getTeams().stream().filter(gameTeam -> gameTeam.isMember(gamePlayer)).findFirst();
     }
 
+    public void addPlayerToTeam(GamePlayer gamePlayer, GameTeam gameTeam) {
+        removePlayerToTeam(gamePlayer);
+        gameTeam.addMember(gamePlayer);
+    }
+
+    public void removePlayerToTeam(GamePlayer gamePlayer) {
+        getTeam(gamePlayer).ifPresent(team -> team.removeMember(gamePlayer));
+    }
+
+    public void fillTeam() {
+        getPlayers().values().forEach(gamePlayer -> getTeamWithLeastPlayers().ifPresent(gameTeam -> gameTeam.addMember(gamePlayer)));
+    }
+
     public Optional<G> getPlayer(UUID uuid) {
         return Optional.ofNullable(getPlayers().get(uuid));
     }
 
     private Optional<GameTeam> getTeamWithLeastPlayers() {
         return getTeams().stream().filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
-    }
-
-    public void fillTeam() {
-        getPlayers().values().forEach(gamePlayer -> getTeamWithLeastPlayers().ifPresent(gameTeam -> gameTeam.addMember(gamePlayer)));
     }
 
     public void checkGameState(GameState gameState, Runnable runnable) {
@@ -170,7 +179,7 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         player.sendMessage("Game: " + getFullName());
         player.sendMessage("Size: type=" + getSettings().getGameSize().getName() + ", min=" + getSettings().getGameSize().getMinPlayer() + ", max=" + getSettings().getGameSize().getMaxPlayer() + ", tn=" + getSettings().getGameSize().getTeamNeeded() + ", tm=" + getSettings().getGameSize().getTeamMaxPlayer());
         player.sendMessage("State: " + getState());
-        player.sendMessage("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
+        Optional.ofNullable(getPhaseManager().getCurrentPhase()).ifPresent(phase -> player.sendMessage("Phase: " + phase.getClass().getSimpleName()));
 
         /*player.sendMessage("Locations: ");
         getSettings().getLocations().forEach((s, locations) -> player.sendMessage(s + ": " + locations.stream().map(Location::toString).collect(Collectors.joining(", "))));*/

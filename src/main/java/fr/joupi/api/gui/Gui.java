@@ -51,7 +51,7 @@ public abstract class Gui<P extends JavaPlugin> {
         open(player);
     }
 
-    private void open(Player player) {
+    public void open(Player player) {
         player.openInventory(getInventory());
     }
 

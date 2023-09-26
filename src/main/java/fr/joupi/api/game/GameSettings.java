@@ -6,8 +6,7 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -37,6 +36,10 @@ public class GameSettings {
 
     public Location getLocation(String name) {
         return getLocations(name).get(0);
+    }
+
+    public Optional<Location> getRandomLocation(String name) {
+        return getLocations(name).stream().skip(getLocations(name).isEmpty() ? 0 : new Random().nextInt(getLocations(name).size())).findFirst();
     }
 
     public List<Location> getLocations(String name) {

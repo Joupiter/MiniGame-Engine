@@ -1,5 +1,6 @@
 package fr.joupi.api.duelgame;
 
+import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.duelgame.phase.CountdownPhase;
 import fr.joupi.api.duelgame.phase.DuelPhase;
@@ -8,13 +9,13 @@ import fr.joupi.api.duelgame.phase.WaitingPhase;
 import fr.joupi.api.game.*;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
+import fr.joupi.api.game.gui.TeamGui;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.UUID;
 
@@ -51,22 +52,43 @@ public class DuelGame extends Game<DuelGamePlayer> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerJoin(GamePlayerJoinEvent<DuelGamePlayer> event) {
-        GamePlayer gamePlayer = event.getGamePlayer();
-
         if (containsPlayer(event.getPlayer().getUniqueId())) {
+            Player player = event.getPlayer();
+            DuelGamePlayer gamePlayer = event.getGamePlayer();
+
+            checkGameState(GameState.WAIT, () -> {
+                player.setGameMode(GameMode.ADVENTURE);
+                player.teleport(getSettings().getLocation("waiting"));
+                player.getInventory().setItem(0, new ItemBuilder(Material.CHEST).setName("&eÉquipes").build());
+            });
+
             checkGameState(GameState.IN_GAME, () -> {
                 gamePlayer.setSpectator(true);
-                event.getPlayer().setGameMode(GameMode.SPECTATOR);
+                player.setGameMode(GameMode.SPECTATOR);
                 gamePlayer.sendMessage("&aLa partie est déjà commencer !");
             });
 
             checkGameState(GameState.END, () -> {
                 gamePlayer.setSpectator(true);
-                event.getPlayer().setGameMode(GameMode.SPECTATOR);
+                player.setGameMode(GameMode.SPECTATOR);
                 gamePlayer.sendMessage("&aLa partie est déjà terminée !");
             });
 
             event.sendJoinMessage();
+        }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+
+        if (event.getItem() == null) return;
+        if (!event.getItem().getType().equals(Material.CHEST)) return;
+
+        if (containsPlayer(player.getUniqueId())) {
+            DuelGamePlayer gamePlayer = getPlayer(player.getUniqueId()).orElse(null);
+
+            checkGameState(GameState.WAIT, () -> new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player));
         }
     }
 

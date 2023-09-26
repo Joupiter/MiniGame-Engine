@@ -15,13 +15,12 @@ public class GameCommand implements CommandExecutor {
     private final Spigot plugin;
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] strings) {
-
+    public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
 
-            if (label.equals("join"))
-                getPlugin().getGameManager().findGame(player, "duel");
+            if (label.equals("join") && args.length > 0)
+                getPlugin().getGameManager().findGame(player, args[0]);
 
             if (label.equals("leave"))
                 getPlugin().getGameManager().getGame(player, game -> game.leaveGame(player.getUniqueId()));

@@ -1,5 +1,6 @@
 package fr.joupi.api;
 
+import fr.joupi.api.ffa.FFAGame;
 import fr.joupi.api.game.GameManager;
 import fr.joupi.api.listener.GameCommand;
 import fr.joupi.api.listener.TestListener;
@@ -38,6 +39,8 @@ public class Spigot extends JavaPlugin {
         getCommand("join").setExecutor(new GameCommand(this));
         getCommand("leave").setExecutor(new GameCommand(this));
         getCommand("info").setExecutor(new GameCommand(this));
+
+        getGameManager().addGame("ffa", new FFAGame(this));
     }
 
     @Override

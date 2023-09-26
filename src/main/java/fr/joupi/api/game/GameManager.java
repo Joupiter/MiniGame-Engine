@@ -22,10 +22,6 @@ public class GameManager {
         this.games = new ConcurrentHashMap<>();
     }
 
-    /*
-        First check : get game with more players in WAITING state and check if the game is not full
-        Second check : get game with less players in WAITING state and check if the game is not full
-     */
     public void findGame(Player player, String gameName) {
         if (Optional.ofNullable(getGames(gameName)).isPresent()) {
             getBestGame(gameName).ifPresentOrElse(
@@ -88,8 +84,11 @@ public class GameManager {
         return getReachableGame(gameName).stream().findFirst();
     }
 
+    /*
+        Todo: NE PAS OUBLIER DE RETIRER LE COMMENTAIRE !!!!!!!!!!!!!!!!!!!
+     */
     public List<Game> getReachableGame(String gameName) {
-        return getGames(gameName, GameState.WAIT).stream()
+        return getGames(gameName/*, GameState.WAIT*/).stream()
                 .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
                 .collect(Collectors.toList());
     }
