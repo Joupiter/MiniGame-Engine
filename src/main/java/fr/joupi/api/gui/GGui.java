@@ -1,20 +1,19 @@
 package fr.joupi.api.gui;
 
-import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 @Getter
@@ -26,21 +25,26 @@ public abstract class GGui<P extends JavaPlugin> {
     private Inventory inventory;
     private final String inventoryName;
     private final int rows;
+    private Consumer<InventoryCloseEvent> closeConsumer;
 
     private final ConcurrentMap<Integer, GuiButton> buttons;
-    private transient GuiButtonListener listener;
 
     public GGui(P plugin, String inventoryName, int rows) {
         this.plugin = plugin;
         this.inventoryName = inventoryName;
         this.rows = rows;
-        this.buttons = Maps.newConcurrentMap();
+        this.buttons = new ConcurrentHashMap<>();
         this.inventory = Bukkit.createInventory(null, rows * 9, ChatColor.translateAlternateColorCodes('&', inventoryName));
-        this.registerEvents();
         defaultLoad();
     }
 
     public abstract void setup();
+
+    public void onUpdate() {}
+
+    public void setCloseInventory(Consumer<InventoryCloseEvent> closeConsumer) {
+        this.closeConsumer = closeConsumer;
+    }
 
     public void onOpen(Player player) {
         setup();
@@ -53,11 +57,6 @@ public abstract class GGui<P extends JavaPlugin> {
 
     public void close(Player player) {
         player.closeInventory();
-    }
-
-    public void update(Player player) {
-        close(player);
-        open(player);
     }
 
     public void setItem(int slot, GuiButton button) {
@@ -138,40 +137,12 @@ public abstract class GGui<P extends JavaPlugin> {
         getButtons().forEach((slot, item) -> getInventory().setItem(slot, item.getItemStack()));
     }
 
-    private void registerEvents() {
-        getPlugin().getServer().getPluginManager().registerEvents(new GuiButtonListener(), plugin);
-    }
-
     public GuiButton getItem(int slot) {
         return getButtons().get(slot);
     }
 
     public int getSize() {
         return rows * 9;
-    }
-
-    public class GuiButtonListener implements Listener {
-
-        @EventHandler
-        public void onClick(InventoryClickEvent event) {
-            Inventory inventory = getInventory();
-            ItemStack itemStack = event.getCurrentItem();
-
-            System.out.println("gui event call");
-
-            if (itemStack != null)
-                if (event.getInventory().equals(inventory)) {
-                    if (event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.LEFT)
-                        getButtons()
-                                .entrySet()
-                                .stream()
-                                .filter(entry -> entry.getValue().getItemStack().equals(itemStack))
-                                .findFirst()
-                                .ifPresent(entry -> entry.getValue().getClickEvent().accept(event));
-
-                    event.setCancelled(true);
-                }
-        }
     }
 
 }

@@ -32,6 +32,10 @@ public class GameManager {
         }
     }
 
+    public void leave(Player player) {
+        getGame(player, game -> game.leaveGame(player.getUniqueId()));
+    }
+
     public void addGame(String gameName, Game game) {
         //Optional.ofNullable(getGames().get(gameName)).ifPresentOrElse(gameList -> gameList.add(game), () -> getGames().putIfAbsent(gameName, Lists.newArrayList(game)));
         getGames().computeIfAbsent(gameName, k -> Lists.newArrayList()).add(game);

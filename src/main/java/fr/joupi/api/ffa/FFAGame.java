@@ -1,12 +1,12 @@
 package fr.joupi.api.ffa;
 
 import fr.joupi.api.ItemBuilder;
-import fr.joupi.api.Spigot;
-import fr.joupi.api.duelgame.DuelGamePlayer;
-import fr.joupi.api.game.*;
+import fr.joupi.api.game.Game;
+import fr.joupi.api.game.GameSettings;
+import fr.joupi.api.game.GameSize;
+import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
-import fr.joupi.api.game.gui.TeamGui;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
