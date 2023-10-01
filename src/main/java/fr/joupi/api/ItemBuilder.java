@@ -111,7 +111,7 @@ public class ItemBuilder {
         if (meta.hasLore())
             lore = new ArrayList<>(meta.getLore());
 
-        lore.add(line);
+        lore.add(ChatColor.translateAlternateColorCodes('&', line));
         meta.setLore(lore);
         item.setItemMeta(meta);
         return this;
@@ -124,7 +124,9 @@ public class ItemBuilder {
         if (meta.hasLore())
             lore = new ArrayList<>(meta.getLore());
 
-        Collections.addAll(lore, lines);
+        for (String line : lines)
+            lore.add(ChatColor.translateAlternateColorCodes('&', line));
+
         meta.setLore(lore);
         item.setItemMeta(meta);
         return this;

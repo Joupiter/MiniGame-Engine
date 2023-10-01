@@ -3,6 +3,8 @@ package fr.joupi.api.game;
 import fr.joupi.api.BooleanWrapper;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
+import fr.joupi.api.game.host.GameHost;
+import fr.joupi.api.game.host.GameHostState;
 import fr.joupi.api.game.phase.PhaseManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,20 +23,22 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
-public abstract class Game<G extends GamePlayer> implements Listener {
+public abstract class Game<G extends GamePlayer, S extends GameSettings> implements Listener {
 
     private final JavaPlugin plugin;
 
     private final String name, id;
-    private final GameSettings settings;
+    private final S settings;
+
     private final PhaseManager<?> phaseManager;
+    @Setter private GameHost<?> gameHost;
 
     private final List<GameTeam> teams;
     private final ConcurrentMap<UUID, G> players;
 
     @Setter private GameState state;
 
-    protected Game(JavaPlugin plugin, String name, GameSettings settings) {
+    protected Game(JavaPlugin plugin, String name, S settings) {
         this.plugin = plugin;
         this.name = name;
         this.id = RandomStringUtils.randomAlphanumeric(10);
@@ -103,9 +107,35 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         return getTeams().stream().filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
     }
 
+    public void checkSetting(boolean setting, Runnable runnable) {
+        checkSetting(setting, runnable, () -> {});
+    }
+
+    public void checkSetting(boolean setting, Runnable trueRunnable, Runnable falseRunnable) {
+        if (setting) trueRunnable.run();
+        else falseRunnable.run();
+    }
+
+    public void ifHostedGame(Runnable runnable) {
+        Optional.ofNullable(getGameHost())
+                .ifPresent(host -> runnable.run());
+    }
+
+    public void ifHostedGame(boolean b, Runnable runnable) {
+        ifHostedGame(() -> {
+            if (b) runnable.run();
+        });
+    }
+
+    public void checkGameHostState(GameHostState hostState, Runnable runnable) {
+        Optional.ofNullable(getGameHost())
+                .filter(host -> host.getHostState().equals(hostState))
+                .ifPresent(host -> runnable.run());
+    }
+
     public void checkGameState(GameState gameState, Runnable runnable) {
         if (getState().equals(gameState))
-                runnable.run();
+            runnable.run();
     }
 
     public void joinGame(Player player) {
@@ -143,7 +173,7 @@ public abstract class Game<G extends GamePlayer> implements Listener {
     }
 
     public String getFullName() {
-        return getName() + "-" + getSettings().getGameSize().getName() + "-" + getId();
+        return getName() + (Optional.ofNullable(getGameHost()).isPresent() ? "Host" : "") + "-" + getSettings().getGameSize().getName() + "-" + getId();
     }
 
     public boolean containsPlayer(UUID uuid) {
@@ -180,6 +210,7 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         player.sendMessage("Size: type=" + getSettings().getGameSize().getName() + ", min=" + getSettings().getGameSize().getMinPlayer() + ", max=" + getSettings().getGameSize().getMaxPlayer() + ", tn=" + getSettings().getGameSize().getTeamNeeded() + ", tm=" + getSettings().getGameSize().getTeamMaxPlayer());
         player.sendMessage("State: " + getState());
         Optional.ofNullable(getPhaseManager().getCurrentPhase()).ifPresent(phase -> player.sendMessage("Phase: " + phase.getClass().getSimpleName()));
+        Optional.ofNullable(getGameHost()).ifPresent(host -> host.sendDebugMessage(player));
 
         /*player.sendMessage("Locations: ");
         getSettings().getLocations().forEach((s, locations) -> player.sendMessage(s + ": " + locations.stream().map(Location::toString).collect(Collectors.joining(", "))));*/
@@ -192,23 +223,6 @@ public abstract class Game<G extends GamePlayer> implements Listener {
         player.sendMessage("Alive players: " + getAlivePlayers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
         player.sendMessage("Spectator players: " + getSpectators().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
         player.sendMessage("-----------------------------");
-    }
-
-    public void sendDebugInfoMessage() {
-        System.out.println("-----------------------------");
-        System.out.println("Game: " + getFullName());
-        System.out.println("Size: type=" + getSettings().getGameSize().getName() + ", min=" + getSettings().getGameSize().getMinPlayer() + ", max=" + getSettings().getGameSize().getMaxPlayer() + ", tn=" + getSettings().getGameSize().getTeamNeeded() + ", tm=" + getSettings().getGameSize().getTeamMaxPlayer());
-        System.out.println("State: " + getState());
-        System.out.println("Phase: " + getPhaseManager().getCurrentPhase().getClass().getSimpleName());
-
-        System.out.println("Team Alive: " + getAliveTeamCount());
-        System.out.println("Teams: " + getTeamsCount());
-        getTeams().forEach(gameTeam -> System.out.println(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
-
-        System.out.println("Players: " + getSize() + " (" + getAlivePlayersCount() + "|" + getSpectatorsCount() + ")");
-        System.out.println("Alive players: " + getAlivePlayers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
-        System.out.println("Spectator players: " + getSpectators().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", ")));
-        System.out.println("-----------------------------");
     }
 
 }

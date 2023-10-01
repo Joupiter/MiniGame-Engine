@@ -1,6 +1,6 @@
 package fr.joupi.api.duelgame.phase;
 
-import fr.joupi.api.CountdownTimer;
+import fr.joupi.api.game.CountdownTimer;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;

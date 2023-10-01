@@ -18,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Optional;
 import java.util.UUID;
 
-public class FFAGame extends Game<FFAGamePlayer> {
+public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     public FFAGame(JavaPlugin plugin) {
         super(plugin, "FFA", new GameSettings(new GameSize("ffa", 0, 999, 0, 0), Bukkit.getWorld("world")));

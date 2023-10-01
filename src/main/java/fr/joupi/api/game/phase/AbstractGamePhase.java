@@ -1,6 +1,6 @@
 package fr.joupi.api.game.phase;
 
-import fr.joupi.api.GameRunnable;
+import fr.joupi.api.game.GameRunnable;
 import fr.joupi.api.game.EventListenerWrapper;
 import fr.joupi.api.game.Game;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @Getter
-public abstract class AbstractGamePhase<G extends Game<?>> {
+public abstract class AbstractGamePhase<G extends Game<?, ?>> {
 
     private final G game;
 

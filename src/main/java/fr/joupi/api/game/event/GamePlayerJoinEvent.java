@@ -14,7 +14,7 @@ public class GamePlayerJoinEvent<G extends GamePlayer> extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Game<G> game;
+    private Game<G, ?> game;
     private G gamePlayer;
 
     public Player getPlayer() {

@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.bukkit.Material;
 
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
 public class FFAGamePlayer extends GamePlayer {

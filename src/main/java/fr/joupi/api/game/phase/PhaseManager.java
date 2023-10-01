@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 @Getter
-public class PhaseManager<G extends Game<?>> {
+public class PhaseManager<G extends Game<?, ?>> {
 
     private final G game;
 

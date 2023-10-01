@@ -14,10 +14,10 @@ import org.bukkit.inventory.ItemStack;
 @Getter
 public class TeamGui extends Gui<Spigot> {
 
-    private final Game<?> game;
+    private final Game<?, ?> game;
     private final GamePlayer gamePlayer;
 
-    public TeamGui(Spigot plugin, Game<?> game, GamePlayer gamePlayer) {
+    public TeamGui(Spigot plugin, Game<?, ?> game, GamePlayer gamePlayer) {
         super(plugin, "Équipes", 1);
         this.game = game;
         this.gamePlayer = gamePlayer;

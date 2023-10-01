@@ -10,6 +10,7 @@ import fr.joupi.api.game.*;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
+import fr.joupi.api.game.host.GameHost;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,12 +18,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.Optional;
 import java.util.UUID;
 
-public class DuelGame extends Game<DuelGamePlayer> {
+public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     public DuelGame(Spigot plugin, GameSize gameSize) {
-        super(plugin, "Duel", new GameSettings(gameSize, Bukkit.getWorld("world")));
+        super(plugin, "Duel", new DuelGameSettings(gameSize, Bukkit.getWorld("world"), false));
 
         getSettings().addLocation("waiting", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
         getSettings().addLocation("red", new Location(getSettings().getWorld(), -179, 67, 74));
@@ -39,6 +41,13 @@ public class DuelGame extends Game<DuelGamePlayer> {
         );
 
         getPhaseManager().start();
+    }
+
+    public DuelGame(Spigot plugin, Player player, GameSize gameSize) {
+        this(plugin, gameSize);
+        setGameHost(new GameHost<>(this, player.getUniqueId())
+                .setHostGui(new DuelGameHostGui(plugin, this))
+                .setHostItem(new ItemBuilder(Material.REDSTONE_COMPARATOR).setName("&eParamètres").build()));
     }
 
     @Override
@@ -60,6 +69,8 @@ public class DuelGame extends Game<DuelGamePlayer> {
                 player.setGameMode(GameMode.ADVENTURE);
                 player.teleport(getSettings().getLocation("waiting"));
                 player.getInventory().setItem(0, new ItemBuilder(Material.CHEST).setName("&eÉquipes").build());
+
+                ifHostedGame(() -> getGameHost().giveHostItem(8));
             });
 
             checkGameState(GameState.IN_GAME, () -> {
@@ -83,12 +94,17 @@ public class DuelGame extends Game<DuelGamePlayer> {
         Player player = event.getPlayer();
 
         if (event.getItem() == null) return;
-        if (!event.getItem().getType().equals(Material.CHEST)) return;
 
         if (containsPlayer(player.getUniqueId())) {
             DuelGamePlayer gamePlayer = getPlayer(player.getUniqueId()).orElse(null);
 
-            checkGameState(GameState.WAIT, () -> new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player));
+                checkGameState(GameState.WAIT, () -> {
+                    if (event.getItem().getType().equals(Material.CHEST))
+                        new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player);
+
+                    ifHostedGame(event.getItem().getType().equals(getGameHost().getHostItem().getType()),
+                            () -> getGameHost().getHostGui().onOpen(player));
+                });
         }
     }
 

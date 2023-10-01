@@ -1,4 +1,4 @@
-package fr.joupi.api;
+package fr.joupi.api.game;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

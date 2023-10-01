@@ -2,6 +2,7 @@ package fr.joupi.api.gui;
 
 import fr.joupi.api.threading.MultiThreading;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,6 +28,8 @@ public class GuiManager implements Listener {
     public GuiManager(JavaPlugin plugin) {
         this.guis = new ConcurrentHashMap<>();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        // Utilise soit bukkit runnable ou ma class MultiThreading mais laisse en une
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateButtons, 20, 20);
         MultiThreading.runnablePool.scheduleAtFixedRate(this::updateButtons, 1, 1, TimeUnit.SECONDS);
     }
 

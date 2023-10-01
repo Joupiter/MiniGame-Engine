@@ -3,6 +3,7 @@ package fr.joupi.api.duelgame.phase;
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.duelgame.DuelGamePlayer;
+import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.GameTeam;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
@@ -23,7 +24,10 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
     public void onStart() {
         getGame().setState(GameState.IN_GAME);
         getGame().fillTeam();
-        getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.IRON_SWORD).build()));
+
+        getGame().checkSetting(getGame().getSettings().isUseSpecialKit(),
+                () -> getGame().getAlivePlayers().stream().map(GamePlayer::getPlayer).forEach(getGame().getSettings()::giveSpecialKit),
+                () -> getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.IRON_SWORD).build())));
 
         getGame().getAliveTeam().forEach(this::teleportPlayersToBase);
 

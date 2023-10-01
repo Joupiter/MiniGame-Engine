@@ -5,8 +5,9 @@ import fr.joupi.api.Spigot;
 import fr.joupi.api.User;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.GameSizeTemplate;
+import fr.joupi.api.duelgame.DuelGameHostGui;
+import fr.joupi.api.game.host.GameHost;
 import fr.joupi.api.shop.ShopGui;
-import fr.joupi.api.skyly.PlayerGameListGui;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,8 +41,13 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!gui")) {
-            new PlayerGameListGui(getPlugin(), player).onOpen(player);
+        if (event.getMessage().equals("!addhost")) {
+            getPlugin().getGameManager().addGame("duelhost", new DuelGame(getPlugin(), player, GameSizeTemplate.SIZE_1V1.getGameSize()));
+            event.setCancelled(true);
+        }
+
+        if (event.getMessage().equals("!newpagegui")) {
+            getPlugin().getGuiManager().open(player, new fdg8yfht15(getPlugin()));
             event.setCancelled(true);
         }
 
