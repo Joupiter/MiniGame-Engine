@@ -1,6 +1,7 @@
 package fr.joupi.api.game;
 
 import com.google.common.collect.Lists;
+import fr.joupi.api.game.host.GameHostState;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -88,6 +89,10 @@ public class GameManager {
         return getReachableGame(gameName).stream().findFirst();
     }
 
+    public Optional<Game> getGameHost(Player player) {
+        return getGamesHost().stream().filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).findFirst();
+    }
+
     /*
         Todo: NE PAS OUBLIER DE RETIRER LE COMMENTAIRE !!!!!!!!!!!!!!!!!!!
      */
@@ -119,12 +124,42 @@ public class GameManager {
         return getGames().getOrDefault(gameName, Collections.emptyList());
     }
 
-    public int getSize(String gameName) {
+    public List<Game> getGamesHost() {
+        return getGames().values().stream()
+                .flatMap(List::stream)
+                .filter(game -> game.getGameHost() != null).collect(Collectors.toList());
+    }
+
+    public List<Game> getGamesHost(String gameName) {
+        return getGames(gameName).stream().filter(game -> game.getGameHost() != null).collect(Collectors.toList());
+    }
+
+    public List<Game> getGamesHost(String gameName, GameHostState gameHostState) {
+        return getGamesHost(gameName).stream()
+                .filter(game -> game.getGameHost().getHostState().equals(gameHostState))
+                .collect(Collectors.toList());
+    }
+
+    public List<Game> getGamesHost(String gameName, GameHostState gameHostState, GameState gameState) {
+        return getGamesHost(gameName, gameHostState).stream()
+                .filter(game -> game.getState().equals(gameState))
+                .collect(Collectors.toList());
+    }
+
+    public int getPlayersCount(String gameName) {
         return getGames().get(gameName).stream().mapToInt(Game::getSize).sum();
     }
 
+    public int getPlayersCount() {
+        return getGames().values().stream().flatMap(List::stream).mapToInt(Game::getSize).sum();
+    }
+
+    public int getSize(String gameName) {
+        return getGames().get(gameName).size();
+    }
+
     public int getSize() {
-        return getGames().values().stream().mapToInt(List::size).sum();
+        return getGames().values().size();
     }
 
 }

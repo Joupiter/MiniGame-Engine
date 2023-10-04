@@ -1,15 +1,11 @@
 package fr.joupi.api.gui;
 
-import fr.joupi.api.threading.MultiThreading;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,7 +14,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 public class GuiManager implements Listener {
@@ -28,9 +23,7 @@ public class GuiManager implements Listener {
     public GuiManager(JavaPlugin plugin) {
         this.guis = new ConcurrentHashMap<>();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        // Utilise soit bukkit runnable ou ma class MultiThreading mais laisse en une
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, this::updateButtons, 20, 20);
-        MultiThreading.runnablePool.scheduleAtFixedRate(this::updateButtons, 1, 1, TimeUnit.SECONDS);
+        //MultiThreading.runnablePool.scheduleAtFixedRate(this::updateButtons, 1, 1, TimeUnit.SECONDS);
     }
 
     private void updateButtons() {
@@ -48,9 +41,28 @@ public class GuiManager implements Listener {
 
         if (itemStack == null) return;
 
+        /*Optional.ofNullable(getGuis().get(event.getWhoClicked().getUniqueId())).filter(gui -> player.hasMetadata("GAME")).ifPresent(gui -> {
+            if (event.getWhoClicked().getOpenInventory().getTitle().equals(gui.getInventoryName())) {
+                if (event.getClick() == ClickType.SHIFT_RIGHT || event.getClick() == ClickType.SHIFT_LEFT)
+                    event.setCancelled(true);
+            }
+
+            if (event.getClickedInventory().equals(gui.getInventory())) {
+                if (itemStack.getType() == Material.SKULL_ITEM)
+                    gui.getButtons().entrySet().stream()
+                            .filter(entry -> entry.getValue().getItemStack().hasItemMeta() && entry.getValue().getItemStack().getItemMeta().getDisplayName().equals(itemStack.getItemMeta().getDisplayName()))
+                            .findFirst().ifPresent(entry -> entry.getValue().getClickEvent().accept(event));
+                else
+                    gui.getButtons().entrySet().stream()
+                            .filter(entry -> entry.getValue().getItemStack().equals(itemStack))
+                            .findFirst().ifPresent(entry -> entry.getValue().getClickEvent().accept(event));
+
+                event.setCancelled(true);
+            }
+        });*/
+
         Optional.ofNullable(getGuis().get(event.getWhoClicked().getUniqueId()))
                 .filter(gui -> event.getInventory().equals(gui.getInventory()))
-                .filter(gui -> event.getClick() == ClickType.RIGHT || event.getClick() == ClickType.LEFT)
                 .ifPresent(gui -> {
                     if (itemStack.getType() == Material.SKULL_ITEM)
                         gui.getButtons().entrySet().stream()
@@ -63,6 +75,13 @@ public class GuiManager implements Listener {
 
                     event.setCancelled(true);
                 });
+    }
+
+    @EventHandler
+    public void onDrag(InventoryDragEvent event) {
+        Optional.ofNullable(getGuis().get(event.getWhoClicked().getUniqueId()))
+                .filter(gui -> event.getInventory().equals(gui.getInventory()))
+                .ifPresent(gui -> event.setCancelled(true));
     }
 
     @EventHandler

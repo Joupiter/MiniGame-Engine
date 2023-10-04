@@ -25,17 +25,17 @@ public class TestGui extends GGui<Spigot> {
         setItem(2, new GuiButton(new ItemBuilder(Material.CHEST).setAmount(getPlugin().getGameManager().getSize()).build(),
                 event -> event.getWhoClicked().sendMessage("GAME COUCOU")));
 
-        setItem(3, new GuiButton(new ItemBuilder(Material.EMERALD).setName("User: " + getPlugin().getUsers().get(0).getStackSize()).build(),
+        setItem(3, new GuiButton(new ItemBuilder(Material.EMERALD).setAmount(0).setName("User: " + getPlugin().getUsers().get(0).getStackSize()).build(),
                 event -> event.getWhoClicked().sendMessage("USER COUCOU")));
     }
 
-    @Override
+    /*@Override
     public void onUpdate() {
         setItem(2, new GuiButton(new ItemBuilder(Material.CHEST).setAmount(getPlugin().getGameManager().getSize()).build(),
                 event -> event.getWhoClicked().sendMessage("GAME COUCOU")));
 
-        setItem(3, new GuiButton(new ItemBuilder(Material.EMERALD).setName("User: " + getPlugin().getUsers().get(0).getStackSize()).build(),
+        setItem(3, new GuiButton(new ItemBuilder(Material.EMERALD).setAmount(0).setName("User: " + getPlugin().getUsers().get(0).getStackSize()).build(),
                 event -> event.getWhoClicked().sendMessage("USER COUCOU")));
-    }
+    }*/
 
 }
