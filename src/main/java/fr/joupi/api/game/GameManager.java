@@ -1,6 +1,7 @@
 package fr.joupi.api.game;
 
 import com.google.common.collect.Lists;
+import fr.joupi.api.Utils;
 import fr.joupi.api.game.host.GameHostState;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -25,11 +26,15 @@ public class GameManager {
 
     public void findGame(Player player, String gameName) {
         if (Optional.ofNullable(getGames(gameName)).isPresent()) {
-            getBestGame(gameName).ifPresentOrElse(
+            Utils.ifPresentOrElse(getBestGame(gameName), game -> {
+                getGame(player, currentGame -> currentGame.leaveGame(player.getUniqueId()));
+                game.joinGame(player);
+            }, () -> System.out.println("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER " + player.getName()));
+            /*getBestGame(gameName).ifPresentOrElse(
                     game -> {
-                        getGame(player, currentGame -> currentGame.leaveGame(player.getUniqueId())); // Leave game of the player if he currently in a game (reduce bug)
+                        getGame(player, currentGame -> currentGame.leaveGame(player.getUniqueId()));
                         game.joinGame(player);
-                    }, () -> System.out.println("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER " + player.getName()));
+                    }, () -> System.out.println("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER " + player.getName()));*/
         }
     }
 
@@ -38,7 +43,6 @@ public class GameManager {
     }
 
     public void addGame(String gameName, Game game) {
-        //Optional.ofNullable(getGames().get(gameName)).ifPresentOrElse(gameList -> gameList.add(game), () -> getGames().putIfAbsent(gameName, Lists.newArrayList(game)));
         getGames().computeIfAbsent(gameName, k -> Lists.newArrayList()).add(game);
         System.out.println("ADD GAME " + game.getFullName());
     }
@@ -59,6 +63,14 @@ public class GameManager {
 
     public Optional<Game> getGame(String gameName, Player player) {
         return getGames().get(gameName).stream().filter(game -> game.containsPlayer(player.getUniqueId())).findFirst();
+    }
+
+    public Optional<Game> getGame(String gameName, String id) {
+        return getGames(gameName).stream().filter(game -> game.getId().equals(id)).findFirst();
+    }
+
+    public Optional<Game> getGame(String id) {
+        return getGames().values().stream().flatMap(List::stream).filter(game -> game.getId().equals(id)).findFirst();
     }
 
     public List<Game> getGamesWithMorePlayers(String gameName, GameState state) {
@@ -131,7 +143,9 @@ public class GameManager {
     }
 
     public List<Game> getGamesHost(String gameName) {
-        return getGames(gameName).stream().filter(game -> game.getGameHost() != null).collect(Collectors.toList());
+        return getGames(gameName).stream()
+                .filter(game -> game.getGameHost() != null)
+                .collect(Collectors.toList());
     }
 
     public List<Game> getGamesHost(String gameName, GameHostState gameHostState) {

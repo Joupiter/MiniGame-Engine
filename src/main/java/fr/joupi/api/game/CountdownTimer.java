@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 @Getter
@@ -40,10 +41,7 @@ public class CountdownTimer implements Runnable {
     public void run() {
         if (getSecondsLeft() < 1) {
             getAfterTimer().run();
-
-            if (getAssignedTaskId() != null)
-                Bukkit.getScheduler().cancelTask(getAssignedTaskId());
-
+            Optional.ofNullable(getAssignedTaskId()).ifPresent(Bukkit.getScheduler()::cancelTask);
             return;
         }
 

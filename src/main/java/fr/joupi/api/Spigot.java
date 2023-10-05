@@ -44,6 +44,7 @@ public class Spigot extends JavaPlugin {
         getCommand("join").setExecutor(new GameCommand(this));
         getCommand("leave").setExecutor(new GameCommand(this));
         getCommand("info").setExecutor(new GameCommand(this));
+        getCommand("end").setExecutor(new GameCommand(this));
 
         getGameManager().addGame("ffa", new FFAGame(this));
     }

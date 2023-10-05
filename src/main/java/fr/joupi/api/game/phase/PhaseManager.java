@@ -1,5 +1,6 @@
 package fr.joupi.api.game.phase;
 
+import fr.joupi.api.Utils;
 import fr.joupi.api.game.Game;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,18 +35,24 @@ public class PhaseManager<G extends Game<?, ?>> {
     }
 
     public void tryAdvance(AbstractGamePhase<?> previousPhase) {
-        getNextPhase(previousPhase)
+        Utils.ifPresentOrElse(getNextPhase(previousPhase).filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate()),
+                this::setPhase, this::unregisterPhases);
+        /*getNextPhase(previousPhase)
                 .filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate())
-                .ifPresentOrElse(this::setPhase, this::unregisterPhases);
+                .ifPresentOrElse(this::setPhase, this::unregisterPhases);*/
     }
 
     public void tryRetreat(AbstractGamePhase<?> phase) {
-        getPreviousPhase(phase)
+        Utils.ifPresentOrElse(getPreviousPhase(phase).filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate()), this::setPhase, () -> {
+            phase.unregister();
+            phase.startPhase();
+        });
+        /*getPreviousPhase(phase)
                 .filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate())
                 .ifPresentOrElse(this::setPhase, () -> {
                     phase.unregister();
                     phase.startPhase();
-                });
+                });*/
     }
 
     public void start() {

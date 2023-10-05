@@ -28,6 +28,13 @@ public class GameCommand implements CommandExecutor {
             if (label.equals("info"))
                 getPlugin().getGameManager().getGames().values().forEach(games -> games.forEach(game -> game.sendDebugInfoMessage(player)));
 
+            if (label.equals("end") && args.length > 0) {
+                if (args.length == 1)
+                    getPlugin().getGameManager().getGame(args[0]).ifPresent(game -> game.endGame(getPlugin().getGameManager()));
+                else
+                    getPlugin().getGameManager().getGame(args[0], args[1]).ifPresent(game -> game.endGame(getPlugin().getGameManager()));
+            }
+
         }
 
         return false;

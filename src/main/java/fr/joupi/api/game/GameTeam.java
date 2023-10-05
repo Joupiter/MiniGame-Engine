@@ -1,8 +1,8 @@
 package fr.joupi.api.game;
 
-import com.google.common.collect.Lists;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -17,15 +17,17 @@ public class GameTeam {
     public GameTeam(GameTeamColor color) {
         this.name = color.getName();
         this.color = color;
-        this.members = Lists.newLinkedList();
+        this.members = new ArrayList<>();
     }
 
     public void addMember(GamePlayer gamePlayer) {
         getMembers().add(gamePlayer);
+        System.out.println("[Team] " + gamePlayer.getPlayer().getName() + " added to " + getName() + " team");
     }
 
     public void removeMember(GamePlayer gamePlayer) {
         getMembers().remove(gamePlayer);
+        System.out.println("[Team] " + gamePlayer.getPlayer().getName() + " removed to " + getName() + " team");
     }
 
     public boolean isMember(GamePlayer gamePlayer) {

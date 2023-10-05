@@ -3,7 +3,7 @@ package fr.joupi.api.duelgame;
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.game.host.GameHostState;
-import fr.joupi.api.gui.Gui;
+import fr.joupi.api.gui.GGui;
 import fr.joupi.api.gui.GuiButton;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -12,7 +12,7 @@ import org.bukkit.Material;
 import java.util.Arrays;
 
 @Getter
-public class DuelGameHostGui extends Gui<Spigot> {
+public class DuelGameHostGui extends GGui<Spigot> {
 
     private final DuelGame game;
 

@@ -21,11 +21,13 @@ import java.util.UUID;
 public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     public FFAGame(JavaPlugin plugin) {
-        super(plugin, "FFA", new GameSettings(new GameSize("ffa", 0, 999, 0, 0), Bukkit.getWorld("world")));
+        super(plugin, "ComboFFA", new GameSettings(new GameSize("ffa", 0, 999, 0, 0), Bukkit.getWorld("world")));
         setState(GameState.IN_GAME);
 
         getSettings().addLocations("lobby", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
         getSettings().addLocations("random", new Location(getSettings().getWorld(), -179, 67, 74), new Location(getSettings().getWorld(), -189, 67, 74));
+
+        registerListeners(new FFAGameTestListener(this));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package fr.joupi.api.game;
 
-import fr.joupi.api.BooleanWrapper;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.host.GameHost;
@@ -19,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -33,6 +33,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     private final PhaseManager<?> phaseManager;
     @Setter private GameHost<?> gameHost;
 
+    private final List<GameListenerWrapper<?>> listeners;
     private final List<GameTeam> teams;
     private final ConcurrentMap<UUID, G> players;
 
@@ -44,7 +45,8 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         this.id = RandomStringUtils.randomAlphanumeric(10);
         this.settings = settings;
         this.phaseManager = new PhaseManager<>(this);
-        this.teams = new LinkedList<>();
+        this.listeners = new ArrayList<>();
+        this.teams = new ArrayList<>();
         this.players = new ConcurrentHashMap<>();
         this.state = GameState.WAIT;
         load();
@@ -58,10 +60,23 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
                 .forEach(gameTeamColor -> getTeams().add(new GameTeam(gameTeamColor)));
 
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
+        System.out.println(getFullName() + " loaded");
     }
 
     public void unload() {
+        getListeners().forEach(HandlerList::unregisterAll);
         HandlerList.unregisterAll(this);
+        System.out.println(getFullName() + " unloaded");
+    }
+
+    public void registerListeners(GameListenerWrapper<?>... listeners) {
+        Arrays.asList(listeners)
+                .forEach(this::registerListener);
+    }
+
+    public void registerListener(GameListenerWrapper<?> listener) {
+        Bukkit.getPluginManager().registerEvents(listener, getPlugin());
+        getListeners().add(listener);
     }
 
     public List<G> getAlivePlayers() {
@@ -70,6 +85,14 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public List<G> getSpectators() {
         return getPlayers().values().stream().filter(GamePlayer::isSpectator).collect(Collectors.toList());
+    }
+
+    public List<G> getPlayersWithTeam() {
+        return getPlayers().values().stream().filter(this::haveTeam).collect(Collectors.toList());
+    }
+
+    public List<G> getPlayersWithoutTeam() {
+        return getPlayers().values().stream().filter(gamePlayer -> !haveTeam(gamePlayer)).collect(Collectors.toList());
     }
 
     public List<GameTeam> getAliveTeam() {
@@ -86,6 +109,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         return getTeams().stream().filter(gameTeam -> gameTeam.isMember(gamePlayer)).findFirst();
     }
 
+    private Optional<GameTeam> getTeamWithLeastPlayers() {
+        return getTeams().stream().filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
+    }
+
     public void addPlayerToTeam(GamePlayer gamePlayer, GameTeam gameTeam) {
         removePlayerToTeam(gamePlayer);
         gameTeam.addMember(gamePlayer);
@@ -96,15 +123,11 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public void fillTeam() {
-        getPlayers().values().forEach(gamePlayer -> getTeamWithLeastPlayers().ifPresent(gameTeam -> gameTeam.addMember(gamePlayer)));
+        getPlayersWithoutTeam().forEach(gamePlayer -> getTeamWithLeastPlayers().ifPresent(gameTeam -> gameTeam.addMember(gamePlayer)));
     }
 
     public Optional<G> getPlayer(UUID uuid) {
         return Optional.ofNullable(getPlayers().get(uuid));
-    }
-
-    private Optional<GameTeam> getTeamWithLeastPlayers() {
-        return getTeams().stream().filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
     }
 
     public void checkSetting(boolean setting, Runnable runnable) {
@@ -121,10 +144,8 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
                 .ifPresent(host -> runnable.run());
     }
 
-    public void ifHostedGame(boolean b, Runnable runnable) {
-        ifHostedGame(() -> {
-            if (b) runnable.run();
-        });
+    public void ifHostedGame(Consumer<GameHost<?>> consumer) {
+        ifHostedGame(() -> consumer.accept(getGameHost()));
     }
 
     public void checkGameHostState(GameHostState hostState, Runnable runnable) {
@@ -139,13 +160,12 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public void joinGame(Player player) {
-        BooleanWrapper.of(getPlayers().containsKey(player.getUniqueId()))
-                .ifFalse(() -> {
-                    G gamePlayer = defaultGamePlayer(player.getUniqueId());
-                    getPlayers().put(player.getUniqueId(), gamePlayer);
-                    Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
-                    System.out.println(player.getName() + " join " + getFullName() + " game");
-                });
+        if (!getPlayers().containsKey(player.getUniqueId())) {
+            G gamePlayer = defaultGamePlayer(player.getUniqueId());
+            getPlayers().put(player.getUniqueId(), gamePlayer);
+            Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
+            System.out.println(player.getName() + " join " + getFullName() + " game");
+        }
     }
 
     public void leaveGame(UUID uuid) {
@@ -173,7 +193,15 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public String getFullName() {
-        return getName() + (Optional.ofNullable(getGameHost()).isPresent() ? "Host" : "") + "-" + getSettings().getGameSize().getName() + "-" + getId();
+        return getName() + (isGameHost() ? "Host" : "") + "-" + getSettings().getGameSize().getName() + "-" + getId();
+    }
+
+    public boolean isGameHost() {
+        return Optional.ofNullable(getGameHost()).isPresent();
+    }
+
+    public boolean haveTeam(G gamePlayer) {
+        return getTeam(gamePlayer).isPresent();
     }
 
     public boolean containsPlayer(UUID uuid) {

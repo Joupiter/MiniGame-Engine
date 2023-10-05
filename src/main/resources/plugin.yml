@@ -9,3 +9,5 @@ commands:
     description: leave game
   info:
     description: game info
+  end:
+    description: end game

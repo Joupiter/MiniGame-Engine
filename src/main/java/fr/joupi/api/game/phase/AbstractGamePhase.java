@@ -11,7 +11,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -26,8 +26,8 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> {
 
     public AbstractGamePhase(G game) {
         this.game = game;
-        this.events = new LinkedList<>();
-        this.tasks = new LinkedList<>();
+        this.events = new ArrayList<>();
+        this.tasks = new ArrayList<>();
     }
 
     public abstract void onStart();

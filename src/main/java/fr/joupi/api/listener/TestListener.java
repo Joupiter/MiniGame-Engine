@@ -5,13 +5,28 @@ import fr.joupi.api.Spigot;
 import fr.joupi.api.User;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.GameSizeTemplate;
+import fr.joupi.api.game.phase.AbstractGamePhase;
 import fr.joupi.api.shop.ShopGui;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredListener;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class TestListener extends AListener<Spigot> {
 
@@ -55,7 +70,17 @@ public class TestListener extends AListener<Spigot> {
         }
 
         if (event.getMessage().equals("!list")) {
-            getPlugin().getGuiManager().getGuis().forEach((uuid, gui) -> player.sendMessage(Bukkit.getPlayer(uuid).getName() + " + " + gui.getInventoryName()));
+
+            Arrays.stream(getPlugin().getServer().getPluginManager().getPlugins())
+                    .filter(plugin -> plugin.getName().equals(getPlugin().getName()))
+                    .map(HandlerList::getRegisteredListeners)
+                    .forEach(rls ->
+                            rls.forEach(registeredListener ->
+                                    Arrays.stream(registeredListener.getListener().getClass().getDeclaredMethods())
+                                            .filter(method -> method.isAnnotationPresent(EventHandler.class))
+                                            .forEach(method -> System.out.println(registeredListener.getListener().getClass().getSimpleName() + " = " + method.getName())))
+                    );
+
             event.setCancelled(true);
         }
 

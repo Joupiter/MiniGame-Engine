@@ -17,15 +17,17 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
 import java.util.UUID;
 
 public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
+    private final Spigot spigot;
+
     public DuelGame(Spigot plugin, GameSize gameSize) {
         super(plugin, "Duel", new DuelGameSettings(gameSize, Bukkit.getWorld("world"), false));
-
+        this.spigot = plugin;
         getSettings().addLocation("waiting", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
         getSettings().addLocation("red", new Location(getSettings().getWorld(), -179, 67, 74));
         getSettings().addLocation("blue", new Location(getSettings().getWorld(), -189, 67, 74));
@@ -92,18 +94,23 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
+        ItemStack itemStack = event.getItem();
 
-        if (event.getItem() == null) return;
+        if (itemStack == null) return;
 
         if (containsPlayer(player.getUniqueId())) {
             DuelGamePlayer gamePlayer = getPlayer(player.getUniqueId()).orElse(null);
 
                 checkGameState(GameState.WAIT, () -> {
-                    if (event.getItem().getType().equals(Material.CHEST))
+                    if (itemStack.getType().equals(Material.CHEST))
                         new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player);
 
-                    ifHostedGame(event.getItem().getType().equals(getGameHost().getHostItem().getType()),
-                            () -> getGameHost().getHostGui().onOpen(player));
+                    ifHostedGame(gameHost -> {
+                        if (itemStack.getType().equals(gameHost.getHostItem().getType()))
+                            gameHost.openGui(spigot.getGuiManager(), player);
+                    });
+
+                    event.setCancelled(true);
                 });
         }
     }
