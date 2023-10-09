@@ -1,12 +1,11 @@
 package fr.joupi.api.ffa;
 
 import fr.joupi.api.ItemBuilder;
-import fr.joupi.api.game.Game;
-import fr.joupi.api.game.GameSettings;
-import fr.joupi.api.game.GameSize;
-import fr.joupi.api.game.GameState;
+import fr.joupi.api.game.*;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
+import fr.joupi.api.game.utils.GameInfo;
+import fr.joupi.api.game.utils.GameSizeTemplate;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,10 +17,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Optional;
 import java.util.UUID;
 
+@GameInfo(name = "ComboFFA")
 public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
-    public FFAGame(JavaPlugin plugin) {
-        super(plugin, "ComboFFA", new GameSettings(new GameSize("ffa", 0, 999, 0, 0), Bukkit.getWorld("world")));
+    public FFAGame(JavaPlugin plugin, GameSize gameSize) {
+        super(plugin, "ComboFFA", new GameSettings(gameSize, Bukkit.getWorld("world")));
         setState(GameState.IN_GAME);
 
         getSettings().addLocations("lobby", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
@@ -30,12 +30,16 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
         registerListeners(new FFAGameTestListener(this));
     }
 
+    public FFAGame(JavaPlugin plugin) {
+        this(plugin, GameSizeTemplate.FFA.getGameSize());
+    }
+
     @Override
-    public FFAGamePlayer defaultGamePlayer(UUID uuid) {
+    public FFAGamePlayer defaultGamePlayer(UUID uuid, boolean spectator) {
         /*
             Requete SQL ici pour recup stats du joueur
          */
-        return new FFAGamePlayer(uuid, 0, 0, 0, false);
+        return new FFAGamePlayer(uuid, 0, 0, 0, spectator);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -45,13 +49,10 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
             FFAGamePlayer gamePlayer = event.getGamePlayer();
 
             checkGameState(GameState.IN_GAME, () -> {
-                event.sendJoinMessage();
-                player.setGameMode(GameMode.ADVENTURE);
-                player.getInventory().clear();
-                player.setHealth(player.getMaxHealth());
+                gamePlayer.setupPlayer();
                 player.teleport(getSettings().getLocation("lobby"));
-                player.getInventory().setItem(0, new ItemBuilder(Material.GOLD_AXE).setName("&bJouer").build());
                 gamePlayer.sendStats();
+                event.sendJoinMessage();
             });
         }
     }

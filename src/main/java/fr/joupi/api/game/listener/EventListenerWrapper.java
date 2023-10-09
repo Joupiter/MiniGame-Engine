@@ -1,4 +1,4 @@
-package fr.joupi.api.game;
+package fr.joupi.api.game.listener;
 
 import lombok.AllArgsConstructor;
 import org.bukkit.event.Event;

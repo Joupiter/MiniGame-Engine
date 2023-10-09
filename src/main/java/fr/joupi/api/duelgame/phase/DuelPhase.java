@@ -5,7 +5,7 @@ import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.duelgame.DuelGamePlayer;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
-import fr.joupi.api.game.GameTeam;
+import fr.joupi.api.game.team.GameTeam;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import org.bukkit.GameMode;

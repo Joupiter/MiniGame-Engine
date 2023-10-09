@@ -1,5 +1,6 @@
-package fr.joupi.api.game;
+package fr.joupi.api.game.team;
 
+import fr.joupi.api.game.GamePlayer;
 import lombok.Getter;
 
 import java.util.ArrayList;

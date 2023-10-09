@@ -37,9 +37,6 @@ public class PhaseManager<G extends Game<?, ?>> {
     public void tryAdvance(AbstractGamePhase<?> previousPhase) {
         Utils.ifPresentOrElse(getNextPhase(previousPhase).filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate()),
                 this::setPhase, this::unregisterPhases);
-        /*getNextPhase(previousPhase)
-                .filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate())
-                .ifPresentOrElse(this::setPhase, this::unregisterPhases);*/
     }
 
     public void tryRetreat(AbstractGamePhase<?> phase) {
@@ -47,12 +44,6 @@ public class PhaseManager<G extends Game<?, ?>> {
             phase.unregister();
             phase.startPhase();
         });
-        /*getPreviousPhase(phase)
-                .filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate())
-                .ifPresentOrElse(this::setPhase, () -> {
-                    phase.unregister();
-                    phase.startPhase();
-                });*/
     }
 
     public void start() {

@@ -22,11 +22,14 @@ dependencies {
     implementation 'org.mongodb:mongo-java-driver:3.12.12'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.7'
     implementation 'org.reactivestreams:reactive-streams:1.0.4'
+    implementation 'org.javassist:javassist:3.28.0-GA'
 }
 
 shadowJar {
     dependencies {
         include(dependency('io.reactivex.rxjava3:rxjava:3.1.7'))
+        include(dependency('org.reflections:reflections:0.10.2'))
         include(dependency('org.reactivestreams:reactive-streams:1.0.4'))
+        include(dependency('org.javassist:javassist:3.28.0-GA'))
     }
 }

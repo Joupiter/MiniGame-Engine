@@ -4,12 +4,14 @@ import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.host.GameHost;
 import fr.joupi.api.game.host.GameHostState;
+import fr.joupi.api.game.listener.GameListenerWrapper;
 import fr.joupi.api.game.phase.PhaseManager;
+import fr.joupi.api.game.team.GameTeam;
+import fr.joupi.api.game.team.GameTeamColor;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -52,7 +54,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         load();
     }
 
-    public abstract G defaultGamePlayer(UUID uuid);
+    public abstract G defaultGamePlayer(UUID uuid, boolean spectator);
 
     private void load() {
         Arrays.stream(GameTeamColor.values()).collect(Collectors.toList()).stream()
@@ -160,11 +162,15 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public void joinGame(Player player) {
+        joinGame(player, false);
+    }
+
+    public void joinGame(Player player, boolean spectator) {
         if (!getPlayers().containsKey(player.getUniqueId())) {
-            G gamePlayer = defaultGamePlayer(player.getUniqueId());
+            G gamePlayer = defaultGamePlayer(player.getUniqueId(), spectator);
             getPlayers().put(player.getUniqueId(), gamePlayer);
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
-            System.out.println(player.getName() + " join " + getFullName() + " game");
+            System.out.println(player.getName() + (gamePlayer.isSpectator() ? " spectate " : " join ")+ getFullName() + " game");
         }
     }
 
@@ -184,7 +190,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     private void broadcast(String message) {
-        getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', message)));
+        getPlayers().values().forEach(gamePlayer -> gamePlayer.sendMessage(message));
     }
 
     public void broadcast(String... messages) {

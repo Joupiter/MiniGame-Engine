@@ -1,6 +1,6 @@
 package fr.joupi.api.ffa;
 
-import fr.joupi.api.game.GameListenerWrapper;
+import fr.joupi.api.game.listener.GameListenerWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerPickupItemEvent;

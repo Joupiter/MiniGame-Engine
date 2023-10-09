@@ -1,6 +1,6 @@
 package fr.joupi.api.duelgame.phase;
 
-import fr.joupi.api.game.CountdownTimer;
+import fr.joupi.api.game.utils.CountdownTimer;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
@@ -37,6 +37,11 @@ public class CountdownPhase extends AbstractGamePhase<DuelGame> {
             getCountdownTimer().cancelTimer();
             cancelPhase();
         }
+    }
+
+    @Override
+    public void onCancel() {
+        getCountdownTimer().cancelTimer();
     }
 
     @Override

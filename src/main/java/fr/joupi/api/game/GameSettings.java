@@ -6,7 +6,10 @@ import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,6 +26,10 @@ public class GameSettings {
         this.gameSize = gameSize;
         this.world = world;
         this.locations = new ConcurrentHashMap<>();
+    }
+
+    public void loadWorld() {
+
     }
 
     public void addLocation(String name, Location location) {

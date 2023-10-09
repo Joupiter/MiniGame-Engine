@@ -11,6 +11,8 @@ import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
 import fr.joupi.api.game.host.GameHost;
+import fr.joupi.api.game.team.GameTeam;
+import fr.joupi.api.game.utils.GameInfo;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
+@GameInfo(name = "Duel")
 public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     private final Spigot spigot;
@@ -28,6 +31,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
     public DuelGame(Spigot plugin, GameSize gameSize) {
         super(plugin, "Duel", new DuelGameSettings(gameSize, Bukkit.getWorld("world"), false));
         this.spigot = plugin;
+
         getSettings().addLocation("waiting", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
         getSettings().addLocation("red", new Location(getSettings().getWorld(), -179, 67, 74));
         getSettings().addLocation("blue", new Location(getSettings().getWorld(), -189, 67, 74));
@@ -42,6 +46,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
                 new VictoryPhase(this, plugin)
         );
 
+
         getPhaseManager().start();
     }
 
@@ -53,8 +58,8 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
     }
 
     @Override
-    public DuelGamePlayer defaultGamePlayer(UUID uuid) {
-        return new DuelGamePlayer(uuid, 0, 0, 0, !getState().equals(GameState.WAIT));
+    public DuelGamePlayer defaultGamePlayer(UUID uuid, boolean spectator) {
+        return new DuelGamePlayer(uuid, 0, 0, 0, spectator);
     }
 
     /*

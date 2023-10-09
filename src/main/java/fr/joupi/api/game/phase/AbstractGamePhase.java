@@ -1,7 +1,7 @@
 package fr.joupi.api.game.phase;
 
-import fr.joupi.api.game.GameRunnable;
-import fr.joupi.api.game.EventListenerWrapper;
+import fr.joupi.api.game.utils.GameRunnable;
+import fr.joupi.api.game.listener.EventListenerWrapper;
 import fr.joupi.api.game.Game;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 @Getter
-public abstract class AbstractGamePhase<G extends Game<?, ?>> {
+public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePhase {
 
     private final G game;
 
@@ -30,9 +30,6 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> {
         this.tasks = new ArrayList<>();
     }
 
-    public abstract void onStart();
-    public abstract void onEnd();
-
     public void startPhase() {
         onStart();
     }
@@ -44,6 +41,7 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> {
     }
 
     public void cancelPhase() {
+        onCancel();
         unregister();
         getGame().getPhaseManager().tryRetreat(this);
     }

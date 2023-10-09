@@ -2,12 +2,12 @@ package fr.joupi.api;
 
 import fr.joupi.api.ffa.FFAGame;
 import fr.joupi.api.game.GameManager;
+import fr.joupi.api.game.entity.GameEntityManager;
 import fr.joupi.api.gui.GuiManager;
 import fr.joupi.api.listener.GameCommand;
 import fr.joupi.api.listener.TestListener;
 import fr.joupi.api.shop.Product;
 import fr.joupi.api.skyly.KillStreak;
-import fr.joupi.api.threading.MultiThreading;
 import lombok.Getter;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 public class Spigot extends JavaPlugin {
@@ -29,6 +28,7 @@ public class Spigot extends JavaPlugin {
     private List<Product> products;
     private List<User> users;
     private KillStreak killStreak;
+    private GameEntityManager gameEntityManager;
     private GuiManager guiManager;
 
     @Override
@@ -38,6 +38,7 @@ public class Spigot extends JavaPlugin {
         this.users = new ArrayList<>();
         this.killStreak = new KillStreak(this);
         this.guiManager = new GuiManager(this);
+        this.gameEntityManager = new GameEntityManager(this);
 
         addProduct();
         getServer().getPluginManager().registerEvents(new TestListener(this), this);
@@ -46,7 +47,7 @@ public class Spigot extends JavaPlugin {
         getCommand("info").setExecutor(new GameCommand(this));
         getCommand("end").setExecutor(new GameCommand(this));
 
-        getGameManager().addGame("ffa", new FFAGame(this));
+        getGameManager().addGame("comboffa", new FFAGame(this));
     }
 
     @Override

@@ -4,6 +4,7 @@ import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.game.GamePlayer;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 
 import java.util.UUID;
@@ -36,6 +37,21 @@ public class FFAGamePlayer extends GamePlayer {
         getPlayer().getInventory().setLeggings(new ItemBuilder(Material.IRON_LEGGINGS).build());
         getPlayer().getInventory().setHelmet(new ItemBuilder(Material.IRON_HELMET).build());
         getPlayer().getInventory().setChestplate(new ItemBuilder(Material.IRON_CHESTPLATE).build());
+    }
+
+    public void setupPlayer() {
+        if (!isSpectator()) {
+            getPlayer().setGameMode(GameMode.ADVENTURE);
+            getPlayer().getInventory().clear();
+            getPlayer().setHealth(getPlayer().getMaxHealth());
+            getPlayer().getInventory().setItem(0, new ItemBuilder(Material.GOLD_AXE).setName("&bJouer").build());
+        } else
+            setupSpectator();
+    }
+
+    public void setupSpectator() {
+        getPlayer().setGameMode(GameMode.SPECTATOR);
+        getPlayer().getInventory().clear();
     }
 
     public void addKill(int kills) {

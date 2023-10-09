@@ -4,29 +4,18 @@ import fr.joupi.api.AListener;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.User;
 import fr.joupi.api.duelgame.DuelGame;
-import fr.joupi.api.game.GameSizeTemplate;
-import fr.joupi.api.game.phase.AbstractGamePhase;
+import fr.joupi.api.game.entity.Golem;
+import fr.joupi.api.game.utils.GameSizeTemplate;
 import fr.joupi.api.shop.ShopGui;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredListener;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class TestListener extends AListener<Spigot> {
 
@@ -54,8 +43,13 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!addhost")) {
-            getPlugin().getGameManager().addGame("duelhost", new DuelGame(getPlugin(), player, GameSizeTemplate.SIZE_1V1.getGameSize()));
+        if (event.getMessage().equals("!golemredremove")) {
+            getPlugin().getGameEntityManager().destroy("&cRouge");
+            event.setCancelled(true);
+        }
+
+        if (event.getMessage().equals("!golemblueremove")) {
+            getPlugin().getGameEntityManager().destroy("&9Blue");
             event.setCancelled(true);
         }
 
@@ -69,18 +63,7 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!list")) {
-
-            Arrays.stream(getPlugin().getServer().getPluginManager().getPlugins())
-                    .filter(plugin -> plugin.getName().equals(getPlugin().getName()))
-                    .map(HandlerList::getRegisteredListeners)
-                    .forEach(rls ->
-                            rls.forEach(registeredListener ->
-                                    Arrays.stream(registeredListener.getListener().getClass().getDeclaredMethods())
-                                            .filter(method -> method.isAnnotationPresent(EventHandler.class))
-                                            .forEach(method -> System.out.println(registeredListener.getListener().getClass().getSimpleName() + " = " + method.getName())))
-                    );
-
+        if (event.getMessage().equals("!spec")) {
             event.setCancelled(true);
         }
 
@@ -99,7 +82,7 @@ public class TestListener extends AListener<Spigot> {
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        getPlugin().getGameManager().leave(player);
+        getPlugin().getGameManager().leaveGame(player);
         getPlugin().getUsers().remove(getPlugin().getUser(player.getUniqueId()));
     }
 

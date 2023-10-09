@@ -1,5 +1,6 @@
-package fr.joupi.api.game;
+package fr.joupi.api.game.utils;
 
+import fr.joupi.api.game.Game;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;

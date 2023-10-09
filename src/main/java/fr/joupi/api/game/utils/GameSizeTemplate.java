@@ -1,5 +1,6 @@
-package fr.joupi.api.game;
+package fr.joupi.api.game.utils;
 
+import fr.joupi.api.game.GameSize;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -7,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum GameSizeTemplate {
 
+    FFA (new GameSize("ffa", 0, 999, 0, 0)),
     SIZE_1V1 (new GameSize("1vs1", 2, 2, 2, 1)),
     SIZE_2V2 (new GameSize("2vs2", 2, 4, 2, 2)),
     SIZE_5V5 (new GameSize("5vs5", 5, 10,2, 5)),
