@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -34,9 +35,14 @@ public class GameEntityManager implements Listener {
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEntityEvent event) {
-        if (event.getRightClicked() == null) return;
+    public void onSpawn(EntitySpawnEvent event) {
+        getEntities().values().stream()
+                .filter(entity -> entity.getEntity().equals(event.getEntity()))
+                .forEach(entity -> entity.spawnEvent().accept(event));
+    }
 
+    @EventHandler
+    public void onInteract(PlayerInteractEntityEvent event) {
         getEntities().values().stream()
                 .filter(entity -> entity.getEntity().equals(event.getRightClicked()))
                 .forEach(entity -> entity.interactEvent().accept(event));

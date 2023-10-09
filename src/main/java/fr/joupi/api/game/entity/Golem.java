@@ -12,15 +12,10 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.function.Consumer;
 
-@Getter
-@Setter
 public class Golem extends AbstractGameEntity<IronGolem> {
 
-    //private final GameTeam gameTeam;
-
-    public Golem(String name, int maxHealth, Location location /*,GameTeam gameTeam*/) {
+    public Golem(String name, int maxHealth, Location location) {
         super(name, maxHealth, location);
-        //this.gameTeam = gameTeam;
     }
 
     @Override
