@@ -1,5 +1,6 @@
 package fr.joupi.api.game;
 
+import fr.joupi.api.game.entity.GameEntityManager;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.host.GameHost;
@@ -33,6 +34,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     private final S settings;
 
     private final PhaseManager<?> phaseManager;
+    private final GameEntityManager gameEntityManager;
     @Setter private GameHost<?> gameHost;
 
     private final List<GameListenerWrapper<?>> listeners;
@@ -47,6 +49,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         this.id = RandomStringUtils.randomAlphanumeric(10);
         this.settings = settings;
         this.phaseManager = new PhaseManager<>(this);
+        this.gameEntityManager = new GameEntityManager(plugin);
         this.listeners = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.players = new ConcurrentHashMap<>();

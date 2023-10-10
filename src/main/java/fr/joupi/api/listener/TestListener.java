@@ -4,18 +4,13 @@ import fr.joupi.api.AListener;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.User;
 import fr.joupi.api.duelgame.DuelGame;
-import fr.joupi.api.game.entity.Golem;
 import fr.joupi.api.game.utils.GameSizeTemplate;
 import fr.joupi.api.shop.ShopGui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 public class TestListener extends AListener<Spigot> {
 

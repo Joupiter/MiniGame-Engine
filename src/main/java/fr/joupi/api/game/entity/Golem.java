@@ -1,7 +1,9 @@
 package fr.joupi.api.game.entity;
 
+import fr.joupi.api.duelgame.DuelGamePlayer;
+import fr.joupi.api.game.GamePlayer;
+import fr.joupi.api.game.team.GameTeam;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -12,16 +14,20 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.function.Consumer;
 
+@Getter
 public class Golem extends AbstractGameEntity<IronGolem> {
 
-    public Golem(String name, int maxHealth, Location location) {
+    private final GameTeam gameTeam;
+
+    public Golem(GameTeam gameTeam, String name, int maxHealth, Location location) {
         super(name, maxHealth, location);
+        this.gameTeam = gameTeam;
     }
 
     @Override
     public void spawn() {
         IronGolem ironGolem = (IronGolem) getLocation().getWorld().spawnEntity(getLocation(), EntityType.IRON_GOLEM);
-        ironGolem.setCustomName(getName());
+        ironGolem.setCustomName(getGameTeam().getColoredName());
         ironGolem.setCustomNameVisible(true);
         ironGolem.setMaxHealth(getMaxHealth());
         removeAI(ironGolem);
@@ -35,7 +41,11 @@ public class Golem extends AbstractGameEntity<IronGolem> {
 
     @Override
     public Consumer<EntityDamageByEntityEvent> damageEvent() {
-        return event -> update();
+        return event -> {
+            if (getGameTeam().isMember(event.getDamager().getUniqueId()))
+                event.setCancelled(true);
+            else update();
+        };
     }
 
     @Override
@@ -50,7 +60,7 @@ public class Golem extends AbstractGameEntity<IronGolem> {
 
     @Override
     public void update() {
-        getEntity().setCustomName(ChatColor.translateAlternateColorCodes('&', "&7" + getEntity().getHealth() + " &c<3"));
+        getEntity().setCustomName(ChatColor.translateAlternateColorCodes('&',  "&7> " + getGameTeam().getColor().getChatColor() + getEntity().getHealth() + " &c<3"));
     }
 
 }

@@ -16,4 +16,8 @@ public enum GameSizeTemplate {
 
     private final GameSize gameSize;
 
+    public static GameSize newGameSize(GameSizeTemplate gameSizeTemplate) {
+        return new GameSize(gameSizeTemplate.getGameSize().getName(), gameSizeTemplate.getGameSize().getMinPlayer(), gameSizeTemplate.getGameSize().getMaxPlayer(), gameSizeTemplate.getGameSize().getTeamNeeded(), gameSizeTemplate.getGameSize().getTeamMaxPlayer());
+    }
+
 }

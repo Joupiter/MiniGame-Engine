@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +33,11 @@ public class GameEntityManager implements Listener {
     public void destroy(String entityName) {
         Optional.ofNullable(getEntities().get(entityName)).ifPresent(GameEntity::destroy);
         getEntities().remove(entityName);
+    }
+
+    public void destroy(String... entitiesName) {
+        Arrays.asList(entitiesName)
+                .forEach(this::destroy);
     }
 
     @EventHandler

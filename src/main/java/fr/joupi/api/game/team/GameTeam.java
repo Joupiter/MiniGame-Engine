@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,10 @@ public class GameTeam {
 
     public boolean isMember(GamePlayer gamePlayer) {
         return getMembers().contains(gamePlayer);
+    }
+
+    public boolean isMember(UUID uuid) {
+        return getMembers().stream().anyMatch(gamePlayer -> gamePlayer.getUuid().equals(uuid));
     }
 
     public List<GamePlayer> getAlivePlayers() {
