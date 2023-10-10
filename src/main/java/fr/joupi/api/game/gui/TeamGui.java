@@ -2,7 +2,6 @@ package fr.joupi.api.game.gui;
 
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.Spigot;
-import fr.joupi.api.duelgame.phase.VictoryPhase;
 import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.team.GameTeam;

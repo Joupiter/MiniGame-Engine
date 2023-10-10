@@ -1,7 +1,5 @@
 package fr.joupi.api.game.entity;
 
-import fr.joupi.api.duelgame.DuelGamePlayer;
-import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.team.GameTeam;
 import lombok.Getter;
 import org.bukkit.ChatColor;
