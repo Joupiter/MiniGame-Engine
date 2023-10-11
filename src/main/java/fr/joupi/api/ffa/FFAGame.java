@@ -1,7 +1,9 @@
 package fr.joupi.api.ffa;
 
-import fr.joupi.api.ItemBuilder;
-import fr.joupi.api.game.*;
+import fr.joupi.api.game.Game;
+import fr.joupi.api.game.GameSettings;
+import fr.joupi.api.game.GameSize;
+import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.utils.GameInfo;
@@ -31,14 +33,11 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
     }
 
     public FFAGame(JavaPlugin plugin) {
-        this(plugin, GameSizeTemplate.FFA.getGameSize());
+        this(plugin, GameSizeTemplate.FFA.getGameSize().clone());
     }
 
     @Override
     public FFAGamePlayer defaultGamePlayer(UUID uuid, boolean spectator) {
-        /*
-            Requete SQL ici pour recup stats du joueur
-         */
         return new FFAGamePlayer(uuid, 0, 0, 0, spectator);
     }
 

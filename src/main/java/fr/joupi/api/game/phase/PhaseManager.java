@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Getter
@@ -54,6 +55,11 @@ public class PhaseManager<G extends Game<?, ?>> {
         getPhases().forEach(AbstractGamePhase::unregister);
         getPhases().clear();
         setCurrentPhase(null);
+    }
+
+    public <T extends AbstractGamePhase<?>> void checkGamePhase(Class<T> phaseClass, Consumer<T> consumer) {
+        Optional.ofNullable(getCurrentPhase()).filter(phase -> phase.getClass().equals(phaseClass))
+                .ifPresent(phase -> consumer.accept((T) phase));
     }
 
     public Optional<AbstractGamePhase<?>> getNextPhase(AbstractGamePhase<?> phase) {

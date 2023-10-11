@@ -122,9 +122,14 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer().getUniqueId()))
+        if (containsPlayer(event.getPlayer().getUniqueId())) {
+            Player player = event.getPlayer();
+
+            getPhaseManager().checkGamePhase(CountdownPhase.class, countdownPhase -> player.sendMessage(countdownPhase.getCountdownTimer().getSecondsLeft() + " secondes"));
+
             getPlayer(event.getPlayer().getUniqueId())
                     .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

@@ -34,7 +34,7 @@ public class TestListener extends AListener<Spigot> {
          */
 
         if (event.getMessage().equals("!addgame")) {
-            getPlugin().getGameManager().addGame("duel", new DuelGame(getPlugin(), GameSizeTemplate.SIZE_1V1.getGameSize()));
+            getPlugin().getGameManager().addGame("duel", new DuelGame(getPlugin(), GameSizeTemplate.SIZE_1V1.getGameSize().clone()));
             event.setCancelled(true);
         }
 

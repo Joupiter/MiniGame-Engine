@@ -69,6 +69,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public void unload() {
+        getPhaseManager().unregisterPhases();
         getListeners().forEach(HandlerList::unregisterAll);
         HandlerList.unregisterAll(this);
         System.out.println(getFullName() + " unloaded");
@@ -180,7 +181,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     public void leaveGame(UUID uuid) {
         getPlayer(uuid).ifPresent(gamePlayer -> {
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent<>(this, gamePlayer));
-            getTeam(gamePlayer).ifPresent(gameTeam -> gameTeam.removeMember(gamePlayer));
+            removePlayerToTeam(gamePlayer);
             System.out.println(gamePlayer.getPlayer().getName() + " leave " + getFullName() + " game");
         });
     }
@@ -219,6 +220,18 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public boolean oneTeamAlive() {
         return getAliveTeamCount() == 1;
+    }
+
+    public boolean canStart() {
+        return getAlivePlayersCount() >= getSettings().getGameSize().getMinPlayer();
+    }
+
+    public boolean isFull() {
+        return getAlivePlayersCount() == getSettings().getGameSize().getMaxPlayer();
+    }
+
+    public boolean canJoin() {
+        return getAlivePlayersCount() < getSettings().getGameSize().getMaxPlayer();
     }
 
     public int getAliveTeamCount() {

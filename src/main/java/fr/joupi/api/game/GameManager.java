@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import fr.joupi.api.Utils;
 import fr.joupi.api.game.host.GameHostState;
 import fr.joupi.api.game.utils.GameInfo;
+import fr.joupi.api.threading.MultiThreading;
 import javassist.compiler.MemberResolver;
 import lombok.Getter;
 import org.bukkit.World;
@@ -17,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -78,8 +80,8 @@ public class GameManager {
                     addGame(gameName, newGame);
                     return;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
         }
     }
@@ -98,8 +100,8 @@ public class GameManager {
                     addGame(gameName + "host", newGame);
                     return;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
         }
     }
@@ -110,37 +112,41 @@ public class GameManager {
         System.out.println("REMOVE GAME " + game.getFullName());
     }
 
-    /*
-        ex: getGamesWithMorePlayers("golemrush1vs1"); return all games
-        ex: getGamesWithMorePlayers("golemrush10vs10"); return all games
-     */
-
     public void getGame(Player player, Consumer<Game> consumer) {
         getGames().keySet().forEach(gameName -> getGame(gameName, player).ifPresent(consumer));
     }
 
     public Optional<Game> getGame(Player player) {
-        return getGames().values().stream().flatMap(List::stream).filter(game -> game.containsPlayer(player.getUniqueId())).findFirst();
+        return getGames().values().stream()
+                .flatMap(List::stream)
+                .filter(game -> game.containsPlayer(player.getUniqueId())).findFirst();
     }
 
     public Optional<Game> getGame(String gameName, Player player) {
-        return getGames().get(gameName).stream().filter(game -> game.containsPlayer(player.getUniqueId())).findFirst();
+        return getGames().get(gameName).stream()
+                .filter(game -> game.containsPlayer(player.getUniqueId())).findFirst();
     }
 
     public Optional<Game> getGame(String gameName, String id) {
-        return getGames(gameName).stream().filter(game -> game.getId().equals(id)).findFirst();
+        return getGames(gameName).stream()
+                .filter(game -> game.getId().equals(id)).findFirst();
     }
 
     public Optional<Game> getGame(String id) {
-        return getGames().values().stream().flatMap(List::stream).filter(game -> game.getId().equals(id)).findFirst();
+        return getGames().values().stream()
+                .flatMap(List::stream)
+                .filter(game -> game.getId().equals(id)).findFirst();
     }
 
     public Optional<Game> getGame(String gameName, World world) {
-        return getGames(gameName).stream().filter(game -> game.getSettings().getWorld().equals(world)).findFirst();
+        return getGames(gameName).stream()
+                .filter(game -> game.getSettings().getWorld().equals(world)).findFirst();
     }
 
     public Optional<Game> getGame(World world) {
-        return getGames().values().stream().flatMap(List::stream).filter(game -> game.getSettings().getWorld().equals(world)).findFirst();
+        return getGames().values().stream()
+                .flatMap(List::stream)
+                .filter(game -> game.getSettings().getWorld().equals(world)).findFirst();
     }
 
     public List<Game> getGamesWithMorePlayers(String gameName, GameState state) {
@@ -180,19 +186,19 @@ public class GameManager {
      */
     public List<Game> getReachableGame(String gameName) {
         return getGames(gameName/*, GameState.WAIT*/).stream()
-                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
+                .filter(Game::canJoin)
                 .collect(Collectors.toList());
     }
 
     public List<Game> getReachableGamesWithMorePlayers(String gameName) {
         return getGamesWithMorePlayers(gameName, GameState.WAIT).stream()
-                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
+                .filter(Game::canJoin)
                 .collect(Collectors.toList());
     }
 
     public List<Game> getReachableGamesWithLessPlayers(String gameName) {
         return getGamesWithLessPlayers(gameName, GameState.WAIT).stream()
-                .filter(game -> game.getAlivePlayersCount() < game.getSettings().getGameSize().getMaxPlayer())
+                .filter(Game::canJoin)
                 .collect(Collectors.toList());
     }
 
@@ -209,12 +215,12 @@ public class GameManager {
     public List<Game> getGamesHost() {
         return getGames().values().stream()
                 .flatMap(List::stream)
-                .filter(game -> game.getGameHost() != null).collect(Collectors.toList());
+                .filter(Game::isGameHost).collect(Collectors.toList());
     }
 
     public List<Game> getGamesHost(String gameName) {
         return getGames(gameName).stream()
-                .filter(game -> game.getGameHost() != null)
+                .filter(Game::isGameHost)
                 .collect(Collectors.toList());
     }
 
@@ -230,20 +236,32 @@ public class GameManager {
                 .collect(Collectors.toList());
     }
 
+    public List<Game> getEmptyGames() {
+        return getGames().values().stream().flatMap(List::stream)
+                .filter(game -> game.getAlivePlayers().isEmpty())
+                .collect(Collectors.toList());
+    }
+
     public int getPlayersCount(String... gamesName) {
-        return Arrays.stream(gamesName).map(this::getGames).flatMap(List::stream).mapToInt(Game::getSize).sum();
+        return Arrays.stream(gamesName).map(this::getGames)
+                .flatMap(List::stream)
+                .mapToInt(Game::getSize).sum();
     }
 
     public int getPlayersCount(String gameName) {
-        return getGames(gameName).stream().mapToInt(Game::getSize).sum();
+        return getGames(gameName).stream()
+                .mapToInt(Game::getSize).sum();
     }
 
     public int getPlayersCount() {
-        return getGames().values().stream().flatMap(List::stream).mapToInt(Game::getSize).sum();
+        return getGames().values().stream()
+                .flatMap(List::stream)
+                .mapToInt(Game::getSize).sum();
     }
 
     public int getSize(String... gamesName) {
-        return Arrays.stream(gamesName).map(this::getGames).mapToInt(List::size).sum();
+        return Arrays.stream(gamesName).map(this::getGames)
+                .mapToInt(List::size).sum();
     }
 
     public int getSize(String gameName) {

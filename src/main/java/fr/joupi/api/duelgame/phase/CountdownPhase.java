@@ -20,7 +20,7 @@ public class CountdownPhase extends AbstractGamePhase<DuelGame> {
     @Override
     public void onStart() {
         getCountdownTimer().setBeforeTimer(() -> getGame().broadcast("&eLa partie va se lancer !"));
-        getCountdownTimer().setEverySecond(timer -> getGame().getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.getPlayer().setLevel(timer.getSecondsLeft())));
+        getCountdownTimer().setEverySecond(timer -> getGame().getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.setLevel(timer.getSecondsLeft())));
         getCountdownTimer().setAfterTimer(this::endPhase);
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
