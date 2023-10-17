@@ -112,7 +112,7 @@ public class GamePartyCommand implements CommandExecutor {
         Utils.ifPresentOrElse(getSpigot().getGameManager().getPartyManager().getParty(player),
                 gameParty -> {
                     getSpigot().getGameManager().getPartyManager().leaveParty(player);
-                    player.sendMessage("Vous avez supprimer votre partie");
+                    player.sendMessage("Vous avez quitter votre partie");
                 }, () -> player.sendMessage("Vous n'avez pas de partie"));
     }
 
