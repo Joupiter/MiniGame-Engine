@@ -5,10 +5,7 @@ import fr.joupi.api.game.Game;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -22,7 +19,7 @@ public class PhaseManager<G extends Game<?, ?>> {
 
     public PhaseManager(G game) {
         this.game = game;
-        this.phases = new LinkedList<>();
+        this.phases = new ArrayList<>();
     }
 
     public final void addPhase(AbstractGamePhase<?>... phases) {

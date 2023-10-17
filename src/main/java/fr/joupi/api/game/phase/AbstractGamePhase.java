@@ -61,12 +61,8 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePha
         getEvents().add(wrapper);
     }
 
-    public boolean canTriggerEvent(G game, UUID uuid) {
-        return game.containsPlayer(uuid);
-    }
-
     public boolean canTriggerEvent(UUID uuid) {
-        return canTriggerEvent(getGame(), uuid);
+        return getGame().containsPlayer(uuid);
     }
 
     public void scheduleSyncTask(Consumer<BukkitTask> task, long delay) {

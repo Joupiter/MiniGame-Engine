@@ -3,6 +3,7 @@ package fr.joupi.api.game;
 import com.google.common.collect.Lists;
 import fr.joupi.api.Utils;
 import fr.joupi.api.game.host.GameHostState;
+import fr.joupi.api.game.party.GamePartyManager;
 import fr.joupi.api.game.utils.GameInfo;
 import fr.joupi.api.threading.MultiThreading;
 import javassist.compiler.MemberResolver;
@@ -27,10 +28,13 @@ import java.util.stream.Collectors;
 public class GameManager {
 
     private final JavaPlugin plugin;
+
+    private final GamePartyManager partyManager;
     private final ConcurrentMap<String, List<Game>> games;
 
     public GameManager(JavaPlugin plugin) {
         this.plugin = plugin;
+        this.partyManager = new GamePartyManager(this);
         this.games = new ConcurrentHashMap<>();
     }
 
@@ -106,7 +110,6 @@ public class GameManager {
         }
     }
 
-
     public void removeGame(Game game) {
         getGames().values().forEach(gameList -> gameList.remove(game));
         System.out.println("REMOVE GAME " + game.getFullName());
@@ -179,6 +182,10 @@ public class GameManager {
 
     public Optional<Game> getGameHost(Player player) {
         return getGamesHost().stream().filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).findFirst();
+    }
+
+    public List<Game> getGamesHost(Player player) {
+        return getGames().values().stream().flatMap(List::stream).filter(Game::isGameHost).filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).collect(Collectors.toList());
     }
 
     /*
@@ -260,8 +267,7 @@ public class GameManager {
     }
 
     public int getSize(String... gamesName) {
-        return Arrays.stream(gamesName).map(this::getGames)
-                .mapToInt(List::size).sum();
+        return Arrays.stream(gamesName).mapToInt(this::getSize).sum();
     }
 
     public int getSize(String gameName) {

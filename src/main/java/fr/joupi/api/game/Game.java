@@ -1,5 +1,7 @@
 package fr.joupi.api.game;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import fr.joupi.api.game.entity.GameEntityManager;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
@@ -40,6 +42,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     private final List<GameListenerWrapper<?>> listeners;
     private final List<GameTeam> teams;
     private final ConcurrentMap<UUID, G> players;
+    private final Gson gson;
 
     @Setter private GameState state;
 
@@ -53,6 +56,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         this.listeners = new ArrayList<>();
         this.teams = new ArrayList<>();
         this.players = new ConcurrentHashMap<>();
+        this.gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         this.state = GameState.WAIT;
         load();
     }
@@ -101,10 +105,14 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         return getPlayers().values().stream().filter(gamePlayer -> !haveTeam(gamePlayer)).collect(Collectors.toList());
     }
 
-    public List<GameTeam> getAliveTeam() {
+    public List<GameTeam> getAliveTeams() {
         return getTeams().stream()
                 .filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate())
                 .collect(Collectors.toList());
+    }
+
+    public List<GameTeam> getReachableTeams() {
+        return getTeams().stream().filter(gameTeam -> gameTeam.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).collect(Collectors.toList());
     }
 
     public GameTeam getTeam(String teamName) {
@@ -115,8 +123,15 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         return getTeams().stream().filter(gameTeam -> gameTeam.isMember(gamePlayer)).findFirst();
     }
 
+    public Optional<GameTeam> getRandomTeam() {
+        return getReachableTeams().stream()
+                .skip(getReachableTeams().isEmpty() ? 0 : new Random().nextInt(getReachableTeams().size())).findFirst();
+    }
+
     private Optional<GameTeam> getTeamWithLeastPlayers() {
-        return getTeams().stream().filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).min(Comparator.comparingInt(GameTeam::getSize));
+        return getTeams().stream()
+                .filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer())
+                .min(Comparator.comparingInt(GameTeam::getSize));
     }
 
     public void addPlayerToTeam(GamePlayer gamePlayer, GameTeam gameTeam) {
@@ -152,6 +167,12 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public void ifHostedGame(Consumer<GameHost<?>> consumer) {
         ifHostedGame(() -> consumer.accept(getGameHost()));
+    }
+
+    public void ifHostedGame(Predicate<GameHost<?>> predicate, Runnable runnable) {
+        Optional.ofNullable(getGameHost())
+                .filter(predicate)
+                .ifPresent(host -> runnable.run());
     }
 
     public void checkGameHostState(GameHostState hostState, Runnable runnable) {
@@ -219,7 +240,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public boolean oneTeamAlive() {
-        return getAliveTeamCount() == 1;
+        return getAliveTeamsCount() == 1;
     }
 
     public boolean canStart() {
@@ -234,8 +255,8 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         return getAlivePlayersCount() < getSettings().getGameSize().getMaxPlayer();
     }
 
-    public int getAliveTeamCount() {
-        return getAliveTeam().size();
+    public int getAliveTeamsCount() {
+        return getAliveTeams().size();
     }
 
     public int getAlivePlayersCount() {
@@ -265,7 +286,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         /*player.sendMessage("Locations: ");
         getSettings().getLocations().forEach((s, locations) -> player.sendMessage(s + ": " + locations.stream().map(Location::toString).collect(Collectors.joining(", "))));*/
 
-        player.sendMessage("Team Alive: " + getAliveTeamCount());
+        player.sendMessage("Team Alive: " + getAliveTeamsCount());
         player.sendMessage("Teams: " + getTeamsCount());
         getTeams().forEach(gameTeam -> player.sendMessage(gameTeam.getName() + ": " + gameTeam.getMembers().stream().map(GamePlayer::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
 

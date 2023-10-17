@@ -17,7 +17,6 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     implementation 'org.reflections:reflections:0.10.2'
-    implementation 'com.github.ben-manes.caffeine:caffeine:2.9.3'
     implementation 'org.jetbrains:annotations:24.0.0'
     implementation 'org.mongodb:mongo-java-driver:3.12.12'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.7'
@@ -27,9 +26,7 @@ dependencies {
 
 shadowJar {
     dependencies {
-        include(dependency('io.reactivex.rxjava3:rxjava:3.1.7'))
         include(dependency('org.reflections:reflections:0.10.2'))
-        include(dependency('org.reactivestreams:reactive-streams:1.0.4'))
         include(dependency('org.javassist:javassist:3.28.0-GA'))
     }
 }

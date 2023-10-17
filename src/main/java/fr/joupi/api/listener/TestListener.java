@@ -38,13 +38,8 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!golemredremove")) {
-            getPlugin().getGameEntityManager().destroy("&cRouge");
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!golemblueremove")) {
-            getPlugin().getGameEntityManager().destroy("&9Blue");
+        if (event.getMessage().equals("!addhost")) {
+            getPlugin().getGameManager().addGame("duel", new DuelGame(getPlugin(), player, GameSizeTemplate.SIZE_1V1.getGameSize().clone()));
             event.setCancelled(true);
         }
 
@@ -67,17 +62,15 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!npc")) {
-            event.setCancelled(true);
-        }
-
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
+        getPlugin().getGameManager().getPartyManager().onLeave(player);
         getPlugin().getGameManager().leaveGame(player);
+        getPlugin().getGameManager().getGameHost(player).ifPresent(game -> game.endGame(getPlugin().getGameManager()));
         getPlugin().getUsers().remove(getPlugin().getUser(player.getUniqueId()));
     }
 

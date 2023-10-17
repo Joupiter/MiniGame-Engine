@@ -1,5 +1,6 @@
 package fr.joupi.api.ffa;
 
+import com.google.gson.JsonObject;
 import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GameSettings;
 import fr.joupi.api.game.GameSize;
@@ -16,6 +17,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -58,8 +61,30 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer().getUniqueId()))
+        if (containsPlayer(event.getPlayer().getUniqueId())) {
             event.setFormat(ChatColor.translateAlternateColorCodes('&', "&7[&b1&7] &7%1$s &7: &f%2$s"));
+
+            if (event.getMessage().equals("!gson")) {
+                toDocument();
+                event.setCancelled(true);
+            }
+
+        }
+    }
+
+    public void toDocument() {
+        try {
+            JsonObject jsonObject = new JsonObject();
+
+            for (Field field : getSettings().getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                jsonObject.addProperty(field.getName(), String.valueOf(field.get(getSettings())));
+            }
+
+            System.out.println(jsonObject);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     @EventHandler

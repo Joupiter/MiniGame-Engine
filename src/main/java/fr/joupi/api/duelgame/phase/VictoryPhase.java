@@ -7,6 +7,7 @@ import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import fr.joupi.api.threading.MultiThreading;
 import lombok.Getter;
+import org.bukkit.GameMode;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -32,6 +33,11 @@ public class VictoryPhase extends AbstractGamePhase<DuelGame> {
                         "&eavec &b" + gamePlayer.getKills() + " &ekills et &b" + gamePlayer.getDeaths() + " &emorts !",
                         "              &9&lGG WP",
                         "&7&m-----------------------"));
+
+        getGame().getAlivePlayers().forEach(gamePlayer -> {
+            gamePlayer.setSpectator(true);
+            gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
+        });
 
         MultiThreading.schedule(this::endPhase, 10, TimeUnit.SECONDS);
     }

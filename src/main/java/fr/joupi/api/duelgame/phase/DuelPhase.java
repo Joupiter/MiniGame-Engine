@@ -34,7 +34,7 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
                 () -> getGame().getAlivePlayers().stream().map(GamePlayer::getPlayer).forEach(getGame().getSettings()::giveSpecialKit),
                 () -> getGame().getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().getInventory().setItem(0, new ItemBuilder(Material.IRON_SWORD).build())));
 
-        getGame().getAliveTeam().forEach(this::teleportPlayersToBase);
+        getGame().getAliveTeams().forEach(this::teleportPlayersToBase);
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
             if (canTriggerEvent(event.getPlayer().getUniqueId())) {

@@ -5,6 +5,7 @@ import fr.joupi.api.game.GameManager;
 import fr.joupi.api.game.entity.GameEntityManager;
 import fr.joupi.api.gui.GuiManager;
 import fr.joupi.api.listener.GameCommand;
+import fr.joupi.api.listener.GamePartyCommand;
 import fr.joupi.api.listener.TestListener;
 import fr.joupi.api.shop.Product;
 import fr.joupi.api.skyly.KillStreak;
@@ -27,6 +28,7 @@ public class Spigot extends JavaPlugin {
 
     private List<Product> products;
     private List<User> users;
+
     private KillStreak killStreak;
     private GameEntityManager gameEntityManager;
     private GuiManager guiManager;
@@ -42,10 +44,12 @@ public class Spigot extends JavaPlugin {
 
         addProduct();
         getServer().getPluginManager().registerEvents(new TestListener(this), this);
+
         getCommand("join").setExecutor(new GameCommand(this));
         getCommand("leave").setExecutor(new GameCommand(this));
         getCommand("info").setExecutor(new GameCommand(this));
         getCommand("end").setExecutor(new GameCommand(this));
+        getCommand("party").setExecutor(new GamePartyCommand(this));
 
         getGameManager().addGame("comboffa", new FFAGame(this));
     }

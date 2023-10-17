@@ -11,3 +11,5 @@ commands:
     description: game info
   end:
     description: end game
+  party:
+    description: party command

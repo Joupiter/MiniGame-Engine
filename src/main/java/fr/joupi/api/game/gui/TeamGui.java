@@ -26,6 +26,16 @@ public class TeamGui extends Gui<Spigot> {
     @Override
     public void setup() {
         getGame().getTeams().forEach(this::addTeamItem);
+
+        /*
+        https://minecraft-heads.com/custom-heads/decoration/216-dice-black
+        "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE1ZjdjMzEzYmNhOWMyZjk1OGU2OGFiMTRhYjM5Mzg2N2Q2NzUwM2FmZmZmOGYyMGNiMTNmYmU5MTdmZDMxIn19fQ=="
+         */
+        setItem(8, new GuiButton(new ItemBuilder(Material.STORAGE_MINECART).setName("&7Aléatoire").build(), event ->
+                getGame().getRandomTeam().ifPresent(gameTeam -> {
+                    getGame().addPlayerToTeam(getGamePlayer(), gameTeam);
+                    updateGui();
+                })));
     }
 
     private void updateGui() {

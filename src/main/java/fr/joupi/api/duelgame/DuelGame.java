@@ -1,5 +1,6 @@
 package fr.joupi.api.duelgame;
 
+import com.google.gson.JsonObject;
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.Spigot;
 import fr.joupi.api.duelgame.phase.CountdownPhase;
@@ -21,6 +22,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.Field;
 import java.util.UUID;
 
 @GameInfo(name = "Duel")
@@ -45,7 +47,6 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
                 new DuelPhase(this),
                 new VictoryPhase(this, plugin)
         );
-
 
         getPhaseManager().start();
     }
@@ -77,7 +78,8 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
                 player.teleport(getSettings().getLocation("waiting"));
                 player.getInventory().setItem(0, new ItemBuilder(Material.CHEST).setName("&eÉquipes").build());
 
-                ifHostedGame(() -> getGameHost().giveHostItem(8));
+                ifHostedGame(gameHost -> gameHost.getHostUuid().equals(player.getUniqueId()),
+                        () -> getGameHost().giveHostItem(8));
             });
 
             checkGameState(GameState.IN_GAME, () -> {
@@ -125,10 +127,28 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
         if (containsPlayer(event.getPlayer().getUniqueId())) {
             Player player = event.getPlayer();
 
-            getPhaseManager().checkGamePhase(CountdownPhase.class, countdownPhase -> player.sendMessage(countdownPhase.getCountdownTimer().getSecondsLeft() + " secondes"));
+            if (event.getMessage().equals("!gson")) {
+                toDocument();
+                event.setCancelled(true);
+            }
 
-            getPlayer(event.getPlayer().getUniqueId())
+            getPlayer(player.getUniqueId())
                     .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
+        }
+    }
+
+    public void toDocument() {
+        try {
+            JsonObject jsonObject = new JsonObject();
+
+            for (Field field : getSettings().getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                jsonObject.addProperty(field.getName(), String.valueOf(field.get(getSettings())));
+            }
+
+            System.out.println(jsonObject);
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
