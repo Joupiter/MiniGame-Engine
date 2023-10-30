@@ -1,8 +1,6 @@
 package fr.joupi.api.listener;
 
 import fr.joupi.api.Spigot;
-import fr.joupi.api.game.entity.Golem;
-import fr.joupi.api.game.utils.GameSizeTemplate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.command.Command;
@@ -11,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Optional;
 
 @Getter
 @AllArgsConstructor

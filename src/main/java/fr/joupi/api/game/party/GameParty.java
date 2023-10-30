@@ -1,6 +1,5 @@
 package fr.joupi.api.game.party;
 
-import fr.joupi.api.game.GamePlayer;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -80,11 +79,11 @@ public class GameParty {
 
     public void sendDebug(Player player) {
         player.sendMessage("-----------------------------");
-        player.sendMessage("Leader: " + getPlayer().getName());
-        player.sendMessage("Name: " + getName());
-        player.sendMessage("Max Player: " + getMaxMembers());
-        player.sendMessage("Size: " + getSize());
-        player.sendMessage("Members: " + getPlayers().stream().map(Player::getName).collect(Collectors.joining(", ")));
+        player.sendMessage(String.format("Leader: %s", getPlayer().getName()));
+        player.sendMessage(String.format("Name: %s", getName()));
+        player.sendMessage(String.format("Max Player: %d", getMaxMembers()));
+        player.sendMessage(String.format("Size: %d", getSize()));
+        player.sendMessage(String.format("Members: %s", getPlayers().stream().map(Player::getName).collect(Collectors.joining(", "))));
         player.sendMessage("-----------------------------");
     }
 

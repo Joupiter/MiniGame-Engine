@@ -4,20 +4,16 @@ import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.duelgame.DuelGamePlayer;
 import fr.joupi.api.game.GamePlayer;
-import fr.joupi.api.game.GameSize;
 import fr.joupi.api.game.GameState;
-import fr.joupi.api.game.entity.Golem;
+import fr.joupi.api.duelgame.Golem;
 import fr.joupi.api.game.team.GameTeam;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
-import fr.joupi.api.game.utils.GameSizeTemplate;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-
-import java.util.stream.Collectors;
 
 public class DuelPhase extends AbstractGamePhase<DuelGame> {
 

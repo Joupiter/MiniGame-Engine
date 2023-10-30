@@ -8,6 +8,7 @@ import fr.joupi.api.game.utils.GameInfo;
 import fr.joupi.api.threading.MultiThreading;
 import javassist.compiler.MemberResolver;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,8 +43,19 @@ public class GameManager {
         if (Optional.ofNullable(getGames(gameName)).isPresent()) {
             Utils.ifPresentOrElse(getBestGame(gameName),
                     game -> joinGame(game, player),
-                    () -> System.out.println("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER " + player.getName()));
+                    () -> System.out.printf("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER %s", player.getName()));
         }
+    }
+
+    public void joinGameWithParty(Player leader) {
+        getPartyManager().getParty(leader).filter(gameParty -> getPartyManager().isPartyLeader(leader)).ifPresent(gameParty -> {
+            getGame(leader).filter(game -> gameParty.getSize() + game.getSize() < game.getSettings().getGameSize().getMaxPlayer()).ifPresent(game -> {
+                gameParty.getMembers().stream()
+                        .map(Bukkit::getPlayer)
+                        .filter(player -> !getGame(player).isPresent())
+                        .forEach(player -> joinGame(game, player));
+            });
+        });
     }
 
     public void joinGame(Game game, Player player) {
@@ -67,7 +79,7 @@ public class GameManager {
 
     public void addGame(String gameName, Game game) {
         getGames().computeIfAbsent(gameName, k -> Lists.newArrayList()).add(game);
-        System.out.println("ADD GAME " + game.getFullName());
+        System.out.printf("ADD GAME %s", game.getFullName());
     }
 
     public <P extends JavaPlugin> void addGame(P plugin, String gameName, GameSize gameSize) {
@@ -112,7 +124,7 @@ public class GameManager {
 
     public void removeGame(Game game) {
         getGames().values().forEach(gameList -> gameList.remove(game));
-        System.out.println("REMOVE GAME " + game.getFullName());
+        System.out.printf("REMOVE GAME %s", game.getFullName());
     }
 
     public void getGame(Player player, Consumer<Game> consumer) {
@@ -188,9 +200,6 @@ public class GameManager {
         return getGames().values().stream().flatMap(List::stream).filter(Game::isGameHost).filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).collect(Collectors.toList());
     }
 
-    /*
-        Todo: NE PAS OUBLIER DE RETIRER LE COMMENTAIRE !!!!!!!!!!!!!!!!!!!
-     */
     public List<Game> getReachableGame(String gameName) {
         return getGames(gameName/*, GameState.WAIT*/).stream()
                 .filter(Game::canJoin)

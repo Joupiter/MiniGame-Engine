@@ -1,5 +1,6 @@
 package fr.joupi.api.duelgame;
 
+import com.google.gson.annotations.Expose;
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.game.GameSettings;
 import fr.joupi.api.game.GameSize;
@@ -13,7 +14,7 @@ import org.bukkit.entity.Player;
 @Setter
 public class DuelGameSettings extends GameSettings {
 
-    private boolean useSpecialKit;
+    @Expose private boolean useSpecialKit;
 
     public DuelGameSettings(GameSize gameSize, World world, boolean useSpecialKit) {
         super(gameSize, world);

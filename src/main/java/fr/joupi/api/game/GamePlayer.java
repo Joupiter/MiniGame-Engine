@@ -1,5 +1,6 @@
 package fr.joupi.api.game;
 
+import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +15,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class GamePlayer {
 
-    private final UUID uuid;
-    @Setter private boolean spectator;
+    @Expose private final UUID uuid;
+    @Expose @Setter private boolean spectator;
 
     public void sendMessage(String... messages) {
         Arrays.asList(messages)

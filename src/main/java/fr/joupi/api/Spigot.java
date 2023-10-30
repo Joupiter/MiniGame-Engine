@@ -7,9 +7,12 @@ import fr.joupi.api.gui.GuiManager;
 import fr.joupi.api.listener.GameCommand;
 import fr.joupi.api.listener.GamePartyCommand;
 import fr.joupi.api.listener.TestListener;
+import fr.joupi.api.module.Module;
+import fr.joupi.api.module.ModuleManager;
 import fr.joupi.api.shop.Product;
 import fr.joupi.api.skyly.KillStreak;
 import lombok.Getter;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +35,7 @@ public class Spigot extends JavaPlugin {
     private KillStreak killStreak;
     private GameEntityManager gameEntityManager;
     private GuiManager guiManager;
+    private ModuleManager moduleManager;
 
     @Override
     public void onEnable() {
@@ -41,6 +45,7 @@ public class Spigot extends JavaPlugin {
         this.killStreak = new KillStreak(this);
         this.guiManager = new GuiManager(this);
         this.gameEntityManager = new GameEntityManager(this);
+        this.moduleManager = new ModuleManager(this);
 
         addProduct();
         getServer().getPluginManager().registerEvents(new TestListener(this), this);
@@ -57,6 +62,7 @@ public class Spigot extends JavaPlugin {
     @Override
     public void onDisable() {
         getKillStreak().saveKillStreak();
+        getModuleManager().getEnabledModules().stream().map(Pair::getLeft).forEach(getModuleManager()::disableModule);
     }
 
     public User getUser(UUID uuid) {

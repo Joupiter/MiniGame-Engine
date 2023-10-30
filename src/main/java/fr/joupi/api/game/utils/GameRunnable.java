@@ -16,7 +16,7 @@ public class GameRunnable implements Runnable {
     private final Consumer<BukkitTask> consumer;
 
     public synchronized void cancel() throws IllegalStateException {
-        Bukkit.getScheduler().cancelTask(this.getTaskId());
+        Bukkit.getScheduler().cancelTask(getTaskId());
     }
 
     public synchronized BukkitTask runTask(Game<?, ?> game) {

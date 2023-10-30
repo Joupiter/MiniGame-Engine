@@ -1,5 +1,6 @@
-package fr.joupi.api.game.entity;
+package fr.joupi.api.duelgame;
 
+import fr.joupi.api.game.entity.AbstractGameEntity;
 import fr.joupi.api.game.team.GameTeam;
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -28,6 +29,7 @@ public class Golem extends AbstractGameEntity<IronGolem> {
         ironGolem.setCustomName(getGameTeam().getColoredName());
         ironGolem.setCustomNameVisible(true);
         ironGolem.setMaxHealth(getMaxHealth());
+
         removeAI(ironGolem);
         setEntity(ironGolem);
     }

@@ -14,15 +14,15 @@ public class GamePlayerLeaveEvent<G extends GamePlayer> extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Game<G, ?> game;
-    private G gamePlayer;
+    private final Game<G, ?> game;
+    private final G gamePlayer;
 
     public Player getPlayer() {
         return getGamePlayer().getPlayer();
     }
 
     public void sendLeaveMessage() {
-        getGame().broadcast("&c- &7" + getPlayer().getName() + " (" + getGame().getPlayers().size() + "/" + getGame().getSettings().getGameSize().getMaxPlayer() +")");
+        getGame().broadcast(String.format("&c- &7%s (%d/%d)", getPlayer().getName(), getGame().getPlayers().size(), getGame().getSettings().getGameSize().getMaxPlayer()));
     }
 
     @Override

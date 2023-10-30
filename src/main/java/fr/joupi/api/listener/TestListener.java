@@ -5,12 +5,17 @@ import fr.joupi.api.Spigot;
 import fr.joupi.api.User;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.utils.GameSizeTemplate;
+import fr.joupi.api.module.ModuleGui;
 import fr.joupi.api.shop.ShopGui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TestListener extends AListener<Spigot> {
 
@@ -53,7 +58,8 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!spec")) {
+        if (event.getMessage().equals("!module")) {
+            new ModuleGui(getPlugin()).onOpen(player);
             event.setCancelled(true);
         }
 
@@ -68,9 +74,6 @@ public class TestListener extends AListener<Spigot> {
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
-        getPlugin().getGameManager().getPartyManager().onLeave(player);
-        getPlugin().getGameManager().leaveGame(player);
-        getPlugin().getGameManager().getGameHost(player).ifPresent(game -> game.endGame(getPlugin().getGameManager()));
         getPlugin().getUsers().remove(getPlugin().getUser(player.getUniqueId()));
     }
 

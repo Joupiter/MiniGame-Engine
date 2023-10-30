@@ -1,13 +1,15 @@
 package fr.joupi.api.duelgame;
 
-import com.google.gson.JsonObject;
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.Spigot;
+import fr.joupi.api.Utils;
 import fr.joupi.api.duelgame.phase.CountdownPhase;
 import fr.joupi.api.duelgame.phase.DuelPhase;
 import fr.joupi.api.duelgame.phase.VictoryPhase;
 import fr.joupi.api.duelgame.phase.WaitingPhase;
-import fr.joupi.api.game.*;
+import fr.joupi.api.game.Game;
+import fr.joupi.api.game.GameSize;
+import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
@@ -22,7 +24,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.Field;
+import java.util.Optional;
 import java.util.UUID;
 
 @GameInfo(name = "Duel")
@@ -38,9 +40,6 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
         getSettings().addLocation("red", new Location(getSettings().getWorld(), -179, 67, 74));
         getSettings().addLocation("blue", new Location(getSettings().getWorld(), -189, 67, 74));
 
-        /*
-            Les phases doivent être dans l'ordre !
-         */
         getPhaseManager().addPhase(
                 new WaitingPhase(this),
                 new CountdownPhase(this),
@@ -78,8 +77,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
                 player.teleport(getSettings().getLocation("waiting"));
                 player.getInventory().setItem(0, new ItemBuilder(Material.CHEST).setName("&eÉquipes").build());
 
-                ifHostedGame(gameHost -> gameHost.getHostUuid().equals(player.getUniqueId()),
-                        () -> getGameHost().giveHostItem(8));
+                ifHostedGame(gameHost -> gameHost.getHostUuid().equals(player.getUniqueId()), () -> getGameHost().giveHostItem(8));
             });
 
             checkGameState(GameState.IN_GAME, () -> {
@@ -108,48 +106,22 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
         if (containsPlayer(player.getUniqueId())) {
             DuelGamePlayer gamePlayer = getPlayer(player.getUniqueId()).orElse(null);
 
-                checkGameState(GameState.WAIT, () -> {
-                    if (itemStack.getType().equals(Material.CHEST))
-                        new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player);
+            checkGameState(GameState.WAIT, () -> {
+                if (itemStack.getType().equals(Material.CHEST))
+                    new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player);
 
-                    ifHostedGame(gameHost -> {
-                        if (itemStack.getType().equals(gameHost.getHostItem().getType()))
-                            gameHost.openGui(spigot.getGuiManager(), player);
-                    });
+                ifHostedGame(gameHost -> itemStack.getType().equals(gameHost.getHostItem().getType()),
+                        gameHost -> gameHost.openGui(spigot.getGuiManager(), player));
 
-                    event.setCancelled(true);
-                });
+                event.setCancelled(true);
+            });
         }
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer().getUniqueId())) {
-            Player player = event.getPlayer();
-
-            if (event.getMessage().equals("!gson")) {
-                toDocument();
-                event.setCancelled(true);
-            }
-
-            getPlayer(player.getUniqueId())
-                    .ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
-        }
-    }
-
-    public void toDocument() {
-        try {
-            JsonObject jsonObject = new JsonObject();
-
-            for (Field field : getSettings().getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                jsonObject.addProperty(field.getName(), String.valueOf(field.get(getSettings())));
-            }
-
-            System.out.println(jsonObject);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-        }
+        if (containsPlayer(event.getPlayer().getUniqueId()))
+            getPlayer(event.getPlayer().getUniqueId()).ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

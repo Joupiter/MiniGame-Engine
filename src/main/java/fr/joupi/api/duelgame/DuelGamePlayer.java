@@ -1,5 +1,6 @@
 package fr.joupi.api.duelgame;
 
+import com.google.gson.annotations.Expose;
 import fr.joupi.api.game.GamePlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import java.util.UUID;
 @Getter
 public class DuelGamePlayer extends GamePlayer {
 
-    @Setter private int kills, killStreak, deaths;
+    @Expose @Setter private int kills, killStreak, deaths;
 
     public DuelGamePlayer(UUID uuid, int kills, int killStreak, int deaths, boolean spectator) {
         super(uuid, spectator);

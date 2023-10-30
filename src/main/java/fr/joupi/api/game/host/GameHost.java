@@ -68,8 +68,8 @@ public class GameHost<G extends Game<?, ?>> {
     }
 
     public void sendDebugMessage(Player player) {
-        player.sendMessage("Hosted by: " + getHostPlayer().getName());
-        player.sendMessage("Host State: " + getHostState());
+        player.sendMessage(String.format("Hosted by: %s", getHostPlayer().getName()));
+        player.sendMessage(String.format("Host State: %s", getHostState()));
     }
 
 }

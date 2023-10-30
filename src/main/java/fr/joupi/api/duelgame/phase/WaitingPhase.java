@@ -15,8 +15,7 @@ public class WaitingPhase extends AbstractGamePhase<DuelGame> {
     @Override
     public void onStart() {
         registerEvent(GamePlayerJoinEvent.class, event -> {
-            Player player = event.getPlayer();
-            if (canTriggerEvent(player.getUniqueId()))
+            if (canTriggerEvent(event.getPlayer().getUniqueId()))
                 getGame().checkGameState(GameState.WAIT, this::canEnd);
         });
     }

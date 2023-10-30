@@ -1,7 +1,5 @@
 package fr.joupi.api.game;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import fr.joupi.api.game.entity.GameEntityManager;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
@@ -19,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,8 +40,8 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     private final List<GameListenerWrapper<?>> listeners;
     private final List<GameTeam> teams;
+    private final List<BukkitTask> tasks;
     private final ConcurrentMap<UUID, G> players;
-    private final Gson gson;
 
     @Setter private GameState state;
 
@@ -55,8 +54,8 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         this.gameEntityManager = new GameEntityManager(plugin);
         this.listeners = new ArrayList<>();
         this.teams = new ArrayList<>();
+        this.tasks = new ArrayList<>();
         this.players = new ConcurrentHashMap<>();
-        this.gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
         this.state = GameState.WAIT;
         load();
     }
@@ -64,19 +63,16 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     public abstract G defaultGamePlayer(UUID uuid, boolean spectator);
 
     private void load() {
-        Arrays.stream(GameTeamColor.values()).collect(Collectors.toList()).stream()
-                .limit(getSettings().getGameSize().getTeamNeeded())
-                .forEach(gameTeamColor -> getTeams().add(new GameTeam(gameTeamColor)));
-
+        getTeams().addAll(Arrays.stream(GameTeamColor.values()).limit(getSettings().getGameSize().getTeamNeeded()).map(GameTeam::new).collect(Collectors.toList()));
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
-        System.out.println(getFullName() + " loaded");
+        System.out.printf("%s loaded", getFullName());
     }
 
     public void unload() {
         getPhaseManager().unregisterPhases();
         getListeners().forEach(HandlerList::unregisterAll);
         HandlerList.unregisterAll(this);
-        System.out.println(getFullName() + " unloaded");
+        System.out.printf("%s unloaded", getFullName());
     }
 
     public void registerListeners(GameListenerWrapper<?>... listeners) {
@@ -106,9 +102,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public List<GameTeam> getAliveTeams() {
-        return getTeams().stream()
-                .filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate())
-                .collect(Collectors.toList());
+        return getTeams().stream().filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate()).collect(Collectors.toList());
     }
 
     public List<GameTeam> getReachableTeams() {
@@ -124,8 +118,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public Optional<GameTeam> getRandomTeam() {
-        return getReachableTeams().stream()
-                .skip(getReachableTeams().isEmpty() ? 0 : new Random().nextInt(getReachableTeams().size())).findFirst();
+        return getReachableTeams().stream().skip(getReachableTeams().isEmpty() ? 0 : new Random().nextInt(getReachableTeams().size())).findFirst();
     }
 
     private Optional<GameTeam> getTeamWithLeastPlayers() {
@@ -175,6 +168,12 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
                 .ifPresent(host -> runnable.run());
     }
 
+    public void ifHostedGame(Predicate<GameHost<?>> predicate, Consumer<GameHost<?>> consumer) {
+        Optional.ofNullable(getGameHost())
+                .filter(predicate)
+                .ifPresent(consumer);
+    }
+
     public void checkGameHostState(GameHostState hostState, Runnable runnable) {
         Optional.ofNullable(getGameHost())
                 .filter(host -> host.getHostState().equals(hostState))
@@ -195,7 +194,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
             G gamePlayer = defaultGamePlayer(player.getUniqueId(), spectator);
             getPlayers().put(player.getUniqueId(), gamePlayer);
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
-            System.out.println(player.getName() + (gamePlayer.isSpectator() ? " spectate " : " join ")+ getFullName() + " game");
+            System.out.printf("%s %s %s game", player.getName(), (gamePlayer.isSpectator() ? " spectate " : " join "), getFullName());
         }
     }
 
@@ -203,7 +202,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         getPlayer(uuid).ifPresent(gamePlayer -> {
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent<>(this, gamePlayer));
             removePlayerToTeam(gamePlayer);
-            System.out.println(gamePlayer.getPlayer().getName() + " leave " + getFullName() + " game");
+            System.out.printf("%s leave %s", gamePlayer.getPlayer().getName(), getFullName());
         });
     }
 
@@ -211,7 +210,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         getPlayers().values().stream().map(GamePlayer::getUuid).forEach(this::leaveGame);
         unload();
         gameManager.removeGame(this);
-        System.out.println("END OF GAME : " + getFullName());
+        System.out.printf("END OF GAME : %s", getFullName());
     }
 
     private void broadcast(String message) {

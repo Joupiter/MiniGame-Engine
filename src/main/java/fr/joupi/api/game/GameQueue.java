@@ -41,12 +41,12 @@ public class GameQueue<G extends Game<?, ?>> {
 
     public void addPlayer(Player player) {
         getQueue().add(player.getUniqueId());
-        System.out.println("[Queue] Added " + player.getName() + " to " + getGame().getFullName() + " queue");
+        System.out.printf("[Queue] Added %s to %s queue", player.getName(), getGame().getFullName());
     }
 
     public void removePlayer(Player player) {
         getQueue().remove(player.getUniqueId());
-        System.out.println("[Queue] Remove " + player.getPlayer().getName() + " from " + getGame().getFullName() + " queue");
+        System.out.printf("[Queue] Remove %s from %s queue", player.getPlayer().getName(), getGame().getFullName());
     }
 
     public boolean contains(UUID uuid) {

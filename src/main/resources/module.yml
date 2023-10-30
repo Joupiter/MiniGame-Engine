@@ -1,0 +1,3 @@
+name: "Example"
+version: "1.0.0"
+path: "fr.joupi.api.module.impl.ExampleModule"

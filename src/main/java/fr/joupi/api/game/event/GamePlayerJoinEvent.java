@@ -14,15 +14,15 @@ public class GamePlayerJoinEvent<G extends GamePlayer> extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Game<G, ?> game;
-    private G gamePlayer;
+    private final Game<G, ?> game;
+    private final G gamePlayer;
 
     public Player getPlayer() {
         return getGamePlayer().getPlayer();
     }
 
     public void sendJoinMessage() {
-        getGame().broadcast("&a+ &7" + getPlayer().getName() + " (" + getGame().getPlayers().size() + "/" + getGame().getSettings().getGameSize().getMaxPlayer() +")");
+        getGame().broadcast(String.format("&a+ &7%s (%d/%d)", getPlayer().getName(), getGame().getPlayers().size(), getGame().getSettings().getGameSize().getMaxPlayer()));
     }
 
     @Override
