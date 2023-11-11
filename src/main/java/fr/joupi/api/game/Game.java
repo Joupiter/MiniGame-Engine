@@ -19,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -27,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 public abstract class Game<G extends GamePlayer, S extends GameSettings> implements Listener {
 
     private final JavaPlugin plugin;
@@ -36,16 +38,16 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     private final PhaseManager<?> phaseManager;
     private final GameEntityManager gameEntityManager;
-    @Setter private GameHost<?> gameHost;
+    private GameHost<?> gameHost;
 
     private final List<GameListenerWrapper<?>> listeners;
     private final List<GameTeam> teams;
     private final List<BukkitTask> tasks;
     private final ConcurrentMap<UUID, G> players;
 
-    @Setter private GameState state;
+    private GameState state;
 
-    protected Game(JavaPlugin plugin, String name, S settings) {
+    public Game(JavaPlugin plugin, String name, S settings) {
         this.plugin = plugin;
         this.name = name;
         this.id = RandomStringUtils.randomAlphanumeric(10);
@@ -65,14 +67,14 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     private void load() {
         getTeams().addAll(Arrays.stream(GameTeamColor.values()).limit(getSettings().getGameSize().getTeamNeeded()).map(GameTeam::new).collect(Collectors.toList()));
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
-        System.out.printf("%s loaded", getFullName());
+        System.out.printf(MessageFormat.format("{0} loaded", getFullName()));
     }
 
     public void unload() {
         getPhaseManager().unregisterPhases();
         getListeners().forEach(HandlerList::unregisterAll);
         HandlerList.unregisterAll(this);
-        System.out.printf("%s unloaded", getFullName());
+        System.out.printf(MessageFormat.format("{0} unloaded", getFullName()));
     }
 
     public void registerListeners(GameListenerWrapper<?>... listeners) {
@@ -194,7 +196,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
             G gamePlayer = defaultGamePlayer(player.getUniqueId(), spectator);
             getPlayers().put(player.getUniqueId(), gamePlayer);
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
-            System.out.printf("%s %s %s game", player.getName(), (gamePlayer.isSpectator() ? " spectate " : " join "), getFullName());
+            System.out.printf(MessageFormat.format("{0} {1} {2} game", player.getName(), (gamePlayer.isSpectator() ? "spectate" : "join/leave"), getFullName()));
         }
     }
 
@@ -202,7 +204,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         getPlayer(uuid).ifPresent(gamePlayer -> {
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent<>(this, gamePlayer));
             removePlayerToTeam(gamePlayer);
-            System.out.printf("%s leave %s", gamePlayer.getPlayer().getName(), getFullName());
+            System.out.printf(MessageFormat.format("{0} leave {1}", gamePlayer.getPlayer().getName(), getFullName()));
         });
     }
 
@@ -210,7 +212,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         getPlayers().values().stream().map(GamePlayer::getUuid).forEach(this::leaveGame);
         unload();
         gameManager.removeGame(this);
-        System.out.printf("END OF GAME : %s", getFullName());
+        System.out.printf(MessageFormat.format("END OF GAME : {0}", getFullName()));
     }
 
     private void broadcast(String message) {

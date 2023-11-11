@@ -10,12 +10,13 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Getter
+@Setter
 public class PhaseManager<G extends Game<?, ?>> {
 
     private final G game;
 
     private final List<AbstractGamePhase<?>> phases;
-    @Setter private AbstractGamePhase<?> currentPhase;
+    private AbstractGamePhase<?> currentPhase;
 
     public PhaseManager(G game) {
         this.game = game;

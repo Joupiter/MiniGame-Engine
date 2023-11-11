@@ -24,12 +24,12 @@ public class GameTeam {
 
     public void addMember(GamePlayer gamePlayer) {
         getMembers().add(gamePlayer);
-        System.out.printf("[Team] %s added to %s team", gamePlayer.getPlayer().getName(), getName());
+        System.out.printf("[Team] %s added to %s team%n", gamePlayer.getPlayer().getName(), getName());
     }
 
     public void removeMember(GamePlayer gamePlayer) {
         getMembers().remove(gamePlayer);
-        System.out.printf("[Team] %s removed to %s team", gamePlayer.getPlayer().getName(), getName());
+        System.out.printf("[Team] %s removed to %s team%n", gamePlayer.getPlayer().getName(), getName());
     }
 
     public boolean isMember(GamePlayer gamePlayer) {

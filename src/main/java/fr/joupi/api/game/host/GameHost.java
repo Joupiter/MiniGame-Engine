@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 public class GameHost<G extends Game<?, ?>> {
 
     private final G game;
 
-    @Setter private UUID hostUuid;
-    @Setter private GameHostState hostState;
+    private UUID hostUuid;
+    private GameHostState hostState;
 
     private GGui<?> hostGui;
     private ItemStack hostItem;
@@ -31,16 +32,6 @@ public class GameHost<G extends Game<?, ?>> {
         this.hostUuid = hostUuid;
         this.hostState = GameHostState.PRIVATE;
         this.coHost = new ArrayList<>();
-    }
-
-    public GameHost<G> setHostGui(GGui<?> gui) {
-        this.hostGui = gui;
-        return this;
-    }
-
-    public GameHost<G> setHostItem(ItemStack itemStack) {
-        this.hostItem = itemStack;
-        return this;
     }
 
     public Player getHostPlayer() {
@@ -73,3 +64,4 @@ public class GameHost<G extends Game<?, ?>> {
     }
 
 }
+

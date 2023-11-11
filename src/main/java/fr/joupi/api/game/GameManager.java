@@ -17,6 +17,7 @@ import org.reflections.Reflections;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -43,7 +44,7 @@ public class GameManager {
         if (Optional.ofNullable(getGames(gameName)).isPresent()) {
             Utils.ifPresentOrElse(getBestGame(gameName),
                     game -> joinGame(game, player),
-                    () -> System.out.printf("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER %s", player.getName()));
+                    () -> System.out.printf(MessageFormat.format("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER {0}", player.getName())));
         }
     }
 

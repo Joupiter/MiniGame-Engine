@@ -8,12 +8,11 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Getter
+@Setter
 public class FFAGamePlayer extends GamePlayer {
 
-    @Setter
     private int kills, killStreak, deaths;
 
     public FFAGamePlayer(UUID uuid, int kills, int killStreak, int deaths, boolean spectator) {

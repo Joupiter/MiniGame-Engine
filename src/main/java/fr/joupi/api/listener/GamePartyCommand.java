@@ -53,6 +53,24 @@ public class GamePartyCommand implements CommandExecutor {
             case "invits":
                 getSpigot().getGameManager().getPartyManager().sendInvitationsDebug(player);
             break;
+            case "open":
+                getSpigot().getGameManager().getPartyManager().getParty(player)
+                        .filter(gameParty -> !gameParty.isOpened())
+                        .filter(gameParty -> gameParty.isLeader(player.getUniqueId()))
+                        .ifPresent(gameParty -> {
+                            gameParty.setOpened(true);
+                            player.sendMessage("Vous avez rendu votre partie publique avec succès");
+                        });
+                break;
+            case "close":
+                getSpigot().getGameManager().getPartyManager().getParty(player)
+                        .filter(GameParty::isOpened)
+                        .filter(gameParty -> gameParty.isLeader(player.getUniqueId()))
+                        .ifPresent(gameParty -> {
+                            gameParty.setOpened(false);
+                            player.sendMessage("Vous avez fermé votre partie au public");
+                        });
+                break;
             default:
                 player.sendMessage("Usage: /party create|invite|join|leave|disband");
                 break;
@@ -68,7 +86,6 @@ public class GamePartyCommand implements CommandExecutor {
                     getSpigot().getGameManager().getPartyManager().addParty(new GameParty(player.getUniqueId()));
                     player.sendMessage("Vous avez créer une partie !");
                 });
-
     }
 
     private void handleInviteCommand(Player player, String[] args) {

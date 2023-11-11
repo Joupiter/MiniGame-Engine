@@ -50,7 +50,7 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
             checkGameState(GameState.IN_GAME, () -> {
                 gamePlayer.setupPlayer();
-                player.teleport(getSettings().getLocation("lobby"));
+                getSettings().getLocation("lobby").ifPresent(player::teleport);
                 gamePlayer.sendStats();
                 event.sendJoinMessage();
             });

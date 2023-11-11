@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class GamePartyManager {
     public void addParty(GameParty gameParty) {
         if (getParties().stream().noneMatch(party -> party.isMember(gameParty.getLeader()))) {
             getParties().add(gameParty);
-            System.out.printf("[Party] party of %s has been added with name '%s' and %d max players",  gameParty.getPlayer().getName(), gameParty.getName(), gameParty.getMaxMembers());
+            System.out.printf(MessageFormat.format("[Party] party of {0} has been added with name ({1}) and {2} max players",  gameParty.getPlayer().getName(), gameParty.getName(), gameParty.getMaxMembers()));
         }
     }
 
@@ -41,15 +42,15 @@ public class GamePartyManager {
 
     public void removeParty(GameParty gameParty) {
         getParties().remove(gameParty);
-        System.out.printf("[Party] party of %s has been removed", gameParty.getPlayer().getName());
+        System.out.printf(MessageFormat.format("[Party] party of {0} has been removed", gameParty.getPlayer().getName()));
     }
 
     public void joinParty(Player player, GameParty gameParty) {
-        if (canJoin(player, gameParty.getPlayer()) && !gameParty.isComplete()) {
+        if ((gameParty.isOpened() || canJoin(player, gameParty.getPlayer())) && !gameParty.isComplete()) {
             getPendingInvitation(gameParty.getPlayer()).remove(player.getUniqueId());
             leaveParty(player);
             gameParty.addMember(player.getUniqueId());
-            System.out.printf("[Party] %s join %s party's", player.getName(), gameParty.getPlayer().getName());
+            System.out.printf(MessageFormat.format("[Party] {0} join {1} party {2}", player.getName(), gameParty.getPlayer().getName()));
         }
     }
 
@@ -61,7 +62,7 @@ public class GamePartyManager {
         gameParty.canSetNewRandomLeader(player);
         gameParty.removeMember(player.getUniqueId());
         canRemoveParty(gameParty);
-        System.out.printf("[Party] %s leave %s party's", player.getName(), gameParty.getPlayer().getName());
+        System.out.printf(MessageFormat.format("[Party] {0} leave {1} party", player.getName(), gameParty.getPlayer().getName()));
     }
 
     public void leaveParty(Player player) {
@@ -98,7 +99,7 @@ public class GamePartyManager {
         getGameManager().getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getGameManager().getPlugin(), () ->
                 getPendingInvitation(leader).stream().filter(invited.getUniqueId()::equals).findFirst().ifPresent(uuid -> {
                     getPendingInvitation(leader).remove(invited.getUniqueId());
-                    System.out.printf("L'invitation de %s a %s a expirer", leader.getName(), invited.getName());
+                    System.out.printf(MessageFormat.format("L'invitation de {0} a {1} a expirer", leader.getName(), invited.getName()));
                 }), 1200);
     }
 

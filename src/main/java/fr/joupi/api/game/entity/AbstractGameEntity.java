@@ -9,9 +9,10 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 
 @Getter
+@Setter
 public abstract class AbstractGameEntity<E extends Entity> implements GameEntity<E> {
 
-    @Setter private E entity;
+    private E entity;
 
     private final String name;
     private final int maxHealth;

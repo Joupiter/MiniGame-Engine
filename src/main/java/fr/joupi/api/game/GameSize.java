@@ -1,6 +1,5 @@
 package fr.joupi.api.game;
 
-import com.google.gson.annotations.Expose;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

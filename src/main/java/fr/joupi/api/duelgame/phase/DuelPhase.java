@@ -61,8 +61,8 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
     }
 
     private void teleportPlayersToBase(GameTeam gameTeam) {
-        gameTeam.getAlivePlayers().forEach(gamePlayer -> gamePlayer.getPlayer().teleport(getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase())));
-        getGame().getGameEntityManager().spawn(new Golem(gameTeam, "golem_" + gameTeam.getName(), 150, getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase())));
+        gameTeam.getAlivePlayers().forEach(gamePlayer -> getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase()).ifPresent(gamePlayer.getPlayer()::teleport));
+        getGame().getGameEntityManager().spawn(new Golem(gameTeam, "golem_" + gameTeam.getName(), 150, getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase()).orElse(null)));
     }
 
     @Override

@@ -2,20 +2,13 @@ package fr.joupi.api.listener;
 
 import fr.joupi.api.AListener;
 import fr.joupi.api.Spigot;
-import fr.joupi.api.User;
 import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.game.utils.GameSizeTemplate;
-import fr.joupi.api.module.ModuleGui;
-import fr.joupi.api.shop.ShopGui;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class TestListener extends AListener<Spigot> {
 
@@ -26,8 +19,6 @@ public class TestListener extends AListener<Spigot> {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
-        getPlugin().getUsers().add(new User(player.getUniqueId(), 1));
     }
 
     @EventHandler
@@ -48,33 +39,11 @@ public class TestListener extends AListener<Spigot> {
             event.setCancelled(true);
         }
 
-        if (event.getMessage().equals("!newpagegui")) {
-            getPlugin().getGuiManager().open(player, new fdg8yfht15(getPlugin()));
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!newgui")) {
-            getPlugin().getGuiManager().open(player, new TestGui(getPlugin()));
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!module")) {
-            new ModuleGui(getPlugin()).onOpen(player);
-            event.setCancelled(true);
-        }
-
-        if (event.getMessage().equals("!test")) {
-            new ShopGui(getPlugin(), player).onOpen(player);
-            event.setCancelled(true);
-        }
-
     }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-
-        getPlugin().getUsers().remove(getPlugin().getUser(player.getUniqueId()));
     }
 
 }

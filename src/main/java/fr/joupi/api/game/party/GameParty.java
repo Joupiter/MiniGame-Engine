@@ -17,13 +17,15 @@ public class GameParty {
     private UUID leader;
     private String name;
     private int maxMembers;
-
+    private boolean opened;
+    
     private final List<UUID> members;
 
     public GameParty(UUID leader) {
         this.leader = leader;
-        this.maxMembers = 5;
         this.name = "Partie de " + Bukkit.getPlayer(leader).getName();
+        this.maxMembers = 5;
+        this.opened = false;
         this.members = new ArrayList<>(Collections.singletonList(leader));
     }
 
@@ -82,6 +84,7 @@ public class GameParty {
         player.sendMessage(String.format("Leader: %s", getPlayer().getName()));
         player.sendMessage(String.format("Name: %s", getName()));
         player.sendMessage(String.format("Max Player: %d", getMaxMembers()));
+        player.sendMessage(String.format("Status public: %s", isOpened() ? "OUVERT" : "FERMER"));
         player.sendMessage(String.format("Size: %d", getSize()));
         player.sendMessage(String.format("Members: %s", getPlayers().stream().map(Player::getName).collect(Collectors.joining(", "))));
         player.sendMessage("-----------------------------");

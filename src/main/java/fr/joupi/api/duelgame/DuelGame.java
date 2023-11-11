@@ -2,7 +2,6 @@ package fr.joupi.api.duelgame;
 
 import fr.joupi.api.ItemBuilder;
 import fr.joupi.api.Spigot;
-import fr.joupi.api.Utils;
 import fr.joupi.api.duelgame.phase.CountdownPhase;
 import fr.joupi.api.duelgame.phase.DuelPhase;
 import fr.joupi.api.duelgame.phase.VictoryPhase;
@@ -13,7 +12,7 @@ import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
-import fr.joupi.api.game.host.GameHost;
+import fr.joupi.api.game.utils.GameHostBuilder;
 import fr.joupi.api.game.team.GameTeam;
 import fr.joupi.api.game.utils.GameInfo;
 import org.bukkit.*;
@@ -24,7 +23,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @GameInfo(name = "Duel")
@@ -52,9 +50,10 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     public DuelGame(Spigot plugin, Player player, GameSize gameSize) {
         this(plugin, gameSize);
-        setGameHost(new GameHost<>(this, player.getUniqueId())
-                .setHostGui(new DuelGameHostGui(plugin, this))
-                .setHostItem(new ItemBuilder(Material.REDSTONE_COMPARATOR).setName("&eParamètres").build()));
+        setGameHost(GameHostBuilder.of(this, player.getUniqueId())
+                .withHostGui(new DuelGameHostGui(plugin, this))
+                .withHostItem(new ItemBuilder(Material.REDSTONE_COMPARATOR).setName("&eParamètres").build())
+                .build());
     }
 
     @Override
@@ -74,7 +73,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
             checkGameState(GameState.WAIT, () -> {
                 player.setGameMode(GameMode.ADVENTURE);
-                player.teleport(getSettings().getLocation("waiting"));
+                getSettings().getLocation("waiting").ifPresent(player::teleport);
                 player.getInventory().setItem(0, new ItemBuilder(Material.CHEST).setName("&eÉquipes").build());
 
                 ifHostedGame(gameHost -> gameHost.getHostUuid().equals(player.getUniqueId()), () -> getGameHost().giveHostItem(8));

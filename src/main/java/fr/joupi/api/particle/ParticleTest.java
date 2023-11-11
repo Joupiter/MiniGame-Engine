@@ -9,15 +9,7 @@ import org.bukkit.entity.Player;
 public class ParticleTest {
 
     public void spawnParticle(Player player, EnumParticle particleType, double x, double y, double z, float offsetX, float offsetY, float offsetZ, float particleData, int count, Object generalData) {
-        PacketPlayOutWorldParticles packet;
-
-        if (generalData instanceof int[]) {
-            packet = new PacketPlayOutWorldParticles(particleType, false, (float) x, (float) y, (float) z, offsetX, offsetY, offsetZ, particleData, count, (int[]) generalData);
-        } else {
-            packet = new PacketPlayOutWorldParticles(particleType, false, (float) x, (float) y, (float) z, offsetX, offsetY, offsetZ, particleData, count);
-        }
-
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutWorldParticles(particleType, false, (float) x, (float) y, (float) z, offsetX, offsetY, offsetZ, particleData, count, generalData instanceof  int[] ? (int[]) generalData : null));
     }
 
     public void spawnParticle(Player player, Location location, EnumParticle particleType) {

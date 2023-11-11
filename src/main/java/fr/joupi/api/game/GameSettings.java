@@ -1,13 +1,11 @@
 package fr.joupi.api.game;
 
 import com.google.common.collect.Lists;
-import com.google.gson.annotations.Expose;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 
 @Getter
 @Setter
-public class GameSettings implements Serializable {
+public class GameSettings {
 
     private final GameSize gameSize;
     private World world;
@@ -39,8 +37,8 @@ public class GameSettings implements Serializable {
                 .forEach(location -> addLocation(name, location));
     }
 
-    public Location getLocation(String name) {
-        return getLocations(name).get(0);
+    public Optional<Location> getLocation(String name) {
+        return Optional.ofNullable(getLocations(name).get(0));
     }
 
     public Optional<Location> getRandomLocation(String name) {

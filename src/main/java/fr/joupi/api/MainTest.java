@@ -6,10 +6,6 @@ import java.util.concurrent.CompletableFuture;
 public class MainTest {
 
     public static void main(String[] args) {
-        List<?> list = new ArrayList<>(List.of(1, 2, 3));
-
-        list.forEach(System.out::println);
-
         System.out.println("---------------------------");
         CompletableFuture.runAsync(() -> System.out.println("run async")).whenComplete((unused, throwable) -> System.out.println("finish"));
 
