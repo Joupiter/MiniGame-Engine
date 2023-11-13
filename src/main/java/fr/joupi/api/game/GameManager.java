@@ -4,9 +4,6 @@ import com.google.common.collect.Lists;
 import fr.joupi.api.Utils;
 import fr.joupi.api.game.host.GameHostState;
 import fr.joupi.api.game.party.GamePartyManager;
-import fr.joupi.api.game.utils.GameInfo;
-import fr.joupi.api.threading.MultiThreading;
-import javassist.compiler.MemberResolver;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -15,14 +12,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -44,7 +36,7 @@ public class GameManager {
         if (Optional.ofNullable(getGames(gameName)).isPresent()) {
             Utils.ifPresentOrElse(getBestGame(gameName),
                     game -> joinGame(game, player),
-                    () -> System.out.printf(MessageFormat.format("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER {0}", player.getName())));
+                    () -> Utils.debug("NO GAME AVAILABLE, A NEW GAME IS STARTING FOR PLAYER {0}", player.getName()));
         }
     }
 
@@ -80,52 +72,12 @@ public class GameManager {
 
     public void addGame(String gameName, Game game) {
         getGames().computeIfAbsent(gameName, k -> Lists.newArrayList()).add(game);
-        System.out.printf("ADD GAME %s", game.getFullName());
-    }
-
-    public <P extends JavaPlugin> void addGame(P plugin, String gameName, GameSize gameSize) {
-        Reflections reflections = new Reflections(plugin.getClass().getPackage().getName());
-        Set<Class<? extends Game>> gameClasses = reflections.getSubTypesOf(Game.class);
-
-        for (Class<? extends Game> gameClass : gameClasses) {
-            try {
-                GameInfo gameInfo = gameClass.getAnnotation(GameInfo.class);
-                Constructor constructor = gameClass.getConstructor(plugin.getClass(), GameSize.class);
-
-                if (gameInfo.name().equalsIgnoreCase(gameName)) {
-                    Game newGame = (Game) constructor.newInstance(plugin, gameSize);
-                    addGame(gameName, newGame);
-                    return;
-                }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }
-    }
-
-    public <P extends JavaPlugin> void addHostGame(P plugin, String gameName, Player player, GameSize gameSize) {
-        Reflections reflections = new Reflections(plugin.getClass().getPackage().getName());
-        Set<Class<? extends Game>> gameClasses = reflections.getSubTypesOf(Game.class);
-
-        for (Class<? extends Game> gameClass : gameClasses) {
-            try {
-                GameInfo gameInfo = gameClass.getAnnotation(GameInfo.class);
-                Constructor constructor = gameClass.getConstructor(plugin.getClass(), Player.class, GameSize.class);
-
-                if (gameInfo.name().equalsIgnoreCase(gameName)) {
-                    Game newGame = (Game) constructor.newInstance(plugin, player, gameSize);
-                    addGame(gameName + "host", newGame);
-                    return;
-                }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }
+        Utils.debug("ADD GAME {0}", game.getFullName());
     }
 
     public void removeGame(Game game) {
         getGames().values().forEach(gameList -> gameList.remove(game));
-        System.out.printf("REMOVE GAME %s", game.getFullName());
+        Utils.debug("REMOVE GAME {0}", game.getFullName());
     }
 
     public void getGame(Player player, Consumer<Game> consumer) {
@@ -198,7 +150,10 @@ public class GameManager {
     }
 
     public List<Game> getGamesHost(Player player) {
-        return getGames().values().stream().flatMap(List::stream).filter(Game::isGameHost).filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).collect(Collectors.toList());
+        return getGames().values().stream().flatMap(List::stream)
+                .filter(Game::isGameHost)
+                .filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId()))
+                .collect(Collectors.toList());
     }
 
     public List<Game> getReachableGame(String gameName) {

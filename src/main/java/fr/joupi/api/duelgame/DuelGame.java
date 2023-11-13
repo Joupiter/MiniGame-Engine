@@ -14,7 +14,6 @@ import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
 import fr.joupi.api.game.utils.GameHostBuilder;
 import fr.joupi.api.game.team.GameTeam;
-import fr.joupi.api.game.utils.GameInfo;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-@GameInfo(name = "Duel")
 public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     private final Spigot spigot;
@@ -38,7 +36,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
         getSettings().addLocation("red", new Location(getSettings().getWorld(), -179, 67, 74));
         getSettings().addLocation("blue", new Location(getSettings().getWorld(), -189, 67, 74));
 
-        getPhaseManager().addPhase(
+        getPhaseManager().addPhases(
                 new WaitingPhase(this),
                 new CountdownPhase(this),
                 new DuelPhase(this),
@@ -67,7 +65,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerJoin(GamePlayerJoinEvent<DuelGamePlayer> event) {
-        if (containsPlayer(event.getPlayer().getUniqueId())) {
+        if (containsPlayer(event.getPlayer())) {
             Player player = event.getPlayer();
             DuelGamePlayer gamePlayer = event.getGamePlayer();
 
@@ -97,17 +95,15 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        ItemStack itemStack = event.getItem();
+        if (containsPlayer(event.getPlayer())) {
+            Player player = event.getPlayer();
+            ItemStack itemStack = event.getItem();
 
-        if (itemStack == null) return;
-
-        if (containsPlayer(player.getUniqueId())) {
-            DuelGamePlayer gamePlayer = getPlayer(player.getUniqueId()).orElse(null);
+            if (itemStack == null) return;
 
             checkGameState(GameState.WAIT, () -> {
                 if (itemStack.getType().equals(Material.CHEST))
-                    new TeamGui((Spigot) getPlugin(), this, gamePlayer).onOpen(player);
+                    new TeamGui((Spigot) getPlugin(), this, getPlayer(player.getUniqueId()).orElse(null)).onOpen(player);
 
                 ifHostedGame(gameHost -> itemStack.getType().equals(gameHost.getHostItem().getType()),
                         gameHost -> gameHost.openGui(spigot.getGuiManager(), player));
@@ -119,13 +115,13 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer().getUniqueId()))
+        if (containsPlayer(event.getPlayer()))
             getPlayer(event.getPlayer().getUniqueId()).ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerLeave(GamePlayerLeaveEvent<DuelGamePlayer> event) {
-        if (containsPlayer(event.getPlayer().getUniqueId())) {
+        if (containsPlayer(event.getPlayer())) {
             getPlayers().remove(event.getPlayer().getUniqueId());
             event.sendLeaveMessage();
         }

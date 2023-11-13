@@ -6,7 +6,6 @@ import fr.joupi.api.game.GameSize;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
-import fr.joupi.api.game.utils.GameInfo;
 import fr.joupi.api.game.utils.GameSizeTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,10 +18,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Optional;
 import java.util.UUID;
 
-@GameInfo(name = "ComboFFA")
 public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     public FFAGame(JavaPlugin plugin, GameSize gameSize) {
@@ -44,33 +41,32 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerJoin(GamePlayerJoinEvent<FFAGamePlayer> event) {
-        if (containsPlayer(event.getPlayer().getUniqueId())) {
+        if (containsPlayer(event.getPlayer())) {
             Player player = event.getPlayer();
             FFAGamePlayer gamePlayer = event.getGamePlayer();
 
-            checkGameState(GameState.IN_GAME, () -> {
-                gamePlayer.setupPlayer();
-                getSettings().getLocation("lobby").ifPresent(player::teleport);
-                gamePlayer.sendStats();
-                event.sendJoinMessage();
-            });
+            gamePlayer.setupPlayer();
+            gamePlayer.sendStats();
+            getSettings().getLocation("lobby").ifPresent(player::teleport);
+
+            event.sendJoinMessage();
         }
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer().getUniqueId()))
+        if (containsPlayer(event.getPlayer()))
             event.setFormat(ChatColor.translateAlternateColorCodes('&', "&7[&b1&7] &7%1$s &7: &f%2$s"));
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
+        if (containsPlayer(event.getPlayer())) {
+            Player player = event.getPlayer();
 
-        if (event.getItem() == null) return;
-        if (!event.getItem().getType().equals(Material.GOLD_AXE)) return;
+            if (event.getItem() == null) return;
+            if (!event.getItem().getType().equals(Material.GOLD_AXE)) return;
 
-        if (containsPlayer(player.getUniqueId())) {
             getSettings().getRandomLocation("random").ifPresent(player::teleport);
             getPlayer(player.getUniqueId()).ifPresent(FFAGamePlayer::giveKit);
         }
@@ -78,7 +74,7 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerLeave(GamePlayerLeaveEvent<FFAGamePlayer> event) {
-        if (containsPlayer(event.getPlayer().getUniqueId())) {
+        if (containsPlayer(event.getPlayer())) {
             getPlayers().remove(event.getPlayer().getUniqueId());
             event.sendLeaveMessage();
         }

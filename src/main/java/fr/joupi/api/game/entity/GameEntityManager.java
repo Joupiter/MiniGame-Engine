@@ -56,9 +56,8 @@ public class GameEntityManager implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) return;
-
         getEntities().values().stream()
+                .filter(entity -> event.getDamager() instanceof Player)
                 .filter(entity -> entity.getEntity().equals(event.getEntity()))
                 .forEach(entity -> entity.damageEvent().accept(event));
     }

@@ -24,10 +24,9 @@ public class VictoryPhase extends AbstractGamePhase<DuelGame> {
     @Override
     public void onStart() {
         getGame().setState(GameState.END);
-        Optional<DuelGamePlayer> winner = Optional.ofNullable(getGame().getAlivePlayers().get(0));
 
-        winner.ifPresent(gamePlayer ->
-                getGame().broadcast("&7&m-----------------------",
+        Optional.ofNullable(getGame().getAlivePlayers().get(0)).ifPresent(gamePlayer ->
+                getGame().broadcast( "&7&m-----------------------",
                         "",
                         "&b" + gamePlayer.getPlayer().getName() + " &egagne la partie !",
                         "&eavec &b" + gamePlayer.getKills() + " &ekills et &b" + gamePlayer.getDeaths() + " &emorts !",

@@ -5,6 +5,7 @@ import fr.joupi.api.game.listener.EventListenerWrapper;
 import fr.joupi.api.game.Game;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
@@ -63,6 +64,10 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePha
 
     public boolean canTriggerEvent(UUID uuid) {
         return getGame().containsPlayer(uuid);
+    }
+
+    public boolean canTriggerEvent(Player player) {
+        return getGame().containsPlayer(player.getUniqueId());
     }
 
     public void scheduleSyncTask(Consumer<BukkitTask> task, long delay) {

@@ -42,15 +42,4 @@ public class Spigot extends JavaPlugin {
     @Override
     public void onDisable() {}
 
-    public void registerListeners(String packageName) {
-        new Reflections(packageName).getSubTypesOf(AListener.class)
-                .forEach(clazz -> {
-                    try {
-                        getServer().getPluginManager().registerEvents(clazz.getDeclaredConstructor(this.getClass()).newInstance(this), this);
-                    } catch (InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException exception) {
-                        exception.printStackTrace();
-                    }
-                });
-    }
-
 }

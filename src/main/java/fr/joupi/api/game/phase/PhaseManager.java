@@ -23,7 +23,7 @@ public class PhaseManager<G extends Game<?, ?>> {
         this.phases = new ArrayList<>();
     }
 
-    public final void addPhase(AbstractGamePhase<?>... phases) {
+    public final void addPhases(AbstractGamePhase<?>... phases) {
         Arrays.asList(phases)
                 .forEach(getPhases()::add);
     }
@@ -56,8 +56,10 @@ public class PhaseManager<G extends Game<?, ?>> {
     }
 
     public <T extends AbstractGamePhase<?>> void checkGamePhase(Class<T> phaseClass, Consumer<T> consumer) {
-        Optional.ofNullable(getCurrentPhase()).filter(phase -> phase.getClass().equals(phaseClass))
-                .ifPresent(phase -> consumer.accept((T) phase));
+        Optional.ofNullable(getCurrentPhase())
+                .filter(phaseClass::isInstance)
+                .map(phaseClass::cast)
+                .ifPresent(consumer);
     }
 
     public Optional<AbstractGamePhase<?>> getNextPhase(AbstractGamePhase<?> phase) {

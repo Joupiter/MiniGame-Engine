@@ -1,8 +1,10 @@
 package fr.joupi.api.game;
 
 import fr.joupi.api.game.entity.GameEntityManager;
+import fr.joupi.api.game.event.GameLoadEvent;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
+import fr.joupi.api.game.event.GameUnloadEvent;
 import fr.joupi.api.game.host.GameHost;
 import fr.joupi.api.game.host.GameHostState;
 import fr.joupi.api.game.listener.GameListenerWrapper;
@@ -67,14 +69,16 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     private void load() {
         getTeams().addAll(Arrays.stream(GameTeamColor.values()).limit(getSettings().getGameSize().getTeamNeeded()).map(GameTeam::new).collect(Collectors.toList()));
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
-        System.out.printf(MessageFormat.format("{0} loaded", getFullName()));
+        debug("{0} loaded", getFullName());
+        Bukkit.getPluginManager().callEvent(new GameLoadEvent(this));
     }
 
     public void unload() {
         getPhaseManager().unregisterPhases();
         getListeners().forEach(HandlerList::unregisterAll);
         HandlerList.unregisterAll(this);
-        System.out.printf(MessageFormat.format("{0} unloaded", getFullName()));
+        debug("{0} unloaded", getFullName());
+        Bukkit.getPluginManager().callEvent(new GameUnloadEvent(this));
     }
 
     public void registerListeners(GameListenerWrapper<?>... listeners) {
@@ -196,7 +200,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
             G gamePlayer = defaultGamePlayer(player.getUniqueId(), spectator);
             getPlayers().put(player.getUniqueId(), gamePlayer);
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerJoinEvent<>(this, gamePlayer));
-            System.out.printf(MessageFormat.format("{0} {1} {2} game", player.getName(), (gamePlayer.isSpectator() ? "spectate" : "join/leave"), getFullName()));
+            debug("{0} {1} {2} game", player.getName(), (gamePlayer.isSpectator() ? "spectate" : "join"), getFullName());
         }
     }
 
@@ -204,7 +208,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         getPlayer(uuid).ifPresent(gamePlayer -> {
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent<>(this, gamePlayer));
             removePlayerToTeam(gamePlayer);
-            System.out.printf(MessageFormat.format("{0} leave {1}", gamePlayer.getPlayer().getName(), getFullName()));
+            debug("{0} leave {1}", gamePlayer.getPlayer().getName(), getFullName());
         });
     }
 
@@ -212,7 +216,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         getPlayers().values().stream().map(GamePlayer::getUuid).forEach(this::leaveGame);
         unload();
         gameManager.removeGame(this);
-        System.out.printf(MessageFormat.format("END OF GAME : {0}", getFullName()));
+        debug("END OF GAME : {0}", getFullName());
     }
 
     private void broadcast(String message) {
@@ -222,6 +226,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     public void broadcast(String... messages) {
         Arrays.asList(messages)
                 .forEach(this::broadcast);
+    }
+
+    public void debug(String message, Object ... arguments) {
+        System.out.println("[GameEngine] " + MessageFormat.format(message, arguments));
     }
 
     public String getFullName() {
@@ -238,6 +246,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public boolean containsPlayer(UUID uuid) {
         return getPlayers().containsKey(uuid);
+    }
+
+    public boolean containsPlayer(Player player) {
+        return getPlayers().containsKey(player.getUniqueId());
     }
 
     public boolean oneTeamAlive() {

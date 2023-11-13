@@ -1,5 +1,6 @@
 package fr.joupi.api.game.team;
 
+import fr.joupi.api.Utils;
 import fr.joupi.api.game.GamePlayer;
 import lombok.Getter;
 
@@ -14,6 +15,7 @@ public class GameTeam {
 
     private final String name;
     private final GameTeamColor color;
+
     private final List<GamePlayer> members;
 
     public GameTeam(GameTeamColor color) {
@@ -24,12 +26,12 @@ public class GameTeam {
 
     public void addMember(GamePlayer gamePlayer) {
         getMembers().add(gamePlayer);
-        System.out.printf("[Team] %s added to %s team%n", gamePlayer.getPlayer().getName(), getName());
+        Utils.debug("Team - {0} added to {1} team", gamePlayer.getPlayer().getName(), getName());
     }
 
     public void removeMember(GamePlayer gamePlayer) {
         getMembers().remove(gamePlayer);
-        System.out.printf("[Team] %s removed to %s team%n", gamePlayer.getPlayer().getName(), getName());
+        Utils.debug("Team - {0} removed to {1} team", gamePlayer.getPlayer().getName(), getName());
     }
 
     public boolean isMember(GamePlayer gamePlayer) {

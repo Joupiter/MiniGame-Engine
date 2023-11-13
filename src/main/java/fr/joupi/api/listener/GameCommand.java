@@ -24,7 +24,6 @@ public class GameCommand implements CommandExecutor {
             if (label.equals("join") && args.length > 0)
                 getPlugin().getGameManager().findGame(player, args[0]);
 
-
             if (label.equals("leave"))
                 getPlugin().getGameManager().leaveGame(player);
 
@@ -40,7 +39,6 @@ public class GameCommand implements CommandExecutor {
                 else
                     getPlugin().getGameManager().getGame(args[0], args[1]).ifPresent(game -> game.endGame(getPlugin().getGameManager()));
             }
-
         }
 
         return false;

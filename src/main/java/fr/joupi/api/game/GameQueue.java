@@ -5,7 +5,6 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -42,12 +41,12 @@ public class GameQueue<G extends Game<?, ?>> {
 
     public void addPlayer(Player player) {
         getQueue().add(player.getUniqueId());
-        System.out.printf(MessageFormat.format("[Queue] Added {0} to {1} queue", player.getName(), getGame().getFullName()));
+        getGame().debug("Queue - Added {0} to {1} queue", player.getName(), getGame().getFullName());
     }
 
     public void removePlayer(Player player) {
         getQueue().remove(player.getUniqueId());
-        System.out.printf(MessageFormat.format("[Queue] Remove {0} from {1} queue", player.getPlayer().getName(), getGame().getFullName()));
+        getGame().debug("Queue - Remove {0} from {1} queue", player.getPlayer().getName(), getGame().getFullName());
     }
 
     public boolean contains(UUID uuid) {

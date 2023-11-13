@@ -25,7 +25,7 @@ public class TestListener extends AListener<Spigot> {
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
-        /**
+        /*
          *  TEST
          */
 

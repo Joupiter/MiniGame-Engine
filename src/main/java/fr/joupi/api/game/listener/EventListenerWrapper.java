@@ -9,6 +9,6 @@ import java.util.function.Consumer;
 @AllArgsConstructor
 public class EventListenerWrapper<E extends Event> implements Listener {
 
-    public Consumer<E> event;
+    public final Consumer<E> event;
 
 }

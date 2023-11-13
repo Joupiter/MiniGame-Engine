@@ -29,30 +29,35 @@ public class GamePartyCommand implements CommandExecutor {
             return true;
         }
 
-        String subCommand = args[0].toLowerCase();
-
-        switch (subCommand) {
+        switch (args[0].toLowerCase()) {
             case "create":
                 handleCreateCommand(player);
                 break;
+
             case "invite":
                 handleInviteCommand(player, args);
                 break;
+
             case "join":
                 handleJoinCommand(player, args);
                 break;
+
             case "leave":
                 handleLeaveCommand(player);
                 break;
+
             case "disband":
                 handleDisbandCommand(player);
                 break;
+
             case "list":
                 getSpigot().getGameManager().getPartyManager().getParties().forEach(gameParty -> gameParty.sendDebug(player));
                 break;
+
             case "invits":
                 getSpigot().getGameManager().getPartyManager().sendInvitationsDebug(player);
             break;
+
             case "open":
                 getSpigot().getGameManager().getPartyManager().getParty(player)
                         .filter(gameParty -> !gameParty.isOpened())
@@ -62,6 +67,7 @@ public class GamePartyCommand implements CommandExecutor {
                             player.sendMessage("Vous avez rendu votre partie publique avec succès");
                         });
                 break;
+
             case "close":
                 getSpigot().getGameManager().getPartyManager().getParty(player)
                         .filter(GameParty::isOpened)
@@ -71,6 +77,7 @@ public class GamePartyCommand implements CommandExecutor {
                             player.sendMessage("Vous avez fermé votre partie au public");
                         });
                 break;
+
             default:
                 player.sendMessage("Usage: /party create|invite|join|leave|disband");
                 break;
@@ -112,8 +119,7 @@ public class GamePartyCommand implements CommandExecutor {
             return;
         }
 
-        String leaderName = args[1];
-        Player leader = Bukkit.getPlayer(leaderName);
+        Player leader = Bukkit.getPlayer(args[1]);
 
         if (leader == null || !leader.isOnline()) {
             player.sendMessage("Joueur introuvable ou non connecté");

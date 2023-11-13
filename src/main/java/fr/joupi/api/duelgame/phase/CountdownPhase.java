@@ -24,7 +24,7 @@ public class CountdownPhase extends AbstractGamePhase<DuelGame> {
         getCountdownTimer().setAfterTimer(this::endPhase);
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer().getUniqueId()))
+            if (canTriggerEvent(event.getPlayer()))
                 getGame().checkGameState(GameState.WAIT, this::checkCanCancelPhase);
         });
 

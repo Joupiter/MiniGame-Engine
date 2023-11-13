@@ -5,7 +5,7 @@ import fr.joupi.api.duelgame.DuelGame;
 import fr.joupi.api.duelgame.DuelGamePlayer;
 import fr.joupi.api.game.GamePlayer;
 import fr.joupi.api.game.GameState;
-import fr.joupi.api.duelgame.Golem;
+import fr.joupi.api.duelgame.entity.Golem;
 import fr.joupi.api.game.team.GameTeam;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
@@ -33,14 +33,14 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
         getGame().getAliveTeams().forEach(this::teleportPlayersToBase);
 
         registerEvent(GamePlayerLeaveEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer().getUniqueId())) {
+            if (canTriggerEvent(event.getPlayer())) {
                 event.getGamePlayer().setSpectator(true);
                 endPhase();
             }
         });
 
         registerEvent(PlayerDeathEvent.class, event -> {
-            if (canTriggerEvent(event.getEntity().getUniqueId())) {
+            if (canTriggerEvent(event.getEntity())) {
                 Player player = event.getEntity();
                 Player killer = event.getEntity().getKiller();
 

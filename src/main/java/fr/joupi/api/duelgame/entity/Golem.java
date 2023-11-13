@@ -1,4 +1,4 @@
-package fr.joupi.api.duelgame;
+package fr.joupi.api.duelgame.entity;
 
 import fr.joupi.api.game.entity.AbstractGameEntity;
 import fr.joupi.api.game.team.GameTeam;
