@@ -22,7 +22,7 @@ public class Utils {
     }
 
     public Gson getGson() {
-        return new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().registerTypeAdapter(Location .class, new LocationAdapter()).disableHtmlEscaping().create();
+        return new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().disableHtmlEscaping().create();
     }
 
 }
