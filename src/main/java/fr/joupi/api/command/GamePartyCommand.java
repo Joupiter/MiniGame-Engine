@@ -1,4 +1,4 @@
-package fr.joupi.api.listener;
+package fr.joupi.api.command;
 
 import fr.joupi.api.Spigot;
 import fr.joupi.api.Utils;
@@ -109,7 +109,7 @@ public class GamePartyCommand implements CommandExecutor {
         }
 
         Utils.ifPresentOrElse(getSpigot().getGameManager().getPartyManager().getParty(player),
-                gameParty -> getSpigot().getGameManager().getPartyManager().sendInvitation(player, invitedPlayer),
+                gameParty -> getSpigot().getGameManager().getPartyManager().sendRequest(player, invitedPlayer),
                 () -> player.sendMessage("Vous n'êtes pas dans une partie"));
     }
 

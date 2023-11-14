@@ -4,15 +4,11 @@ import fr.joupi.api.ffa.FFAGame;
 import fr.joupi.api.game.GameManager;
 import fr.joupi.api.game.entity.GameEntityManager;
 import fr.joupi.api.gui.GuiManager;
-import fr.joupi.api.listener.GameCommand;
-import fr.joupi.api.listener.GamePartyCommand;
+import fr.joupi.api.command.GameCommand;
+import fr.joupi.api.command.GamePartyCommand;
 import fr.joupi.api.listener.TestListener;
 import lombok.Getter;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.reflections.Reflections;
-
-import java.lang.reflect.InvocationTargetException;
 
 @Getter
 public class Spigot extends JavaPlugin {

@@ -1,13 +1,12 @@
 package fr.joupi.api.game.party;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import fr.joupi.api.Utils;
 import fr.joupi.api.game.GameManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,16 +16,28 @@ public class GamePartyManager {
     private final GameManager gameManager;
 
     private final List<GameParty> parties;
-    private final Map<UUID, List<UUID>> invitations;
+    private final List<GamePartyRequest> requests;
 
     public GamePartyManager(GameManager gameManager) {
         this.gameManager = gameManager;
         this.parties = new ArrayList<>();
-        this.invitations = new HashMap<>();
+        this.requests = new ArrayList<>();
     }
 
     public Optional<GameParty> getParty(Player player) {
         return getParties().stream().filter(gameParty -> gameParty.isMember(player.getUniqueId())).findFirst();
+    }
+
+    public Optional<GameParty> getPartyLedByPlayer(Player player) {
+        return getParties().stream().filter(gameParty -> gameParty.isLeader(player.getUniqueId())).findFirst();
+    }
+
+    public Optional<GamePartyRequest> getRequest(UUID sender, UUID target) {
+        return getOutgoingRequests(sender).stream().filter(request -> request.getTarget().equals(target)).findFirst();
+    }
+
+    public Optional<GamePartyRequest> getRequest(Player sender, Player target) {
+        return getOutgoingRequests(sender.getUniqueId()).stream().filter(request -> request.getTarget().equals(target.getUniqueId())).findFirst();
     }
 
     public void addParty(GameParty gameParty) {
@@ -47,10 +58,10 @@ public class GamePartyManager {
 
     public void joinParty(Player player, GameParty gameParty) {
         if ((gameParty.isOpened() || canJoin(player, gameParty.getPlayer())) && !gameParty.isComplete()) {
-            getPendingInvitation(gameParty.getPlayer()).remove(player.getUniqueId());
+            removeRequest(gameParty.getLeader(), player.getUniqueId());
             leaveParty(player);
             gameParty.addMember(player.getUniqueId());
-            Utils.debug("Party - {0} join {1} party {2}", player.getName(), gameParty.getPlayer().getName());
+            Utils.debug("Party - {0} join {1} party", player.getName(), gameParty.getPlayer().getName());
         }
     }
 
@@ -62,7 +73,7 @@ public class GamePartyManager {
         gameParty.canSetNewRandomLeader(player);
         gameParty.removeMember(player.getUniqueId());
         canRemoveParty(gameParty);
-       Utils.debug("Party - {0} leave {1} party", player.getName(), gameParty.getPlayer().getName());
+        Utils.debug("Party - {0} leave {1} party", player.getName(), gameParty.getPlayer().getName());
     }
 
     public void leaveParty(Player player) {
@@ -71,36 +82,40 @@ public class GamePartyManager {
 
     public void onLeave(Player player) {
         leaveParty(player);
-        getInvitations().remove(player.getUniqueId());
-        getInvitations().values().stream().flatMap(List::stream).collect(Collectors.toList()).remove(player.getUniqueId());
+        getAllRequests(player.getUniqueId()).forEach(getRequests()::remove);
     }
 
-    public void sendInvitation(Player leader, Player invited) {
-        Utils.ifPresentOrElse(getPendingInvitation(leader).stream().filter(invited.getUniqueId()::equals).findFirst(),
-                uuid -> leader.sendMessage("Le joueur " + invited.getName() + " a déjà une invitation en attente."),
+    public void addRequest(UUID sender, UUID target) {
+        getRequests().add(new GamePartyRequest(sender, target));
+        scheduleRequest(sender, target);
+    }
+
+    public void removeRequest(UUID sender, UUID target) {
+        getOutgoingRequests(sender).stream().filter(request -> request.getTarget().equals(target)).findFirst().ifPresent(getRequests()::remove);
+    }
+
+    public void sendRequest(Player sender, Player target) {
+        Utils.ifPresentOrElse(getRequest(sender, target),
+                request -> sender.sendMessage("Le joueur " + target.getName() + " a déjà une invitation en attente."),
                 () -> {
-                    getInvitations().computeIfAbsent(leader.getUniqueId(), k -> Lists.newArrayList()).add(invited.getUniqueId());
-                    scheduleInvitation(leader, invited);
-                    invited.sendMessage("Vous avez été invité par " + leader.getName() + " ! Tapez /party join " + leader.getName() + " pour rejoindre.");
-                    leader.sendMessage("Invitation envoyée à " + invited.getName() + " !");
+                    addRequest(sender.getUniqueId(), target.getUniqueId());
+                    target.sendMessage("Vous avez été invité par " + sender.getName() + " ! Tapez /party join " + sender.getName() + " pour rejoindre.");
+                    sender.sendMessage("Invitation envoyée à " + target.getName() + " !");
                 });
     }
 
-    public void cancelInvitation(Player leader, Player invited) {
-        Utils.ifPresentOrElse(getPendingInvitation(leader).stream().filter(invited.getUniqueId()::equals).findFirst(),
+    public void cancelRequest(Player leader, Player invited) {
+        Utils.ifPresentOrElse(getRequest(leader, invited),
                 uuid -> {
-                    getInvitations().get(leader.getUniqueId()).remove(uuid);
+                    removeRequest(leader.getUniqueId(), invited.getUniqueId());
                     invited.sendMessage("L'invitation de " + leader.getName() + " a été annulée.");
                     leader.sendMessage("L'invitation pour " + invited.getName() + " a été annulée.");
                 }, () -> leader.sendMessage("Aucune invitation trouvée pour " + invited.getName() + "."));
     }
 
-    private void scheduleInvitation(Player leader, Player invited) {
-        getGameManager().getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getGameManager().getPlugin(), () ->
-                getPendingInvitation(leader).stream().filter(invited.getUniqueId()::equals).findFirst().ifPresent(uuid -> {
-                    getPendingInvitation(leader).remove(invited.getUniqueId());
-                    Utils.debug("Party - L'invitation de {0} a {1} a expirer", leader.getName(), invited.getName());
-                }), 1200);
+    private void scheduleRequest(UUID sender, UUID target) {
+        getGameManager().getPlugin().getServer().getScheduler().runTaskLaterAsynchronously(getGameManager().getPlugin(),
+                () -> getRequest(sender, target).ifPresent(getRequests()::remove), 100);
     }
 
     public List<GameParty> getReachableParty() {
@@ -111,8 +126,28 @@ public class GamePartyManager {
         return getParties().stream().filter(GameParty::isComplete).collect(Collectors.toList());
     }
 
-    public List<UUID> getPendingInvitation(Player player) {
-        return getInvitations().getOrDefault(player.getUniqueId(), Collections.emptyList());
+    public List<Player> getPlayersNotInGame(GameParty gameParty) {
+        return gameParty.getPlayers().stream()
+                .filter(getGameManager()::isNotInGame)
+                .collect(Collectors.toList());
+    }
+
+    public List<Player> getPlayersInGame(GameParty gameParty) {
+        return gameParty.getPlayers().stream()
+                .filter(getGameManager()::isInGame)
+                .collect(Collectors.toList());
+    }
+
+    public ImmutableList<GamePartyRequest> getAllRequests(UUID uuid) {
+        return ImmutableList.<GamePartyRequest>builder().addAll(getIncomingRequests(uuid)).addAll(getOutgoingRequests(uuid)).build();
+    }
+
+    public List<GamePartyRequest> getIncomingRequests(UUID uuid) {
+        return getRequests().stream().filter(request -> request.getTarget().equals(uuid)).collect(Collectors.toList());
+    }
+
+    public List<GamePartyRequest> getOutgoingRequests(UUID uuid) {
+        return getRequests().stream().filter(request -> request.getSender().equals(uuid)).collect(Collectors.toList());
     }
 
     public void canRemoveParty(GameParty gameParty) {
@@ -121,7 +156,7 @@ public class GamePartyManager {
     }
 
     public boolean canJoin(Player invited, Player leader) {
-        return getPendingInvitation(leader).contains(invited.getUniqueId());
+        return getRequest(leader, invited).isPresent();
     }
 
     public boolean isPartyLeader(Player player) {
@@ -133,7 +168,9 @@ public class GamePartyManager {
     }
 
     public void sendInvitationsDebug(Player player) {
-        getInvitations().forEach((uuid, uuids) -> player.sendMessage(Bukkit.getPlayer(uuid).getName() + " - " + uuids.stream().map(Bukkit::getPlayer).map(Player::getName).collect(Collectors.joining(", "))));
+        getIncomingRequests(player.getUniqueId()).forEach(request -> player.sendMessage(Bukkit.getPlayer(request.getSender()).getName() + " a inviter " + Bukkit.getPlayer(request.getTarget()).getName()));
+        player.sendMessage("--------------------------");
+        getOutgoingRequests(player.getUniqueId()).forEach(request -> player.sendMessage(Bukkit.getPlayer(request.getSender()).getName() + " a inviter " + Bukkit.getPlayer(request.getTarget()).getName()));
     }
 
 }

@@ -1,4 +1,4 @@
-package fr.joupi.api.listener;
+package fr.joupi.api.command;
 
 import fr.joupi.api.Spigot;
 import lombok.AllArgsConstructor;

@@ -3,19 +3,18 @@ package fr.joupi.api.game;
 import com.google.common.collect.Lists;
 import fr.joupi.api.Utils;
 import fr.joupi.api.game.host.GameHostState;
+import fr.joupi.api.game.party.GameParty;
 import fr.joupi.api.game.party.GamePartyManager;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.reflections.Reflections;
 
-import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
@@ -41,13 +40,9 @@ public class GameManager {
     }
 
     public void joinGameWithParty(Player leader) {
-        getPartyManager().getParty(leader).filter(gameParty -> getPartyManager().isPartyLeader(leader)).ifPresent(gameParty -> {
-            getGame(leader).filter(game -> gameParty.getSize() + game.getSize() < game.getSettings().getGameSize().getMaxPlayer()).ifPresent(game -> {
-                gameParty.getMembers().stream()
-                        .map(Bukkit::getPlayer)
-                        .filter(player -> !getGame(player).isPresent())
-                        .forEach(player -> joinGame(game, player));
-            });
+        getPartyManager().getPartyLedByPlayer(leader).ifPresent(gameParty -> {
+            getGame(leader).filter(canJoinGameWithParty(gameParty))
+                    .ifPresent(game -> getPartyManager().getPlayersNotInGame(gameParty).forEach(player -> joinGame(game, player)));
         });
     }
 
@@ -117,6 +112,14 @@ public class GameManager {
                 .filter(game -> game.getSettings().getWorld().equals(world)).findFirst();
     }
 
+    public Optional<Game> getBestGame(String gameName) {
+        return getReachableGame(gameName).stream().findFirst();
+    }
+
+    public Optional<Game> getGameHost(Player player) {
+        return getGamesHost().stream().filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).findFirst();
+    }
+
     public List<Game> getGamesWithMorePlayers(String gameName, GameState state) {
         return getGamesWithMorePlayers(gameName).stream()
                 .filter(game -> game.getState().equals(state))
@@ -139,14 +142,6 @@ public class GameManager {
         return getGames(gameName).stream()
                 .min(Comparator.comparingInt(Game::getSize))
                 .stream().collect(Collectors.toList());
-    }
-
-    public Optional<Game> getBestGame(String gameName) {
-        return getReachableGame(gameName).stream().findFirst();
-    }
-
-    public Optional<Game> getGameHost(Player player) {
-        return getGamesHost().stream().filter(game -> game.getGameHost().getHostUuid().equals(player.getUniqueId())).findFirst();
     }
 
     public List<Game> getGamesHost(Player player) {
@@ -212,6 +207,18 @@ public class GameManager {
         return getGames().values().stream().flatMap(List::stream)
                 .filter(game -> game.getAlivePlayers().isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    private Predicate<Game> canJoinGameWithParty(GameParty gameParty) {
+        return game -> gameParty.getSize() + game.getSize() < game.getSettings().getGameSize().getMaxPlayer();
+    }
+
+    public boolean isInGame(Player player) {
+        return getGame(player).isPresent();
+    }
+
+    public boolean isNotInGame(Player player) {
+        return !isInGame(player);
     }
 
     public int getPlayersCount(String... gamesName) {

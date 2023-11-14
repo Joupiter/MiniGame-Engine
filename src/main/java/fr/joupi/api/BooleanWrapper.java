@@ -1,6 +1,5 @@
 package fr.joupi.api;
 
-import fr.joupi.api.game.GameState;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
