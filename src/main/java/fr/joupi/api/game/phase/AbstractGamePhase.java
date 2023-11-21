@@ -70,11 +70,10 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePha
     }
 
     private <EventType extends Event> EventExecutor eventExecutor(Function<EventType, Player> function, Consumer<EventType> consumer) {
-        return (listener, event) -> {
-            Utils.ifPresentOrElse(Optional.ofNullable(function.apply((EventType) event)).filter(this::canTriggerEvent),
-                    uuid -> consumer.accept((EventType) event),
-                    () -> consumer.accept((EventType) event));
-        };
+        return (listener, event) ->
+                Utils.ifPresentOrElse(Optional.ofNullable(function.apply((EventType) event)).filter(this::canTriggerEvent),
+                        uuid -> consumer.accept((EventType) event),
+                        () -> consumer.accept((EventType) event));
     }
 
     public boolean canTriggerEvent(UUID uuid) {
