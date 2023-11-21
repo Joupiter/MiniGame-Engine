@@ -65,8 +65,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerJoin(GamePlayerJoinEvent<DuelGamePlayer> event) {
-        if (containsPlayer(event.getPlayer())) {
-            Player player = event.getPlayer();
+        ifContainsPlayer(event.getPlayer(), player -> {
             DuelGamePlayer gamePlayer = event.getGamePlayer();
 
             checkGameState(GameState.WAIT, () -> {
@@ -90,13 +89,12 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
             });
 
             event.sendJoinMessage();
-        }
+        });
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (containsPlayer(event.getPlayer())) {
-            Player player = event.getPlayer();
+        ifContainsPlayer(event.getPlayer(), player -> {
             ItemStack itemStack = event.getItem();
 
             if (itemStack == null) return;
@@ -110,21 +108,20 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
                 event.setCancelled(true);
             });
-        }
+        });
     }
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer()))
-            getPlayer(event.getPlayer().getUniqueId()).ifPresent(gamePlayer -> event.setFormat(ChatColor.translateAlternateColorCodes('&', getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s")));
+        ifContainsPlayer(event.getPlayer(), player -> getPlayer(player.getUniqueId()).ifPresent(gamePlayer -> event.setFormat(coloredMessage(getTeam(gamePlayer).map(GameTeam::getColoredName).orElse("&fAucune") + " &f%1$s &7: &f%2$s"))));
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerLeave(GamePlayerLeaveEvent<DuelGamePlayer> event) {
-        if (containsPlayer(event.getPlayer())) {
-            getPlayers().remove(event.getPlayer().getUniqueId());
+        ifContainsPlayer(event.getPlayer(), player -> {
+            getPlayers().remove(player.getUniqueId());
             event.sendLeaveMessage();
-        }
+        });
     }
 
 }

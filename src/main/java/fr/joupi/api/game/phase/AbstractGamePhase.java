@@ -1,5 +1,6 @@
 package fr.joupi.api.game.phase;
 
+import fr.joupi.api.Utils;
 import fr.joupi.api.game.utils.GameRunnable;
 import fr.joupi.api.game.listener.EventListenerWrapper;
 import fr.joupi.api.game.Game;
@@ -10,12 +11,14 @@ import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.EventExecutor;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.function.*;
 
 @Getter
 public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePhase {
@@ -55,11 +58,23 @@ public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePha
         getEvents().clear();
     }
 
-    public <EventType extends Event> void registerEvent(Class<EventType> eventClass, Consumer<EventType> handler) {
-        EventListenerWrapper<EventType> wrapper = new EventListenerWrapper<>(handler);
+    public <EventType extends Event> void registerEvent(Class<EventType> eventClass, Consumer<EventType> consumer) {
+        registerEvent(eventClass, null, consumer);
+    }
 
-        Bukkit.getPluginManager().registerEvent(eventClass, wrapper, EventPriority.NORMAL, (listener, event) ->  handler.accept((EventType) event), getGame().getPlugin());
+    public <EventType extends Event> void registerEvent(Class<EventType> eventClass, Function<EventType, Player> function, Consumer<EventType> consumer) {
+        EventListenerWrapper<EventType> wrapper = new EventListenerWrapper<>(consumer);
+
+        Bukkit.getPluginManager().registerEvent(eventClass, wrapper, EventPriority.NORMAL, eventExecutor(function, consumer), getGame().getPlugin());
         getEvents().add(wrapper);
+    }
+
+    private <EventType extends Event> EventExecutor eventExecutor(Function<EventType, Player> function, Consumer<EventType> consumer) {
+        return (listener, event) -> {
+            Utils.ifPresentOrElse(Optional.ofNullable(function.apply((EventType) event)).filter(this::canTriggerEvent),
+                    uuid -> consumer.accept((EventType) event),
+                    () -> consumer.accept((EventType) event));
+        };
     }
 
     public boolean canTriggerEvent(UUID uuid) {

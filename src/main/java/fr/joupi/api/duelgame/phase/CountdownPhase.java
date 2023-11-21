@@ -23,10 +23,7 @@ public class CountdownPhase extends AbstractGamePhase<DuelGame> {
         getCountdownTimer().setEverySecond(timer -> getGame().getPlayers().values().stream().map(GamePlayer::getPlayer).forEach(player -> player.setLevel(timer.getSecondsLeft())));
         getCountdownTimer().setAfterTimer(this::endPhase);
 
-        registerEvent(GamePlayerLeaveEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer()))
-                getGame().checkGameState(GameState.WAIT, this::checkCanCancelPhase);
-        });
+        registerEvent(GamePlayerLeaveEvent.class, GamePlayerLeaveEvent::getPlayer, event -> getGame().checkGameState(GameState.WAIT, this::checkCanCancelPhase));
 
         getCountdownTimer().setSecondsLeft(10);
         getCountdownTimer().scheduleTimer();

@@ -32,46 +32,39 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
 
         getGame().getAliveTeams().forEach(this::teleportPlayersToBase);
 
-        registerEvent(GamePlayerLeaveEvent.class, event -> {
-            if (canTriggerEvent(event.getPlayer())) {
-                event.getGamePlayer().setSpectator(true);
-                endPhase();
-            }
+        registerEvent(GamePlayerLeaveEvent.class, GamePlayerLeaveEvent::getPlayer, event -> {
+            event.getGamePlayer().setSpectator(true);
+            endPhase();
         });
 
-        registerEvent(PlayerDeathEvent.class, event -> {
-            if (canTriggerEvent(event.getEntity())) {
-                Player player = event.getEntity();
-                Player killer = event.getEntity().getKiller();
+        registerEvent(PlayerDeathEvent.class, PlayerDeathEvent::getEntity, event -> {
+            Player player = event.getEntity();
+            Player killer = event.getEntity().getKiller();
 
-                if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
-                    getGame().getPlayer(player.getUniqueId()).ifPresent(gamePlayer -> {
-                        gamePlayer.addDeath(1);
-                        gamePlayer.setSpectator(true);
-                        gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
-                    });
+            if (event.getEntity().getLastDamageCause().getCause() == EntityDamageEvent.DamageCause.ENTITY_ATTACK) {
+                getGame().getPlayer(player.getUniqueId()).ifPresent(gamePlayer -> {
+                    gamePlayer.addDeath(1);
+                    gamePlayer.setSpectator(true);
+                    gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
+                });
 
-                    getGame().getPlayer(killer.getUniqueId()).ifPresent(DuelGamePlayer::addKill);
+                getGame().getPlayer(killer.getUniqueId()).ifPresent(DuelGamePlayer::addKill);
 
-                    getGame().broadcast("&a" + player.getName() + " &ea ete tue par &c" + killer.getName() + " &e!");
-                    endPhase();
-                }
+                getGame().broadcast("&a" + player.getName() + " &ea ete tue par &c" + killer.getName() + " &e!");
+                endPhase();
             }
         });
     }
 
     private void teleportPlayersToBase(GameTeam gameTeam) {
         gameTeam.getAlivePlayers().forEach(gamePlayer -> getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase()).ifPresent(gamePlayer.getPlayer()::teleport));
-        getGame().getGameEntityManager().spawn(new Golem(gameTeam, "golem_" + gameTeam.getName(), 150, getGame().getSettings().getLocation(gameTeam.getColor().name().toLowerCase()).orElse(null)));
     }
 
     @Override
-    public void onEnd() {
-        getGame().getGameEntityManager().destroy("golem_Rouge");
-        getGame().getGameEntityManager().destroy("golem_Bleu");
-    }
+    public void onEnd() {}
 
-    /*
+}
+/*
     registerEvent(PlayerDeathEvent.class, event -> {
             Optional<GamePlayer> player = getGame().getPlayer(event.getEntity().getUniqueId());
             Optional<GamePlayer> killer = getGame().getPlayer(event.getEntity().getKiller().getUniqueId());
@@ -87,6 +80,4 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
                 endPhase();
             });
         });
-     */
-
-}
+*/

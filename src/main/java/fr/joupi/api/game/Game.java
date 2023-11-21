@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -191,6 +192,18 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
             runnable.run();
     }
 
+    public void ifContainsPlayer(UUID uuid, Consumer<Player> consumer) {
+        ifContainsPlayer(Bukkit.getPlayer(uuid), consumer);
+    }
+
+    public void ifContainsPlayer(Player player, Consumer<Player> consumer) {
+        Optional.of(player).filter(this::containsPlayer).ifPresent(consumer);
+    }
+
+    public void ifContainsPlayer(Player player, Runnable runnable) {
+        Optional.of(player).filter(this::containsPlayer).ifPresent(p -> runnable.run());
+    }
+
     public void joinGame(Player player) {
         joinGame(player, false);
     }
@@ -286,6 +299,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public int getSize() {
         return getPlayers().size();
+    }
+
+    public String coloredMessage(String message) {
+        return ChatColor.translateAlternateColorCodes('&', message);
     }
 
     public void sendDebugInfoMessage(Player player) {

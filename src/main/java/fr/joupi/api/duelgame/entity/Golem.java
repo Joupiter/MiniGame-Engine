@@ -60,7 +60,7 @@ public class Golem extends AbstractGameEntity<IronGolem> {
 
     @Override
     public void update() {
-        getEntity().setCustomName(ChatColor.translateAlternateColorCodes('&',  "&7> " + getGameTeam().getColor().getChatColor() + getEntity().getHealth() + " &c<3"));
+        getEntity().setCustomName(colored("&7> " + getGameTeam().getColor().getChatColor() + getEntity().getHealth() + " &c<3"));
     }
 
 }

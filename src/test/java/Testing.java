@@ -1,4 +1,3 @@
-import fr.joupi.api.MergedList;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

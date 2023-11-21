@@ -1,5 +1,6 @@
 package fr.joupi.api.game.entity;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -31,5 +32,9 @@ public interface GameEntity<T extends Entity> {
     }
 
     default void update() {}
+
+    default String colored(String message) {
+        return ChatColor.translateAlternateColorCodes('&', message);
+    }
 
 }

@@ -41,8 +41,7 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerJoin(GamePlayerJoinEvent<FFAGamePlayer> event) {
-        if (containsPlayer(event.getPlayer())) {
-            Player player = event.getPlayer();
+        ifContainsPlayer(event.getPlayer(), player -> {
             FFAGamePlayer gamePlayer = event.getGamePlayer();
 
             gamePlayer.setupPlayer();
@@ -50,34 +49,31 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
             getSettings().getLocation("lobby").ifPresent(player::teleport);
 
             event.sendJoinMessage();
-        }
+        });
     }
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent event) {
-        if (containsPlayer(event.getPlayer()))
-            event.setFormat(ChatColor.translateAlternateColorCodes('&', "&7[&b1&7] &7%1$s &7: &f%2$s"));
+        ifContainsPlayer(event.getPlayer(), player -> event.setFormat(coloredMessage("&7[&b1&7] &7%1$s &7: &f%2$s")));
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (containsPlayer(event.getPlayer())) {
-            Player player = event.getPlayer();
-
+        ifContainsPlayer(event.getPlayer(), player -> {
             if (event.getItem() == null) return;
             if (!event.getItem().getType().equals(Material.GOLD_AXE)) return;
 
             getSettings().getRandomLocation("random").ifPresent(player::teleport);
             getPlayer(player.getUniqueId()).ifPresent(FFAGamePlayer::giveKit);
-        }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerLeave(GamePlayerLeaveEvent<FFAGamePlayer> event) {
-        if (containsPlayer(event.getPlayer())) {
-            getPlayers().remove(event.getPlayer().getUniqueId());
+        ifContainsPlayer(event.getPlayer(), player -> {
+            getPlayers().remove(player.getUniqueId());
             event.sendLeaveMessage();
-        }
+        });
     }
 
 }

@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import fr.joupi.api.Utils;
 import fr.joupi.api.game.GameManager;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -168,9 +167,9 @@ public class GamePartyManager {
     }
 
     public void sendInvitationsDebug(Player player) {
-        getIncomingRequests(player.getUniqueId()).forEach(request -> player.sendMessage(Bukkit.getPlayer(request.getSender()).getName() + " a inviter " + Bukkit.getPlayer(request.getTarget()).getName()));
+        getIncomingRequests(player.getUniqueId()).forEach(request -> player.sendMessage(request.getSenderPlayer().getName() + " a inviter " + request.getTargetPlayer().getName()));
         player.sendMessage("--------------------------");
-        getOutgoingRequests(player.getUniqueId()).forEach(request -> player.sendMessage(Bukkit.getPlayer(request.getSender()).getName() + " a inviter " + Bukkit.getPlayer(request.getTarget()).getName()));
+        getOutgoingRequests(player.getUniqueId()).forEach(request -> player.sendMessage(request.getSenderPlayer().getName() + " a inviter " + request.getTargetPlayer().getName()));
     }
 
 }
