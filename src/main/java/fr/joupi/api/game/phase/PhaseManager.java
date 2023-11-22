@@ -34,12 +34,12 @@ public class PhaseManager<G extends Game<?, ?>> {
     }
 
     public void tryAdvance(AbstractGamePhase<?> previousPhase) {
-        Utils.ifPresentOrElse(getNextPhase(previousPhase).filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate()),
+        Utils.ifPresentOrElse(getNextPhase(previousPhase).filter(equalsToCurrentPhase().negate()),
                 this::setPhase, this::unregisterPhases);
     }
 
     public void tryRetreat(AbstractGamePhase<?> phase) {
-        Utils.ifPresentOrElse(getPreviousPhase(phase).filter(((Predicate<? super AbstractGamePhase<?>>) getCurrentPhase()::equals).negate()), this::setPhase, () -> {
+        Utils.ifPresentOrElse(getPreviousPhase(phase).filter(equalsToCurrentPhase().negate()), this::setPhase, () -> {
             phase.unregister();
             phase.startPhase();
         });
@@ -68,6 +68,10 @@ public class PhaseManager<G extends Game<?, ?>> {
 
     public Optional<AbstractGamePhase<?>> getPreviousPhase(AbstractGamePhase<?> phase) {
         return Optional.ofNullable(getPhases().get(getPhases().indexOf(phase) - 1));
+    }
+
+    private Predicate<AbstractGamePhase<?>> equalsToCurrentPhase() {
+        return getCurrentPhase()::equals;
     }
 
 }

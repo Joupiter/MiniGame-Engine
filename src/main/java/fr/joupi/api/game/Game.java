@@ -93,7 +93,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public List<G> getAlivePlayers() {
-        return getPlayers().values().stream().filter(((Predicate<? super GamePlayer>) GamePlayer::isSpectator).negate()).collect(Collectors.toList());
+        return getPlayers().values().stream().filter(isSpectatorPredicate().negate()).collect(Collectors.toList());
     }
 
     public List<G> getSpectators() {
@@ -109,7 +109,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public List<GameTeam> getAliveTeams() {
-        return getTeams().stream().filter(((Predicate<? super GameTeam>) GameTeam::isNoPlayersAlive).negate()).collect(Collectors.toList());
+        return getTeams().stream().filter(isNoPlayersAlivePredicate().negate()).collect(Collectors.toList());
     }
 
     public List<GameTeam> getReachableTeams() {
@@ -247,6 +247,14 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public String getFullName() {
         return getName() + (isGameHost() ? "Host" : "") + "-" + getSettings().getGameSize().getName() + "-" + getId();
+    }
+
+    private Predicate<GameTeam> isNoPlayersAlivePredicate() {
+        return gameTeam -> gameTeam.getAlivePlayers().isEmpty();
+    }
+
+    private Predicate<GamePlayer> isSpectatorPredicate() {
+        return GamePlayer::isSpectator;
     }
 
     public boolean isGameHost() {

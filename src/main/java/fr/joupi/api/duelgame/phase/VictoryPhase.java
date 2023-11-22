@@ -12,9 +12,10 @@ import org.bukkit.GameMode;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+@Getter
 public class VictoryPhase extends AbstractGamePhase<DuelGame> {
 
-    @Getter private final Spigot spigot;
+    private final Spigot spigot;
 
     public VictoryPhase(DuelGame game, Spigot spigot) {
         super(game);
@@ -26,7 +27,7 @@ public class VictoryPhase extends AbstractGamePhase<DuelGame> {
         getGame().setState(GameState.END);
 
         Optional.ofNullable(getGame().getAlivePlayers().get(0)).ifPresent(gamePlayer ->
-                getGame().broadcast( "&7&m-----------------------",
+                getGame().broadcast("&7&m-----------------------",
                         "",
                         "&b" + gamePlayer.getPlayer().getName() + " &egagne la partie !",
                         "&eavec &b" + gamePlayer.getKills() + " &ekills et &b" + gamePlayer.getDeaths() + " &emorts !",

@@ -58,7 +58,7 @@ public class CountdownTimer implements Runnable {
     }
 
     public void scheduleTimer() {
-        setAssignedTaskId(Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, this, 0L, 20L));
+        setAssignedTaskId(Bukkit.getScheduler().scheduleSyncRepeatingTask(getPlugin(), this, 0L, 20L));
     }
 
 }

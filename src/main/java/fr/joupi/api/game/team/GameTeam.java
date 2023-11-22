@@ -43,7 +43,11 @@ public class GameTeam {
     }
 
     public List<GamePlayer> getAlivePlayers() {
-        return getMembers().stream().filter(((Predicate<? super GamePlayer>) GamePlayer::isSpectator).negate()).collect(Collectors.toList());
+        return getMembers().stream().filter(isSpectatorPredicate().negate()).collect(Collectors.toList());
+    }
+
+    private Predicate<GamePlayer> isSpectatorPredicate() {
+        return GamePlayer::isSpectator;
     }
 
     public boolean isNoPlayersAlive() {

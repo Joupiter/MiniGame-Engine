@@ -43,11 +43,11 @@ public class GameParty {
 
     public void canSetNewRandomLeader(Player player) {
         if (isLeader(player.getUniqueId()))
-            getMembers().stream().filter(((Predicate<? super UUID>) this::isLeader).negate()).findAny().ifPresent(this::setLeader);
+            getMembers().stream().filter(isLeader().negate()).findAny().ifPresent(this::setLeader);
     }
 
     public void kickAll() {
-        getMembers().stream().filter(((Predicate<? super UUID>) this::isLeader).negate()).forEach(this::removeMember);
+        getMembers().stream().filter(isLeader().negate()).forEach(this::removeMember);
     }
 
     public List<Player> getPlayers() {
@@ -61,6 +61,10 @@ public class GameParty {
     public void sendMessages(String... messages) {
         Arrays.asList(messages)
                 .forEach(message -> getPlayers().forEach(player -> player.sendMessage(ChatColor.translateAlternateColorCodes('&', message))));
+    }
+
+    private Predicate<UUID> isLeader() {
+        return this::isLeader;
     }
 
     public boolean isComplete() {

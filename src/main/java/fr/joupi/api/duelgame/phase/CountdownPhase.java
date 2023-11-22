@@ -8,9 +8,10 @@ import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.phase.AbstractGamePhase;
 import lombok.Getter;
 
+@Getter
 public class CountdownPhase extends AbstractGamePhase<DuelGame> {
 
-    @Getter private final CountdownTimer countdownTimer;
+    private final CountdownTimer countdownTimer;
 
     public CountdownPhase(DuelGame game) {
         super(game);
