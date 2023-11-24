@@ -6,12 +6,11 @@ import fr.joupi.api.game.GameSize;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
+import fr.joupi.api.game.utils.DefaultGameSettings;
 import fr.joupi.api.game.utils.GameSizeTemplate;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -23,7 +22,7 @@ import java.util.UUID;
 public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     public FFAGame(JavaPlugin plugin, GameSize gameSize) {
-        super(plugin, "ComboFFA", new GameSettings(gameSize, Bukkit.getWorld("world")));
+        super(plugin, "ComboFFA", new DefaultGameSettings(gameSize, Bukkit.getWorld("world")));
         setState(GameState.IN_GAME);
 
         getSettings().addLocations("lobby", new Location(getSettings().getWorld(), -171, 75, 57, -176, 2));
@@ -70,10 +69,7 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerLeave(GamePlayerLeaveEvent<FFAGamePlayer> event) {
-        ifContainsPlayer(event.getPlayer(), player -> {
-            getPlayers().remove(player.getUniqueId());
-            event.sendLeaveMessage();
-        });
+        ifContainsPlayer(event.getPlayer(), player -> event.sendLeaveMessage());
     }
 
 }

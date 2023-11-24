@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentMap;
 
 @Getter
 @Setter
-public class GameSettings {
+public abstract class GameSettings {
 
     private final GameSize gameSize;
     private World world;

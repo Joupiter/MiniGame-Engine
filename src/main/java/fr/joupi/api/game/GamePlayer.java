@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @AllArgsConstructor
-public class GamePlayer {
+public abstract class GamePlayer {
 
     private final UUID uuid;
     private boolean spectator;

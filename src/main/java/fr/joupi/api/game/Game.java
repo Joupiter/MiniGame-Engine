@@ -220,6 +220,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     public void leaveGame(UUID uuid) {
         getPlayer(uuid).ifPresent(gamePlayer -> {
             Bukkit.getServer().getPluginManager().callEvent(new GamePlayerLeaveEvent<>(this, gamePlayer));
+            getPlayers().remove(uuid);
             removePlayerToTeam(gamePlayer);
             debug("{0} leave {1}", gamePlayer.getPlayer().getName(), getFullName());
         });
@@ -239,6 +240,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     public void broadcast(String... messages) {
         Arrays.asList(messages)
                 .forEach(this::broadcast);
+    }
+
+    public void broadcast(Predicate<G> filter, String... messages) {
+        getPlayers().values().stream().filter(filter).forEach(gamePlayer -> gamePlayer.sendMessage(messages));
     }
 
     public void debug(String message, Object ... arguments) {

@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.function.Predicate;
+
 @Getter
 @AllArgsConstructor
 public class GamePlayerLeaveEvent<G extends GamePlayer> extends Event {
@@ -22,7 +24,11 @@ public class GamePlayerLeaveEvent<G extends GamePlayer> extends Event {
     }
 
     public void sendLeaveMessage() {
-        getGame().broadcast(String.format("&c- &7%s (%d/%d)", getPlayer().getName(), getGame().getPlayers().size(), getGame().getSettings().getGameSize().getMaxPlayer()));
+        getGame().broadcast(broadcastFilter().negate(), String.format("&c- &7%s (%d/%d)", getPlayer().getName(), getGame().getPlayers().size() - 1, getGame().getSettings().getGameSize().getMaxPlayer()));
+    }
+
+    private Predicate<G> broadcastFilter() {
+        return getGamePlayer()::equals;
     }
 
     @Override

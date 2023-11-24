@@ -118,10 +118,7 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onGamePlayerLeave(GamePlayerLeaveEvent<DuelGamePlayer> event) {
-        ifContainsPlayer(event.getPlayer(), player -> {
-            getPlayers().remove(player.getUniqueId());
-            event.sendLeaveMessage();
-        });
+        ifContainsPlayer(event.getPlayer(), player -> event.sendLeaveMessage());
     }
 
 }
