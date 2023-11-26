@@ -2,6 +2,7 @@ package fr.joupi.api;
 
 import lombok.Getter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -10,6 +11,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 public class Probabilities<T> {
@@ -56,6 +59,12 @@ public class Probabilities<T> {
                 .filter(predicate(result, current))
                 .map(Map.Entry::getKey)
                 .findFirst();
+    }
+
+    public List<T> randomize(int number) {
+        return IntStream.range(0, number)
+                .mapToObj(i -> randomize().orElseThrow())
+                .collect(Collectors.toList());
     }
 
     private Predicate<Map.Entry<T, Float>> predicate(float result, AtomicReference<Float> current) {

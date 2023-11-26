@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 public class ProbaTesting {
 
@@ -18,7 +17,7 @@ public class ProbaTesting {
         probabilities.add(Map.of("Legendary", 4f, "Epic", 10f, "Rare", 30f, "Common", 83f));
 
         System.out.println("-----------------------------");
-        IntStream.rangeClosed(1, 50).forEach(i -> probabilities.randomize().ifPresent(this::execute));
+        probabilities.randomize(50).forEach(this::execute);
 
         System.out.println("-----------------------------");
         counter.entrySet().stream().sorted(Comparator.comparingInt(Map.Entry::getValue)).forEach(entry -> System.out.printf("Item: %s | Occurrences: %d \n", entry.getKey(), entry.getValue()));
