@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.spotify:completable-futures:0.3.1" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="com.spotify" artifactId="completable-futures" version="0.3.1" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.spotify/completable-futures/0.3.1/78066c01a40f3e6b4a5ab6ed654a1612ad45c208/completable-futures-0.3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.spotify/completable-futures/0.3.1/fd2f8b09a18134261012cf88e8a89008d907afa9/completable-futures-0.3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
