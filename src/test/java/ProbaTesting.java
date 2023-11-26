@@ -107,6 +107,6 @@ Item: Common | Prob: 83%
 -----------------------------
 [CoinFlip] Result: pile
 -----------------------------
-Operation took 14 ms
+Operation took 18 ms
 -----------------------------
 */
