@@ -35,7 +35,7 @@ public class TestListener extends AListener<Spigot> {
          */
 
         if (event.getMessage().equalsIgnoreCase("!particle")) {
-            MultiThreading.schedule(() -> new ParticleTest().spawnParticle(player, player.getLocation(), EnumParticle.HEART), 10, 10, TimeUnit.MILLISECONDS);
+            MultiThreading.schedule(() -> ParticleTest.spawnParticle(player, player.getLocation(), EnumParticle.HEART), 10, 10, TimeUnit.MILLISECONDS);
             event.setCancelled(true);
         }
 

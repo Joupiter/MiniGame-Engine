@@ -8,15 +8,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 @UtilityClass
 public class MultiThreading {
 
-    public final ExecutorService pool = Executors.newFixedThreadPool(100, runnable -> {
-        final AtomicInteger counter = new AtomicInteger(0);
-        return new Thread(runnable, String.format("Thread %s", counter.incrementAndGet()));
-    });
+    private final AtomicInteger counter = new AtomicInteger(0);
 
-    public final ScheduledExecutorService runnablePool = Executors.newScheduledThreadPool(10, runnable -> {
-        final AtomicInteger counter = new AtomicInteger(0);
-        return new Thread(runnable, "Thread " + counter.incrementAndGet());
-    });
+    public final ExecutorService pool = Executors.newFixedThreadPool(5, runnable -> new Thread(runnable, String.format("Thread %s", counter.incrementAndGet())));
+
+    public final ScheduledExecutorService runnablePool = Executors.newScheduledThreadPool(5, runnable -> new Thread(runnable, String.format("Thread %s", counter.incrementAndGet())));
 
     public ScheduledFuture<?> schedule(Runnable r, long initialDelay, long delay, TimeUnit unit) {
         return runnablePool.scheduleAtFixedRate(r, initialDelay, delay, unit);
@@ -31,8 +27,7 @@ public class MultiThreading {
     }
 
     public int getTotal() {
-        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) pool;
-        return threadPoolExecutor.getActiveCount();
+        return ((ThreadPoolExecutor) pool).getActiveCount();
     }
 
     public void stopTask() {

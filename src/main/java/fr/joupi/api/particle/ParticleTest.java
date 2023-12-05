@@ -1,11 +1,13 @@
 package fr.joupi.api.particle;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+@UtilityClass
 public class ParticleTest {
 
     public void spawnParticle(Player player, EnumParticle particleType, double x, double y, double z, float offsetX, float offsetY, float offsetZ, float particleData, int count, Object generalData) {
