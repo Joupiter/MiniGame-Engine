@@ -5,10 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5ea4fec6-074c-4dba-8ad6-fade6b447b60" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/command/DuelCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelRequestGui.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Pagination.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Pagination.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Probabilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Probabilities.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/ProbaTesting.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ProbaTesting.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Spigot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Spigot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGameSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGameSettings.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/gui/GGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/gui/GGui.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/listener/TestListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/listener/TestListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,6 +95,7 @@
     &quot;Repository.Attach.Sources&quot;: &quot;false&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;ToolWindowRun.ShowToolbar&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
@@ -125,7 +137,7 @@
       <command value="./gradlew clean shadowJar" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.ProbaTesting.test">
+  <component name="RunManager" selected="Gradle.[MiniGame] API [clean shadowJar]">
     <configuration name="D:/Workspace/[MiniGame] API [clean shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -514,7 +526,14 @@
       <option name="project" value="LOCAL" />
       <updated>1700968786741</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="prob new method">
+      <created>1701031329567</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1701031329567</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -530,7 +549,8 @@
     <MESSAGE value="Party invitation update" />
     <MESSAGE value="update" />
     <MESSAGE value="prob" />
-    <option name="LAST_COMMIT_MESSAGE" value="prob" />
+    <MESSAGE value="prob new method" />
+    <option name="LAST_COMMIT_MESSAGE" value="prob new method" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>

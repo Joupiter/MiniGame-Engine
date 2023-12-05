@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -11,6 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
@@ -55,7 +58,7 @@ public abstract class GGui<P extends JavaPlugin> {
         player.openInventory(getInventory());
     }
 
-    public void close(Player player) {
+    public void close(HumanEntity player) {
         player.closeInventory();
     }
 
@@ -65,17 +68,23 @@ public abstract class GGui<P extends JavaPlugin> {
     }
 
     public void setItems(int[] slots, GuiButton button) {
-        for (int slot : slots)
-            setItem(slot, button);
+        Arrays.stream(slots).forEach(slot -> setItem(slot, button));
     }
 
     public void setItems(int[] slots, ItemStack itemStack) {
-        for (int slot : slots)
-            setItem(slot, new GuiButton(itemStack));
+        setItems(slots, new GuiButton(itemStack));
+    }
+
+    public void setItems(List<Integer> slots, GuiButton button) {
+        slots.forEach(slot -> setItem(slot, button));
+    }
+
+    public void setItems(List<Integer> slots, ItemStack itemStack) {
+        setItems(slots, new GuiButton(itemStack));
     }
 
     public void setHorizontalLine(int from, int to, GuiButton button) {
-        IntStream.range(from, to + 1)
+        IntStream.rangeClosed(from, to)
                 .forEach(slot -> setItem(slot, button));
     }
 

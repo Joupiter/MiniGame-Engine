@@ -26,6 +26,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -125,7 +126,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public Optional<GameTeam> getRandomTeam() {
-        return getReachableTeams().stream().skip(getReachableTeams().isEmpty() ? 0 : new Random().nextInt(getReachableTeams().size())).findFirst();
+        return getReachableTeams().stream().skip(getReachableTeams().isEmpty() ? 0 : ThreadLocalRandom.current().nextInt(getReachableTeams().size())).findFirst();
     }
 
     private Optional<GameTeam> getTeamWithLeastPlayers() {

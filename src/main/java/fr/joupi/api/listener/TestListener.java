@@ -57,6 +57,7 @@ public class TestListener extends AListener<Spigot> {
 
         getPlugin().getGameManager().leaveGame(player);
         getPlugin().getGameManager().getPartyManager().onLeave(player);
+        getPlugin().getDuelManager().onLeave(player);
     }
 
 }

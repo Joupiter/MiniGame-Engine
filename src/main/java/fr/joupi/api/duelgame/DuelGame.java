@@ -9,11 +9,13 @@ import fr.joupi.api.duelgame.phase.WaitingPhase;
 import fr.joupi.api.game.Game;
 import fr.joupi.api.game.GameSize;
 import fr.joupi.api.game.GameState;
+import fr.joupi.api.game.duel.DuelRequest;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
 import fr.joupi.api.game.utils.GameHostBuilder;
 import fr.joupi.api.game.team.GameTeam;
+import fr.joupi.api.game.utils.GameSizeTemplate;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -44,6 +46,15 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
         );
 
         getPhaseManager().start();
+    }
+
+    public DuelGame(Spigot plugin, DuelRequest request) {
+        this(plugin, GameSizeTemplate.SIZE_1V1.getGameSize().clone());
+        getSettings().setMap(request.getSelectedMap());
+        getSettings().setKit(request.getSelectedKit());
+        getSettings().setKb(request.getSelectedKnockBack());
+
+        request.getPlayers().forEach(this::joinGame);
     }
 
     public DuelGame(Spigot plugin, Player player, GameSize gameSize) {

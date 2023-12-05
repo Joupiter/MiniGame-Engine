@@ -14,10 +14,18 @@ import org.bukkit.entity.Player;
 public class DuelGameSettings extends GameSettings {
 
     private boolean useSpecialKit;
+    private String map, kit, kb;
 
     public DuelGameSettings(GameSize gameSize, World world, boolean useSpecialKit) {
         super(gameSize, world);
         this.useSpecialKit = useSpecialKit;
+    }
+
+    public DuelGameSettings(GameSize gameSize, World world, String map, String kit, String kb) {
+        super(gameSize, world);
+        this.map = map;
+        this.kit = kit;
+        this.kb = kb;
     }
 
     public void giveSpecialKit(Player player) {

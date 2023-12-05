@@ -13,3 +13,5 @@ commands:
     description: end game
   party:
     description: party command
+  duel:
+    description: duel command
