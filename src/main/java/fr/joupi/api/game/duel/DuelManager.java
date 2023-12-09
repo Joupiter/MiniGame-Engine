@@ -40,10 +40,7 @@ public class DuelManager {
     }
 
     public void removeRequest(UUID sender, UUID target) {
-        getOutgoingRequests(sender).stream()
-                .filter(request -> request.getTarget().equals(target)).findFirst()
-                .map(DuelRequest::getId)
-                .ifPresent(getRequests()::remove);
+        getRequest(sender, target).map(DuelRequest::getId).ifPresent(getRequests()::remove);
     }
 
     public void sendRequest(Player sender, Player target, DuelRequest request) {
@@ -83,7 +80,7 @@ public class DuelManager {
     }
 
     public List<DuelRequest> getAllRequests(UUID uuid) {
-        return ImmutableList.<DuelRequest>builder().addAll(getRequests(duelRequest -> duelRequest.getTarget().equals(uuid) || duelRequest.getSender().equals(uuid))).build();
+        return ImmutableList.<DuelRequest>builder().addAll(getRequests(request -> request.getTarget().equals(uuid) || request.getSender().equals(uuid))).build();
     }
 
     public List<DuelRequest> getRequests(Predicate<DuelRequest> predicate) {

@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 public class GamePartyManager {
@@ -24,11 +25,19 @@ public class GamePartyManager {
     }
 
     public Optional<GameParty> getParty(Player player) {
-        return getParties().stream().filter(gameParty -> gameParty.isMember(player.getUniqueId())).findFirst();
+        return getParty(player.getUniqueId());
+    }
+
+    public Optional<GameParty> getParty(UUID uuid) {
+        return getParties().stream().filter(gameParty -> gameParty.isMember(uuid)).findFirst();
     }
 
     public Optional<GameParty> getPartyLedByPlayer(Player player) {
-        return getParties().stream().filter(gameParty -> gameParty.isLeader(player.getUniqueId())).findFirst();
+        return getPartyLedByPlayer(player.getUniqueId());
+    }
+
+    public Optional<GameParty> getPartyLedByPlayer(UUID uuid) {
+        return getParties().stream().filter(gameParty -> gameParty.isLeader(uuid)).findFirst();
     }
 
     public Optional<GamePartyRequest> getRequest(UUID sender, UUID target) {
@@ -40,10 +49,10 @@ public class GamePartyManager {
     }
 
     public void addParty(GameParty gameParty) {
-        if (getParties().stream().noneMatch(party -> party.isMember(gameParty.getLeader()))) {
+        Utils.ifEmpty(getParty(gameParty.getLeader()), () -> {
             getParties().add(gameParty);
             Utils.debug("Party - party of {0} has been added with name ({1}) and {2} max players",  gameParty.getPlayer().getName(), gameParty.getName(), gameParty.getMaxMembers());
-        }
+        });
     }
 
     public void removeParty(Player player) {
@@ -53,6 +62,10 @@ public class GamePartyManager {
     public void removeParty(GameParty gameParty) {
         getParties().remove(gameParty);
         Utils.debug("Party - party of {0} has been removed", gameParty.getPlayer().getName());
+    }
+
+    public void canRemoveParty(GameParty gameParty) {
+        Optional.of(gameParty).filter(GameParty::isEmpty).ifPresent(this::removeParty);
     }
 
     public void joinParty(Player player, GameParty gameParty) {
@@ -147,11 +160,6 @@ public class GamePartyManager {
 
     public List<GamePartyRequest> getOutgoingRequests(UUID uuid) {
         return getRequests().stream().filter(request -> request.getSender().equals(uuid)).collect(Collectors.toList());
-    }
-
-    public void canRemoveParty(GameParty gameParty) {
-        if (gameParty.isEmpty())
-            removeParty(gameParty);
     }
 
     public boolean canJoin(Player invited, Player leader) {

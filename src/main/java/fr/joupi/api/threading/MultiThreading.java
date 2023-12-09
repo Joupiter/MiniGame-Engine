@@ -10,7 +10,7 @@ public class MultiThreading {
 
     private final AtomicInteger counter = new AtomicInteger(0);
 
-    public final ExecutorService pool = Executors.newFixedThreadPool(5, runnable -> new Thread(runnable, String.format("Thread %s", counter.incrementAndGet())));
+    public final ExecutorService pool = Executors.newFixedThreadPool(10, runnable -> new Thread(runnable, String.format("Thread %s", counter.incrementAndGet())));
 
     public final ScheduledExecutorService runnablePool = Executors.newScheduledThreadPool(5, runnable -> new Thread(runnable, String.format("Thread %s", counter.incrementAndGet())));
 
@@ -27,7 +27,7 @@ public class MultiThreading {
     }
 
     public int getTotal() {
-        return ((ThreadPoolExecutor) pool).getActiveCount();
+        return Integer.sum(((ThreadPoolExecutor) pool).getActiveCount(), ((ThreadPoolExecutor) runnablePool).getActiveCount());
     }
 
     public void stopTask() {

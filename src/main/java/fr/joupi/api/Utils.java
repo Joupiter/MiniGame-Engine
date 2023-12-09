@@ -2,6 +2,7 @@ package fr.joupi.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import fr.joupi.api.request.Request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
@@ -17,6 +18,10 @@ public class Utils {
     public <T> void ifPresentOrElse(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
         if (optional.isPresent()) consumer.accept(optional.get());
         else runnable.run();
+    }
+
+    public <T> void ifEmpty(Optional<T> optional, Runnable runnable) {
+        if (optional.isEmpty()) runnable.run();
     }
 
     public void debug(String message, Object ... arguments) {
@@ -37,8 +42,26 @@ public class Utils {
             return new Value<>(value);
         }
 
-        public void consume(Consumer<T> consumer) {
+        public Value<T> consume(Consumer<T> consumer) {
             consumer.accept(getValue());
+            return this;
+        }
+
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public class OptionalValue<T> {
+
+        private final T value;
+
+        public static <T> OptionalValue<T> of(T optional) {
+            return new OptionalValue<>(optional);
+        }
+
+        public OptionalValue<T> consume(Consumer<T> consumer) {
+            Optional.ofNullable(getValue()).ifPresent(consumer);
+            return this;
         }
 
     }

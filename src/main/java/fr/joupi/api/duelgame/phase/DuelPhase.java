@@ -64,20 +64,3 @@ public class DuelPhase extends AbstractGamePhase<DuelGame> {
     public void onEnd() {}
 
 }
-/*
-    registerEvent(PlayerDeathEvent.class, event -> {
-            Optional<GamePlayer> player = getGame().getPlayer(event.getEntity().getUniqueId());
-            Optional<GamePlayer> killer = getGame().getPlayer(event.getEntity().getKiller().getUniqueId());
-            Optional<EntityDamageEvent> lastDamage = Optional.ofNullable(event.getEntity().getLastDamageCause()).stream().filter(damage -> damage.getCause().equals(EntityDamageEvent.DamageCause.ENTITY_ATTACK)).findFirst();
-
-            lastDamage.ifPresent(entityDamageEvent -> {
-                player.ifPresent(GamePlayer::addDeath);
-                player.ifPresent(gamePlayer -> {
-                    gamePlayer.setSpectator(true);
-                    gamePlayer.getPlayer().setGameMode(GameMode.SPECTATOR);
-                });
-                killer.ifPresent(GamePlayer::addKill);
-                endPhase();
-            });
-        });
-*/

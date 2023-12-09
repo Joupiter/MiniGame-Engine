@@ -49,7 +49,7 @@ public class DuelRequestGui extends GGui<Spigot> {
                 event -> Map.getMaps().forEach(map -> setItem(18 + Map.getMaps().indexOf(map), getMapButton(map)))));
 
         setItem(3, new GuiButton(new ItemBuilder(Material.IRON_SWORD).setName("Kit &e(" + getSelectedKit().getName() + ")").build(),
-            event -> Kit.getKits().forEach(kit -> setItem(18 + Kit.getKits().indexOf(kit), getKitButton(kit)))));
+                event -> Kit.getKits().forEach(kit -> setItem(18 + Kit.getKits().indexOf(kit), getKitButton(kit)))));
 
         setItem(4, new GuiButton(new ItemBuilder(Material.FISHING_ROD).setName("KnockBacks &e(" + getSelectedKnockBack().getName() + ")").build(),
                 event -> KnockBack.getKnockBacks().forEach(knockBack -> setItem(18 + KnockBack.getKnockBacks().indexOf(knockBack), getKnockBackButton(knockBack)))));

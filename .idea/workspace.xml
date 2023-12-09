@@ -4,7 +4,29 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5ea4fec6-074c-4dba-8ad6-fade6b447b60" name="Changes" comment="" />
+    <list default="true" id="5ea4fec6-074c-4dba-8ad6-fade6b447b60" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_11_13.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_agent_1_11_13.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_awaitility_awaitility_4_1_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_hamcrest_hamcrest_2_1.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_mockito_mockito_core_3_12_4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_objenesis_objenesis_3_2.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/request/Request.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/request/RequestManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/request/example/AnotherRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/request/example/ExampleMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/[MiniGame]_API.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/[MiniGame]_API.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/phase/DuelPhase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/phase/DuelPhase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelRequestGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/duel/DuelRequestGui.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/party/GamePartyManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/party/GamePartyManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/GameSizeTemplate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/GameSizeTemplate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/threading/MultiThreading.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/threading/MultiThreading.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -84,15 +106,16 @@
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;11&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Workspace/[MiniGame] API/src/main/java/fr/joupi/api/game/listener&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Workspace/[MiniGame] API/src/main/java/fr/joupi/api/request/example&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Workspace\[MiniGame] API\src\main\java\fr\joupi\api\request\example" />
       <recent name="D:\Workspace\[MiniGame] API\src\main\java\fr\joupi\api\game\listener" />
       <recent name="D:\Workspace\[MiniGame] API\src\main\java\gui" />
     </key>
@@ -121,53 +144,13 @@
       <command value="./gradlew clean shadowJar" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.[MiniGame] API [clean shadowJar]">
-    <configuration name="D:/Workspace/[MiniGame] API [clean shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value="clean" />
-            <option value="shadowJar" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <ForceTestExec>false</ForceTestExec>
-      <method v="2" />
-    </configuration>
-    <configuration name="ProbaTesting" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;ProbaTesting&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <ForceTestExec>true</ForceTestExec>
-      <method v="2" />
+  <component name="RunManager" selected="Application.RequestTesting">
+    <configuration name="RequestTesting" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="RequestTesting" />
+      <module name="[MiniGame]_API.test" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="ProbaTesting.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -193,7 +176,7 @@
       <ForceTestExec>true</ForceTestExec>
       <method v="2" />
     </configuration>
-    <configuration name="[MiniGame] API [clean shadowJar]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="RequestTesting.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -204,27 +187,66 @@
         </option>
         <option name="taskNames">
           <list>
-            <option value="clean" />
-            <option value="shadowJar" />
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;RequestTesting.test&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
       </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>true</ExternalSystemDebugServerProcess>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
       <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
       <DebugAllEnabled>false</DebugAllEnabled>
-      <ForceTestExec>false</ForceTestExec>
+      <ForceTestExec>true</ForceTestExec>
       <method v="2" />
     </configuration>
-    <configuration name="ProbaTesting.test" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="[MiniGame]_API.test" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="ProbaTesting" />
-      <option name="METHOD_NAME" value="test" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="RequestTesting.testRequestManager" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;RequestTesting.testRequestManager&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>true</ForceTestExec>
+      <method v="2" />
+    </configuration>
+    <configuration name="Testing.test (1)" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;Testing.test&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>true</ForceTestExec>
+      <method v="2" />
     </configuration>
     <configuration default="true" type="JetRunConfigurationType">
       <module name="[MiniGame] API" />
@@ -241,11 +263,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.RequestTesting" />
+        <item itemvalue="Gradle.RequestTesting.testRequestManager" />
+        <item itemvalue="Gradle.RequestTesting.test" />
+        <item itemvalue="Gradle.Testing.test (1)" />
         <item itemvalue="Gradle.ProbaTesting.test" />
-        <item itemvalue="Gradle.ProbaTesting" />
-        <item itemvalue="Gradle.[MiniGame] API [clean shadowJar]" />
-        <item itemvalue="JUnit.ProbaTesting.test" />
-        <item itemvalue="Gradle.D:/Workspace/[MiniGame] API [clean shadowJar]" />
       </list>
     </recent_temporary>
   </component>
@@ -524,7 +546,14 @@
       <option name="project" value="LOCAL" />
       <updated>1701804873821</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="xd">
+      <created>1701806697219</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1701806697219</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -542,7 +571,8 @@
     <MESSAGE value="prob" />
     <MESSAGE value="prob new method" />
     <MESSAGE value="duel update" />
-    <option name="LAST_COMMIT_MESSAGE" value="duel update" />
+    <MESSAGE value="xd" />
+    <option name="LAST_COMMIT_MESSAGE" value="xd" />
   </component>
   <component name="XDebuggerManager">
     <watches-manager>
