@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
@@ -42,7 +43,7 @@ public abstract class GameSettings {
     }
 
     public Optional<Location> getRandomLocation(String name) {
-        return getLocations(name).stream().skip(getLocations(name).isEmpty() ? 0 : new Random().nextInt(getLocations(name).size())).findFirst();
+        return getLocations(name).stream().skip(getLocations(name).isEmpty() ? 0 : ThreadLocalRandom.current().nextInt(getLocations(name).size())).findFirst();
     }
 
     public List<Location> getLocations(String name) {

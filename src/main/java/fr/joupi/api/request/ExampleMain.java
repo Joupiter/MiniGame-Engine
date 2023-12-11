@@ -1,6 +1,4 @@
-package fr.joupi.api.request.example;
-
-import fr.joupi.api.request.RequestManager;
+package fr.joupi.api.request;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -9,10 +7,13 @@ public class ExampleMain {
 
     public static void main(String[] args) {
         RequestManager<AnotherRequest> requestManager = new AnotherRequestManager();
-        AnotherRequest request = new AnotherRequest(UUID.randomUUID(), UUID.randomUUID(), "Field");
+        UUID uuid = UUID.randomUUID();
+        AnotherRequest request = new AnotherRequest(uuid, UUID.randomUUID(), "Field");
 
         requestManager.addRequest(request);
         requestManager.addRequest(request, 10, TimeUnit.SECONDS);
+        requestManager.getOutgoingRequests(uuid).forEach(System.out::println);
+        requestManager.removeRequest(request);
     }
 
     static class AnotherRequestManager extends RequestManager<AnotherRequest> {

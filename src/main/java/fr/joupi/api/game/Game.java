@@ -102,11 +102,11 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     }
 
     public List<G> getPlayersWithTeam() {
-        return getPlayers().values().stream().filter(this::haveTeam).collect(Collectors.toList());
+        return getPlayers().values().stream().filter(haveTeamPredicate()).collect(Collectors.toList());
     }
 
     public List<G> getPlayersWithoutTeam() {
-        return getPlayers().values().stream().filter(gamePlayer -> !haveTeam(gamePlayer)).collect(Collectors.toList());
+        return getPlayers().values().stream().filter(haveTeamPredicate().negate()).collect(Collectors.toList());
     }
 
     public List<GameTeam> getAliveTeams() {
@@ -261,6 +261,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     private Predicate<GamePlayer> isSpectatorPredicate() {
         return GamePlayer::isSpectator;
+    }
+
+    private Predicate<GamePlayer> haveTeamPredicate() {
+        return gamePlayer -> getTeam(gamePlayer).isPresent();
     }
 
     public boolean isGameHost() {

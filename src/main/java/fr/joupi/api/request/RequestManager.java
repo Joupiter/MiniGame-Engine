@@ -5,9 +5,7 @@ import fr.joupi.api.Utils;
 import lombok.Getter;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -55,19 +53,27 @@ public abstract class RequestManager<T extends Request> {
         addRequest(request, getDelay(), getTimeUnit());
     }
 
-    private void scheduleRequest(T request, long delay, TimeUnit timeUnit) {
+    public final void addRequests(Collection<T> requests) {
+        addRequests(requests, getDelay(), getTimeUnit());
+    }
+
+    public final void addRequests(Collection<T> requests, long delay, TimeUnit timeUnit) {
+        requests.forEach(request -> addRequest(request, delay, timeUnit));
+    }
+
+    private void scheduleRequest(Request request, long delay, TimeUnit timeUnit) {
         getExecutorService().schedule(() -> Utils.OptionalValue.of(getRequests().get(request.getId())).consume(this::onRequestExpire).consume(this::removeRequest), delay, timeUnit);
     }
 
-    private void scheduleRequest(T request) {
+    private void scheduleRequest(Request request) {
         scheduleRequest(request, getDelay(), getTimeUnit());
     }
 
     public void removeRequest(UUID sender, UUID target) {
-        getRequest(sender, target).map(T::getId).ifPresent(getRequests()::remove);
+        getRequest(sender, target).map(Request::getId).ifPresent(getRequests()::remove);
     }
 
-    public void removeRequest(T request) {
+    public void removeRequest(Request request) {
         getRequests().remove(request.getId());
     }
 

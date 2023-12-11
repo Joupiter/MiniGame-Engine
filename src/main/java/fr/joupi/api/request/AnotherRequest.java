@@ -1,13 +1,10 @@
-package fr.joupi.api.request.example;
+package fr.joupi.api.request;
 
-import fr.joupi.api.request.Request;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.UUID;
 
 @Getter
-@ToString
 public class AnotherRequest extends Request {
 
     private final String field;

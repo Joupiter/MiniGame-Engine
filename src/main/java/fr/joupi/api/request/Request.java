@@ -1,6 +1,7 @@
 package fr.joupi.api.request;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -9,6 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Getter
+@ToString
 public abstract class Request {
 
     private final UUID id, sender, target;
