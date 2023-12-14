@@ -11,11 +11,11 @@ public final class GameHostBuilder {
 
     private final GameHost<?> gameHost;
 
-    private GameHostBuilder(Game<?, ?> game, UUID hostUuid) {
+    private GameHostBuilder(Game<?, ?, ?> game, UUID hostUuid) {
         this.gameHost = new GameHost<>(game, hostUuid);
     }
 
-    public static GameHostBuilder of(Game<?, ?> game, UUID hostUuid) {
+    public static GameHostBuilder of(Game<?, ?, ?> game, UUID hostUuid) {
         return new GameHostBuilder(game, hostUuid);
     }
 

@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: one.util:streamex:0.8.2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="one.util" artifactId="streamex" version="0.8.2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/one.util/streamex/0.8.2/57d48c7e88be177d600b79c4fff555f378263179/streamex-0.8.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/one.util/streamex/0.8.2/4ba024b12c01c2b9f0d0d165fa7543bcf1fe8594/streamex-0.8.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

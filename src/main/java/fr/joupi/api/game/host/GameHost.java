@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class GameHost<G extends Game<?, ?>> {
+public class GameHost<G extends Game<?, ?, ?>> {
 
     private final G game;
 

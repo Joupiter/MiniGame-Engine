@@ -7,11 +7,16 @@ import fr.joupi.api.game.utils.GameSizeTemplate;
 import fr.joupi.api.particle.ParticleTest;
 import fr.joupi.api.threading.MultiThreading;
 import net.minecraft.server.v1_8_R3.EnumParticle;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +46,10 @@ public class TestListener extends AListener<Spigot> {
 
         if (event.getMessage().equals("!addgame")) {
             getPlugin().getGameManager().addGame("duel", new DuelGame(getPlugin(), GameSizeTemplate.SIZE_1V1.getGameSize().clone()));
+            event.setCancelled(true);
+        }
+
+        if (event.getMessage().equals("!test")) {
             event.setCancelled(true);
         }
 

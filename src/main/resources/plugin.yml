@@ -1,6 +1,7 @@
 name: TestPlugin
 version: 1.0.0
 main: fr.joupi.api.Spigot
+depend: [ ProtocolLib ]
 
 commands:
   join:

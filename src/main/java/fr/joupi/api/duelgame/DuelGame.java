@@ -13,6 +13,8 @@ import fr.joupi.api.game.duel.DuelRequest;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
+import fr.joupi.api.game.team.GameTeamColor;
+import fr.joupi.api.game.utils.DefaultGameTeam;
 import fr.joupi.api.game.utils.GameHostBuilder;
 import fr.joupi.api.game.team.GameTeam;
 import fr.joupi.api.game.utils.GameSizeTemplate;
@@ -26,7 +28,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
+public class DuelGame extends Game<DuelGamePlayer, DuelGameTeam, DuelGameSettings> {
 
     private final Spigot spigot;
 
@@ -68,6 +70,11 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
     @Override
     public DuelGamePlayer defaultGamePlayer(UUID uuid, boolean spectator) {
         return new DuelGamePlayer(uuid, 0, 0, 0, spectator);
+    }
+
+    @Override
+    public DuelGameTeam defaultGameTeam(GameTeamColor color) {
+        return new DuelGameTeam(color);
     }
 
     /*
@@ -117,6 +124,8 @@ public class DuelGame extends Game<DuelGamePlayer, DuelGameSettings> {
                 ifHostedGame(gameHost -> itemStack.getType().equals(gameHost.getHostItem().getType()),
                         gameHost -> gameHost.openGui(spigot.getGuiManager(), player));
 
+                getPlayer(player.getUniqueId()).flatMap(this::getTeam).ifPresent(DuelGameTeam::addScore);
+                getTeams().forEach(duelGameTeam -> player.sendMessage(duelGameTeam.getColoredName() + ": " + duelGameTeam.getScore()));
                 event.setCancelled(true);
             });
         });

@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Getter
-public class GameTeam {
+public abstract class GameTeam {
 
     private final String name;
     private final GameTeamColor color;

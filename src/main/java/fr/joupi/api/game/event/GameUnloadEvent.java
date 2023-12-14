@@ -12,7 +12,7 @@ public class GameUnloadEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private final Game<?, ?> game;
+    private final Game<?, ?, ?> game;
 
     @Override
     public HandlerList getHandlers() {

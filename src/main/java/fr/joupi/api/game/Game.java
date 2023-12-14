@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
-public abstract class Game<G extends GamePlayer, S extends GameSettings> implements Listener {
+public abstract class Game<G extends GamePlayer, T extends GameTeam, S extends GameSettings> implements Listener {
 
     private final JavaPlugin plugin;
 
@@ -45,7 +45,7 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
     private GameHost<?> gameHost;
 
     private final List<GameListenerWrapper<?>> listeners;
-    private final List<GameTeam> teams;
+    private final List<T> teams;
     private final List<BukkitTask> tasks;
     private final ConcurrentMap<UUID, G> players;
 
@@ -68,8 +68,10 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
 
     public abstract G defaultGamePlayer(UUID uuid, boolean spectator);
 
+    public abstract T defaultGameTeam(GameTeamColor color);
+
     private void load() {
-        getTeams().addAll(Arrays.stream(GameTeamColor.values()).limit(getSettings().getGameSize().getTeamNeeded()).map(GameTeam::new).collect(Collectors.toList()));
+        getTeams().addAll(Arrays.stream(GameTeamColor.values()).limit(getSettings().getGameSize().getTeamNeeded()).map(this::defaultGameTeam).collect(Collectors.toList()));
         Bukkit.getPluginManager().registerEvents(this, getPlugin());
         debug("{0} loaded", getFullName());
         Bukkit.getPluginManager().callEvent(new GameLoadEvent(this));
@@ -109,27 +111,27 @@ public abstract class Game<G extends GamePlayer, S extends GameSettings> impleme
         return getPlayers().values().stream().filter(haveTeamPredicate().negate()).collect(Collectors.toList());
     }
 
-    public List<GameTeam> getAliveTeams() {
+    public List<T> getAliveTeams() {
         return getTeams().stream().filter(isNoPlayersAlivePredicate().negate()).collect(Collectors.toList());
     }
 
-    public List<GameTeam> getReachableTeams() {
+    public List<T> getReachableTeams() {
         return getTeams().stream().filter(gameTeam -> gameTeam.getSize() < getSettings().getGameSize().getTeamMaxPlayer()).collect(Collectors.toList());
     }
 
-    public GameTeam getTeam(String teamName) {
+    public T getTeam(String teamName) {
         return getTeams().stream().filter(gameTeam -> gameTeam.getName().equals(teamName)).findFirst().orElse(null);
     }
 
-    public Optional<GameTeam> getTeam(GamePlayer gamePlayer) {
+    public Optional<T> getTeam(GamePlayer gamePlayer) {
         return getTeams().stream().filter(gameTeam -> gameTeam.isMember(gamePlayer)).findFirst();
     }
 
-    public Optional<GameTeam> getRandomTeam() {
+    public Optional<T> getRandomTeam() {
         return getReachableTeams().stream().skip(getReachableTeams().isEmpty() ? 0 : ThreadLocalRandom.current().nextInt(getReachableTeams().size())).findFirst();
     }
 
-    private Optional<GameTeam> getTeamWithLeastPlayers() {
+    private Optional<T> getTeamWithLeastPlayers() {
         return getTeams().stream()
                 .filter(team -> team.getSize() < getSettings().getGameSize().getTeamMaxPlayer())
                 .min(Comparator.comparingInt(GameTeam::getSize));

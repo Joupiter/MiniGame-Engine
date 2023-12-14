@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.function.*;
 
 @Getter
-public abstract class AbstractGamePhase<G extends Game<?, ?>> implements GamePhase {
+public abstract class AbstractGamePhase<G extends Game<?, ?, ?>> implements GamePhase {
 
     private final G game;
 

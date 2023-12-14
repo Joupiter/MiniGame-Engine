@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Getter
-public class GameQueue<G extends Game<?, ?>> {
+public class GameQueue<G extends Game<?, ?, ?>> {
 
     private final G game;
 

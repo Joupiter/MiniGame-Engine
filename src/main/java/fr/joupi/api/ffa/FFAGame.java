@@ -6,7 +6,9 @@ import fr.joupi.api.game.GameSize;
 import fr.joupi.api.game.GameState;
 import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
+import fr.joupi.api.game.team.GameTeamColor;
 import fr.joupi.api.game.utils.DefaultGameSettings;
+import fr.joupi.api.game.utils.DefaultGameTeam;
 import fr.joupi.api.game.utils.GameSizeTemplate;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.UUID;
 
-public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
+public class FFAGame extends Game<FFAGamePlayer, DefaultGameTeam, GameSettings> {
 
     public FFAGame(JavaPlugin plugin, GameSize gameSize) {
         super(plugin, "ComboFFA", new DefaultGameSettings(gameSize, Bukkit.getWorld("world")));
@@ -36,6 +38,11 @@ public class FFAGame extends Game<FFAGamePlayer, GameSettings> {
     @Override
     public FFAGamePlayer defaultGamePlayer(UUID uuid, boolean spectator) {
         return new FFAGamePlayer(uuid, 0, 0, 0, spectator);
+    }
+
+    @Override
+    public DefaultGameTeam defaultGameTeam(GameTeamColor color) {
+        return new DefaultGameTeam(color);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
