@@ -4,36 +4,32 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5ea4fec6-074c-4dba-8ad6-fade6b447b60" name="Changes" comment="team update">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__com_comphenix_protocol_ProtocolLib_5_1_0.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__net_bytebuddy_byte_buddy_1_14_3.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__one_util_streamex_0_8_2.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGameTeam.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/DefaultGameTeam.java" afterDir="false" />
+    <list default="true" id="5ea4fec6-074c-4dba-8ad6-fade6b447b60" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/matchmaking/DivisionCommand.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/matchmaking/MatchMakingManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/matchmaking/RankDivision.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/matchmaking/RankSubDivision.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/matchmaking/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/[MiniGame]_API.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/[MiniGame]_API.main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/[MiniGame]_API.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/[MiniGame]_API.test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/ItemBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/ItemBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Spigot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Spigot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/Utils.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/command/GameCommand.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/command/GameCommand.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/ffa/FFAGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/ffa/FFAGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGameSettings.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/duelgame/DuelGameSettings.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GameQueue.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GameQueue.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GameLoadEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GameLoadEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GamePlayerJoinEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GamePlayerJoinEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GamePlayerLeaveEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GamePlayerLeaveEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GameUnloadEvent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/event/GameUnloadEvent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/gui/TeamGui.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/gui/TeamGui.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/host/GameHost.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/host/GameHost.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/listener/GameListenerWrapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/listener/GameListenerWrapper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GamePlayer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GamePlayer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GameState.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/GameState.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/phase/AbstractGamePhase.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/phase/AbstractGamePhase.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/phase/PhaseManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/phase/PhaseManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/team/GameTeam.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/team/GameTeam.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/GameHostBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/GameHostBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/GameRunnable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/game/utils/GameRunnable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/listener/TestListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/listener/TestListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/fr/joupi/api/request/RequestManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/fr/joupi/api/request/RequestManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/plugin.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/plugin.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/Testing.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/Testing.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,9 +64,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Enum" />
         <option value="AnnotationType" />
         <option value="Interface" />
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -89,6 +85,9 @@
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="ProjectErrors" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -115,7 +114,7 @@
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;11&quot;,
     &quot;last_opened_file_path&quot;: &quot;D:/Workspace/[MiniGame] API/src/main/java/fr/joupi/api/request/example&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
@@ -152,7 +151,7 @@
       <command value="./gradlew clean shadowJar" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.[MiniGame] API [clean shadowJar]">
+  <component name="RunManager" selected="Gradle.Testing.test">
     <configuration name="ExampleMain" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="fr.joupi.api.request.ExampleMain" />
       <module name="[MiniGame]_API.main" />
@@ -173,30 +172,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="RequestTesting.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;RequestTesting.test&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <ForceTestExec>true</ForceTestExec>
-      <method v="2" />
-    </configuration>
     <configuration name="RequestTesting.testRequestManager" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -211,6 +186,30 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;RequestTesting.testRequestManager&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <ForceTestExec>true</ForceTestExec>
+      <method v="2" />
+    </configuration>
+    <configuration name="Testing.test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;Testing.test&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -259,11 +258,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.Testing.test" />
         <item itemvalue="Gradle.[MiniGame] API [clean shadowJar]" />
         <item itemvalue="Application.ExampleMain" />
         <item itemvalue="Application.RequestTesting" />
         <item itemvalue="Gradle.RequestTesting.testRequestManager" />
-        <item itemvalue="Gradle.RequestTesting.test" />
       </list>
     </recent_temporary>
   </component>
@@ -563,7 +562,21 @@
       <option name="project" value="LOCAL" />
       <updated>1702299700081</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="team update">
+      <created>1702514970088</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1702514970088</updated>
+    </task>
+    <task id="LOCAL-00043" summary="team update">
+      <created>1702514983435</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1702514983435</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">

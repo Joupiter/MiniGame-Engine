@@ -71,7 +71,7 @@ public class GameManager {
     }
 
     public void removeGame(Game game) {
-        getGames().values().forEach(gameList -> gameList.remove(game));
+        getGames().values().forEach(games -> games.remove(game));
         Utils.debug("REMOVE GAME {0}", game.getFullName());
     }
 

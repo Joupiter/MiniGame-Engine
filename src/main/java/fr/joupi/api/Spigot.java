@@ -9,6 +9,8 @@ import fr.joupi.api.gui.GuiManager;
 import fr.joupi.api.command.GameCommand;
 import fr.joupi.api.command.GamePartyCommand;
 import fr.joupi.api.listener.TestListener;
+import fr.joupi.api.matchmaking.MatchMakingManager;
+import fr.joupi.api.matchmaking.DivisionCommand;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -17,6 +19,7 @@ public class Spigot extends JavaPlugin {
 
     private GameManager gameManager;
     private DuelManager duelManager;
+    private MatchMakingManager matchMakingManager;
 
     private GameEntityManager gameEntityManager;
     private GuiManager guiManager;
@@ -25,6 +28,7 @@ public class Spigot extends JavaPlugin {
     public void onEnable() {
         this.gameManager = new GameManager(this);
         this.duelManager = new DuelManager(this);
+        this.matchMakingManager = new MatchMakingManager();
         this.guiManager = new GuiManager(this);
         this.gameEntityManager = new GameEntityManager(this);
 
@@ -36,6 +40,7 @@ public class Spigot extends JavaPlugin {
         getCommand("end").setExecutor(new GameCommand(this));
         getCommand("party").setExecutor(new GamePartyCommand(this));
         getCommand("duel").setExecutor(new DuelCommand(this));
+        getCommand("division").setExecutor(new DivisionCommand(this));
 
         getGameManager().addGame("comboffa", new FFAGame(this));
     }

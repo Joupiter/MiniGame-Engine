@@ -21,13 +21,6 @@ public class DuelGameSettings extends GameSettings {
         this.useSpecialKit = useSpecialKit;
     }
 
-    public DuelGameSettings(GameSize gameSize, World world, String map, String kit, String kb) {
-        super(gameSize, world);
-        this.map = map;
-        this.kit = kit;
-        this.kb = kb;
-    }
-
     public void giveSpecialKit(Player player) {
         player.getInventory().setItem(0, new ItemBuilder(Material.DIAMOND_SWORD).build());
         player.getInventory().setBoots(new ItemBuilder(Material.IRON_BOOTS).build());

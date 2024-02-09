@@ -2,11 +2,9 @@ package fr.joupi.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.joupi.api.request.Request;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.experimental.UtilityClass;
-import org.bukkit.Location;
 
 import java.text.MessageFormat;
 import java.util.Optional;

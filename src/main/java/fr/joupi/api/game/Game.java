@@ -241,12 +241,12 @@ public abstract class Game<G extends GamePlayer, T extends GameTeam, S extends G
     }
 
     public void broadcast(String... messages) {
-        Arrays.asList(messages)
-                .forEach(this::broadcast);
+        Arrays.asList(messages).forEach(this::broadcast);
     }
 
     public void broadcast(Predicate<G> filter, String... messages) {
-        getPlayers().values().stream().filter(filter).forEach(gamePlayer -> gamePlayer.sendMessage(messages));
+        getPlayers().values().stream().filter(filter)
+                .forEach(gamePlayer -> gamePlayer.sendMessage(messages));
     }
 
     public void debug(String message, Object ... arguments) {

@@ -9,7 +9,6 @@ compileJava.options.encoding = 'UTF-8'
 
 repositories {
     mavenCentral()
-    maven { url "https://repo.dmulloy2.net/repository/public/" }
 }
 
 dependencies {
@@ -18,7 +17,6 @@ dependencies {
     implementation 'org.projectlombok:lombok:1.18.26'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     implementation 'org.reflections:reflections:0.10.2'
-    implementation 'org.jetbrains:annotations:24.0.0'
     implementation 'org.mongodb:mongo-java-driver:3.12.12'
     implementation 'io.reactivex.rxjava3:rxjava:3.1.7'
     implementation 'org.reactivestreams:reactive-streams:1.0.4'

@@ -1,6 +1,7 @@
 package fr.joupi.api.request;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import fr.joupi.api.Utils;
 import lombok.Getter;
 import org.bukkit.entity.Player;

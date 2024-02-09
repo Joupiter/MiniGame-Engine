@@ -14,7 +14,6 @@ import fr.joupi.api.game.event.GamePlayerJoinEvent;
 import fr.joupi.api.game.event.GamePlayerLeaveEvent;
 import fr.joupi.api.game.gui.TeamGui;
 import fr.joupi.api.game.team.GameTeamColor;
-import fr.joupi.api.game.utils.DefaultGameTeam;
 import fr.joupi.api.game.utils.GameHostBuilder;
 import fr.joupi.api.game.team.GameTeam;
 import fr.joupi.api.game.utils.GameSizeTemplate;

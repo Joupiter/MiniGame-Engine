@@ -28,9 +28,6 @@ public class GameCommand implements CommandExecutor {
                 getPlugin().getGameManager().leaveGame(player);
 
             if (label.equals("info"))
-                //Optional.ofNullable(getPlugin().getGameManager().getGames("comboffa").get(0)).ifPresent(game -> game.joinGame(player, true));
-                //getPlugin().getGameEntityManager().spawn(new Golem("&cRouge", 250, player.getLocation()));
-                //getPlugin().getGameManager().addHostGame(getPlugin(), "duel", player, GameSizeTemplate.SIZE_1V1.getGameSize());
                 getPlugin().getGameManager().getGames().values().stream().flatMap(List::stream).forEach(game -> game.sendDebugInfoMessage(player));
 
             if (label.equals("end") && args.length > 0) {

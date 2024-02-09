@@ -15,3 +15,5 @@ commands:
     description: party command
   duel:
     description: duel command
+  division:
+    description: rank command
